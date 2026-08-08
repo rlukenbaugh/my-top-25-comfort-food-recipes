@@ -1,0 +1,7 @@
+__pycache__/
+.venv/
+outputs/
+work/
+*.pyc
+*.pyo
+*.log
