@@ -1,6 +1,7 @@
 ﻿from pathlib import Path
 import json
 import re
+import shutil
 
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter
@@ -409,6 +410,9 @@ def build():
     freezer_guide(c, 3)
     recipe_pages(c, 4)
     c.save()
+    printable_dir = ROOT / "printable"
+    printable_dir.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(OUTPUT, printable_dir / OUTPUT.name)
     print(OUTPUT)
 
 

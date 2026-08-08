@@ -2,6 +2,14 @@
 
 An editable Windows project that builds a printable US Letter PDF from `recipes.json`.
 
+## Web app
+
+Open the live collection at:
+
+https://rlukenbaugh.github.io/my-top-25-comfort-food-recipes/
+
+The web app reads the same `recipes.json` file as the printable book. It includes search, freezer-rating filters, mobile layout, original-recipe links, and a downloadable PDF. GitHub Pages rebuilds and republishes it whenever `main` is updated.
+
 ## Add or change a recipe
 
 1. Open `recipes.json` in Notepad or Codex.
@@ -41,3 +49,13 @@ This confirms the page count, embedded source links, and recipe count.
 - `verify.cmd` - runs the verification check
 
 Full recipe instructions remain on the linked Allrecipes pages. This project stores your ranking, notes, freezer guidance, and source links.
+
+## Preview the web app locally
+
+From this project folder, run:
+
+```text
+py -3 -m http.server 4173
+```
+
+Then open `http://localhost:4173` in a browser.

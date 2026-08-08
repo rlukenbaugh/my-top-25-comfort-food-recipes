@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Ron's ranked comfort-food recipes with practical freezer notes and links to every original recipe." />
+    <meta name="theme-color" content="#651f27" />
+    <title>My Top 25 Comfort-Food Recipes</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#recipes">Skip to recipes</a>
+    <header class="site-header">
+      <a class="brand" href="#top" aria-label="My Comfort-Food Collection home">
+        <svg aria-hidden="true" viewBox="0 0 48 48"><path d="M11 19h26v18a4 4 0 0 1-4 4H15a4 4 0 0 1-4-4V19Z"/><path d="M8 19h32M17 14c0-4 3-7 7-7s7 3 7 7M15 10c-3 0-5 2-5 5M33 10c3 0 5 2 5 5M18 25v9M24 25v9M30 25v9"/></svg>
+        <span>My Comfort-Food Collection</span>
+      </a>
+      <nav aria-label="Main navigation">
+        <a class="nav-link active" href="#recipes">Recipes</a>
+        <a class="nav-link" href="#freezer-guide">Freezer Guide</a>
+        <a class="pdf-link button button-light" href="#" data-pdf-link>
+          <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M6 2h8l4 4v16H6V2Zm8 0v5h5M9 12h6M9 16h6"/></svg>
+          Printable PDF
+        </a>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="intro" aria-labelledby="page-title">
+        <h1 id="page-title">My Top <span data-recipe-count>25</span> Comfort-Food Recipes</h1>
+        <p>Ranked favorites with practical freezer notes and links to every original recipe.</p>
+        <div class="controls" aria-label="Recipe search and filters">
+          <label class="search-box">
+            <span class="sr-only">Search recipes</span>
+            <svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4 4"/></svg>
+            <input id="search" type="search" placeholder="Search recipes" autocomplete="off" />
+          </label>
+          <div class="filter-scroller">
+            <div class="filters" role="group" aria-label="Filter by freezer rating">
+              <button class="filter active" type="button" data-rating="All" aria-pressed="true">All</button>
+              <button class="filter" type="button" data-rating="Outstanding" aria-pressed="false">Outstanding</button>
+              <button class="filter" type="button" data-rating="Excellent" aria-pressed="false">Excellent</button>
+              <button class="filter" type="button" data-rating="Very good" aria-pressed="false">Very good</button>
+              <button class="filter" type="button" data-rating="Good" aria-pressed="false">Good</button>
+              <button class="filter" type="button" data-rating="Fair" aria-pressed="false">Fair</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="recipes" class="recipe-section" aria-labelledby="results-title">
+        <div class="results-heading">
+          <h2 id="results-title"><span id="result-count">25</span> recipes</h2>
+          <button id="clear-filters" class="text-button" type="button" hidden>Clear filters</button>
+        </div>
+        <div id="recipe-list" class="recipe-list" aria-live="polite" aria-busy="true"></div>
+        <div id="empty-state" class="empty-state" hidden>
+          <h3>No recipes found</h3>
+          <p>Try a different search or freezer rating.</p>
+          <button class="button button-primary" type="button" data-clear>Show all recipes</button>
+        </div>
+      </section>
+
+      <section id="freezer-guide" class="freezer-guide" aria-labelledby="freezer-title">
+        <div class="guide-title">
+          <svg aria-hidden="true" viewBox="0 0 48 48"><path d="M24 4v40M7 14l34 20M41 14 7 34M17 7l7 7 7-7M17 41l7-7 7 7M5 24l10-2-3-9M43 24l-10-2 3-9M5 24l10 2-3 9M43 24l-10 2 3 9"/></svg>
+          <div><h2 id="freezer-title">Freezer Guide at a Glance</h2><p>Small habits that protect flavor and texture.</p></div>
+        </div>
+        <div class="guide-items">
+          <article><h3>Cool completely</h3><p>Divide food into shallow containers and refrigerate promptly before freezing.</p></article>
+          <article><h3>Remove excess air</h3><p>Use tight containers or freezer bags with as much air pressed out as possible.</p></article>
+          <article><h3>Label and date</h3><p>Write the dish name, freeze date, and any finish-at-serving instructions.</p></article>
+          <article><h3>Reheat fully</h3><p>Thaw in the refrigerator when practical and reheat leftovers to 165 F.</p></article>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="footer-brand"><strong>My Comfort-Food Collection</strong><span>Made for home cooks, by a home cook.</span></div>
+      <div class="footer-links"><a href="#recipes">Recipes</a><a href="#freezer-guide">Freezer Guide</a><a class="pdf-link" href="#" data-pdf-link>Printable PDF</a></div>
+      <p>Personal recipe collection - 2026</p>
+    </footer>
+
+    <template id="recipe-template">
+      <article class="recipe-row">
+        <div class="recipe-identity"><span class="rank"></span><div><h3 class="recipe-title"></h3><p class="recipe-why"></p></div></div>
+        <div class="recipe-rating"><span class="section-label">Freezer rating</span><strong></strong></div>
+        <div class="recipe-freeze"><span class="section-label">Freeze smart</span><p></p></div>
+        <a class="recipe-link" target="_blank" rel="noopener noreferrer"><span>Open original recipe</span><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 13v7H4V6h7"/></svg></a>
+      </article>
+    </template>
+  </body>
+</html>
