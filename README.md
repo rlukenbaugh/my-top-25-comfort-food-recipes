@@ -1,4 +1,4 @@
-# My Comfort-Food Recipe Book
+# Ron's Recipes
 
 An editable Windows project that builds a printable US Letter PDF from `recipes.json`.
 

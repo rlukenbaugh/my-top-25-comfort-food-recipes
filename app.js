@@ -76,8 +76,8 @@ async function loadRecipes() {
     state.recipes = (await response.json()).sort((a, b) => Number(a.rank) - Number(b.rank));
     const count = state.recipes.length;
     elements.recipeCounts.forEach((element) => { element.textContent = count; });
-    elements.pdfLinks.forEach((link) => { link.href = `printable/my-top-${count}-comfort-food-recipes-2026.pdf`; });
-    document.title = `My Top ${count} Comfort-Food Recipes`;
+    elements.pdfLinks.forEach((link) => { link.href = "printable/rons-recipes-2026.pdf"; });
+    document.title = "Ron's Recipes";
     render();
   } catch (error) {
     console.error(error);

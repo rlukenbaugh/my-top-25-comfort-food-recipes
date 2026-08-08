@@ -50,7 +50,7 @@ def load_recipes():
 
 
 RECIPES = load_recipes()
-OUTPUT = ROOT / "outputs" / f"my-top-{len(RECIPES)}-comfort-food-recipes-2026.pdf"
+OUTPUT = ROOT / "outputs" / "rons-recipes-2026.pdf"
 
 def clean_ascii(text):
     return (
@@ -109,7 +109,7 @@ def draw_qr(c, url, x, y, size=54):
 
 def page_footer(c, page_num, label=None):
     if label is None:
-        label = f"MY TOP {len(RECIPES)} COMFORT-FOOD RECIPES"
+        label = f"RON'S RECIPES - {len(RECIPES)} COMFORT-FOOD FAVORITES"
     c.setStrokeColor(LINE)
     c.setLineWidth(0.6)
     c.line(42, 35, PAGE_W - 42, 35)
@@ -144,8 +144,8 @@ def cover(c):
 
     c.setFillColor(BURGUNDY_DARK)
     c.setFont("Times-Bold", 39)
-    c.drawString(56, 565, f"My Top {len(RECIPES)}")
-    c.drawString(56, 518, "Comfort-Food Recipes")
+    c.drawString(56, 565, "Ron's Recipes")
+    c.drawString(56, 518, f"{len(RECIPES)} Comfort-Food Favorites")
     c.setFillColor(GREEN)
     c.setFont("Times-Italic", 23)
     c.drawString(58, 476, "A printable freezer-friendly companion")
@@ -401,7 +401,7 @@ def recipe_pages(c, start_page):
 def build():
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     c = canvas.Canvas(str(OUTPUT), pagesize=letter, pageCompression=1)
-    c.setTitle(f"My Top {len(RECIPES)} Comfort-Food Recipes for 2026")
+    c.setTitle("Ron's Recipes")
     c.setAuthor("Ron")
     c.setSubject("A printable freezer-friendly recipe companion")
     c.setKeywords("comfort food, recipes, freezer meals, 2026")
