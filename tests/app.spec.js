@@ -104,6 +104,40 @@ test("metadata, install assets, manifest, and offline app shell are valid", asyn
 });
 
 
+test("sticky browsing, collection badges, card accents, back-to-top, and install prompt work", async ({ page }) => {
+  await openCleanApp(page);
+
+  await expect(page.getByText("25 Favorites", { exact: true })).toBeVisible();
+  await expect(page.getByText("Freezer Rated", { exact: true })).toBeVisible();
+  await expect(page.getByText("Works Offline", { exact: true })).toBeVisible();
+  await expect(page.locator("#recipe-list article").first()).toHaveAttribute("data-rating", "excellent");
+
+  const toolbar = page.locator("#browse-toolbar");
+  const backToTop = page.getByRole("button", { name: "Back to top" });
+  await expect(backToTop).toBeHidden();
+  await page.evaluate(() => window.scrollTo(0, 1200));
+  await expect(toolbar).toHaveClass(/is-stuck/);
+  await expect(backToTop).toBeVisible();
+  await backToTop.click();
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeLessThan(20);
+  await expect(backToTop).toBeHidden();
+
+  await page.evaluate(() => {
+    const promptEvent = new Event("beforeinstallprompt", { cancelable: true });
+    Object.defineProperties(promptEvent, {
+      prompt: { value: () => Promise.resolve() },
+      userChoice: { value: Promise.resolve({ outcome: "accepted" }) },
+    });
+    window.dispatchEvent(promptEvent);
+  });
+  const installButton = page.getByRole("button", { name: "Install Ron's Recipes" });
+  await expect(installButton).toBeVisible();
+  await installButton.click();
+  await expect(installButton).toBeHidden();
+  await expect(page.getByRole("status")).toContainText("installation started");
+});
+
+
 test("mobile details, touch targets, wrapping, contrast, and accessibility pass", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await openCleanApp(page);
@@ -138,11 +172,21 @@ test("mobile details, touch targets, wrapping, contrast, and accessibility pass"
   });
   expect(rankContrast).toBeGreaterThanOrEqual(4.5);
 
-  const filterLayout = await page.locator(".filters").evaluate((element) => ({
+  const filterLayout = await page.locator(".filter-scroller").evaluate((element) => ({
     clientWidth: element.clientWidth,
     scrollWidth: element.scrollWidth,
+    pageClientWidth: document.documentElement.clientWidth,
+    pageScrollWidth: document.documentElement.scrollWidth,
   }));
-  expect(filterLayout.scrollWidth).toBeLessThanOrEqual(filterLayout.clientWidth + 1);
+  expect(filterLayout.scrollWidth).toBeGreaterThan(filterLayout.clientWidth);
+  expect(filterLayout.pageScrollWidth).toBeLessThanOrEqual(filterLayout.pageClientWidth + 1);
+
+  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+  const mobileBackToTop = page.getByRole("button", { name: "Back to top" });
+  await expect(mobileBackToTop).toBeVisible();
+  const backToTopBox = await mobileBackToTop.boundingBox();
+  expect(backToTopBox.width).toBeGreaterThanOrEqual(44);
+  expect(backToTopBox.height).toBeGreaterThanOrEqual(44);
 
   const accessibility = await new AxeBuilder({ page }).analyze();
   expect(accessibility.violations).toEqual([]);

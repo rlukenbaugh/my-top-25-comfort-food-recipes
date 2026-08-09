@@ -32,8 +32,8 @@
     <link rel="icon" href="assets/icons/favicon.ico" sizes="any" />
     <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" />
     <link rel="manifest" href="manifest.webmanifest" />
-    <link rel="stylesheet" href="styles.css?v=pwa-1" />
-    <script src="app.js?v=pwa-1" defer></script>
+    <link rel="stylesheet" href="styles.css?v=pwa-3" />
+    <script src="app.js?v=pwa-3" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#recipes">Skip to recipes</a>
@@ -56,7 +56,30 @@
       <section class="intro" aria-labelledby="page-title">
         <h1 id="page-title">Ron's Recipes</h1>
         <p><span data-recipe-count>25</span> ranked comfort-food favorites with practical freezer notes and links to every original recipe.</p>
-        <div class="controls" aria-label="Recipe search and filters">
+        <div class="hero-meta">
+          <ul class="summary-badges" aria-label="Collection highlights">
+            <li>
+              <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m12 3 2.7 5.5 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1L3.2 9.4l6.1-.9L12 3Z"/></svg>
+              <span><strong data-recipe-count>25</strong> Favorites</span>
+            </li>
+            <li>
+              <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 2v20M4 7l16 10M20 7 4 17M8 4l4 4 4-4M8 20l4-4 4 4"/></svg>
+              <span>Freezer Rated</span>
+            </li>
+            <li>
+              <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12.5A7 7 0 0 1 18.5 10 5 5 0 0 1 18 20H7a5 5 0 0 1-2-9.6M9 14l2 2 4-5"/></svg>
+              <span>Works Offline</span>
+            </li>
+          </ul>
+          <button id="install-app" class="install-app" type="button" hidden>
+            <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M5 20h14"/></svg>
+            Install Ron's Recipes
+          </button>
+        </div>
+      </section>
+
+      <section id="browse-toolbar" class="browse-toolbar" aria-label="Recipe search and filters">
+        <div class="controls">
           <label class="search-box">
             <span class="sr-only">Search recipes</span>
             <svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4 4"/></svg>
@@ -226,6 +249,11 @@
         <button id="confirm-remove" class="button button-danger" type="button">Remove Recipe</button>
       </div>
     </dialog>
+
+    <button id="back-to-top" class="back-to-top" type="button" aria-label="Back to top" hidden>
+      <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m6 14 6-6 6 6"/></svg>
+      <span>Top</span>
+    </button>
 
     <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
 

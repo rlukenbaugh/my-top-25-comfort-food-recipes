@@ -3,6 +3,7 @@ const REMOVED_STORAGE_KEY = "rons-recipes.removed.v1";
 const BACKUP_FORMAT = "rons-recipes-backup";
 const BACKUP_VERSION = 1;
 const RATINGS = ["Outstanding", "Excellent", "Very good", "Good", "Fair"];
+let deferredInstallPrompt = null;
 
 const state = {
   baseRecipes: [],
@@ -25,6 +26,10 @@ const elements = {
   clearFilters: document.querySelector("#clear-filters"),
   restoreRemoved: document.querySelector("#restore-removed"),
   removedCount: document.querySelector("#removed-count"),
+  browseToolbar: document.querySelector("#browse-toolbar"),
+  backToTop: document.querySelector("#back-to-top"),
+  installApp: document.querySelector("#install-app"),
+  brand: document.querySelector(".brand"),
   emptyState: document.querySelector("#empty-state"),
   clearButtons: [...document.querySelectorAll("[data-clear]")],
   pdfLinks: [...document.querySelectorAll("[data-pdf-link]")],
@@ -196,6 +201,41 @@ function showToast(message) {
   toastTimer = setTimeout(() => { elements.toast.hidden = true; }, 2400);
 }
 
+function updateScrollEnhancements() {
+  const toolbarTop = elements.browseToolbar.getBoundingClientRect().top;
+  elements.browseToolbar.classList.toggle("is-stuck", toolbarTop <= 1 && window.scrollY > 0);
+  elements.backToTop.hidden = window.scrollY <= Math.max(520, window.innerHeight * 0.75);
+}
+
+let scrollFrame = 0;
+function scheduleScrollUpdate() {
+  if (scrollFrame) return;
+  scrollFrame = requestAnimationFrame(() => {
+    scrollFrame = 0;
+    updateScrollEnhancements();
+  });
+}
+
+function restoreHashPosition() {
+  if (!location.hash) return;
+  const target = document.getElementById(decodeURIComponent(location.hash.slice(1)));
+  if (!target) return;
+  requestAnimationFrame(() => {
+    target.scrollIntoView({ block: "start" });
+    scheduleScrollUpdate();
+  });
+}
+
+async function installApp() {
+  if (!deferredInstallPrompt) return;
+  const prompt = deferredInstallPrompt;
+  deferredInstallPrompt = null;
+  elements.installApp.hidden = true;
+  await prompt.prompt();
+  const choice = await prompt.userChoice;
+  if (choice.outcome === "accepted") showToast("Ron's Recipes installation started");
+}
+
 async function copyRecipe(recipe) {
   try {
     await writeToClipboard(formatRecipeForCopy(recipe));
@@ -286,6 +326,7 @@ function restoreRemovedRecipes() {
 function createRecipeRow(recipe, displayRank) {
   const row = elements.template.content.firstElementChild.cloneNode(true);
   row.dataset.recipeId = recipe.id || `base-${recipe.rank}`;
+  row.dataset.rating = normalizedRating(recipe.rating).toLocaleLowerCase().replace(/\s+/g, "-");
   row.querySelector(".rank").textContent = displayRank;
   row.querySelector(".recipe-title").textContent = recipe.title;
   row.querySelector(".recipe-why").textContent = recipe.why;
@@ -674,6 +715,7 @@ async function loadRecipes() {
     elements.pdfLinks.forEach((link) => { link.href = "printable/rons-recipes-2026.pdf"; });
     document.title = "Ron's Recipes";
     render();
+    restoreHashPosition();
   } catch (error) {
     console.error(error);
     elements.list.setAttribute("aria-busy", "false");
@@ -688,6 +730,12 @@ elements.search.addEventListener("input", (event) => {
 elements.filters.forEach((button) => button.addEventListener("click", () => setRating(button.dataset.rating)));
 elements.clearFilters.addEventListener("click", () => clearFilters());
 elements.clearButtons.forEach((button) => button.addEventListener("click", () => clearFilters()));
+elements.backToTop.addEventListener("click", () => {
+  elements.brand.focus({ preventScroll: true });
+  const behavior = matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+  window.scrollTo({ top: 0, behavior });
+});
+elements.installApp.addEventListener("click", installApp);
 elements.restoreRemoved.addEventListener("click", restoreRemovedRecipes);
 elements.openManager.addEventListener("click", openManager);
 elements.openAdd.addEventListener("click", () => openDialog());
@@ -725,7 +773,21 @@ elements.manageDialog.addEventListener("click", (event) => {
   if (event.target === elements.manageDialog) closeManager();
 });
 
+window.addEventListener("scroll", scheduleScrollUpdate, { passive: true });
+window.addEventListener("resize", scheduleScrollUpdate);
+window.addEventListener("beforeinstallprompt", (event) => {
+  event.preventDefault();
+  deferredInstallPrompt = event;
+  elements.installApp.hidden = false;
+});
+window.addEventListener("appinstalled", () => {
+  deferredInstallPrompt = null;
+  elements.installApp.hidden = true;
+  showToast("Ron's Recipes installed");
+});
+
 loadRecipes();
+updateScrollEnhancements();
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
