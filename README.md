@@ -10,6 +10,8 @@ https://rlukenbaugh.github.io/my-top-25-comfort-food-recipes/
 
 The web app reads the same `recipes.json` file as the printable book. It includes search, freezer-rating filters, expandable mobile details, original-recipe links, a downloadable PDF, and browser-based recipe additions. GitHub Pages validates, tests, rebuilds, and republishes it whenever `main` is updated.
 
+The site also includes branded sharing metadata, install icons, a web-app manifest, and an offline app-shell cache. After the first successful visit, the recipe list and freezer notes remain available without a connection; the printable PDF and original Allrecipes pages still require internet access.
+
 ### Add, copy, and paste recipes
 
 - Select **Add Recipe** to enter a recipe with a simple form.
@@ -78,6 +80,9 @@ This validates the recipe data and exercises search, filters, keyboard tabs, mob
 - `verify.cmd` - runs the verification check
 - `validate_recipes.py` - validates ranks, fields, ratings, and source URLs
 - `check_links.py` - performs the scheduled external-link audit
+- `manifest.webmanifest` and `service-worker.js` - install and offline support
+- `assets/` - favicon, app icons, and social sharing image
+- `generate_web_assets.py` - reproducibly rebuilds the branded web assets
 - `tests/app.spec.js` - browser interaction and accessibility tests
 
 Full recipe instructions remain on the linked Allrecipes pages. This project stores your ranking, notes, freezer guidance, and source links.

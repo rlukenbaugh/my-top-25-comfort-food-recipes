@@ -48,7 +48,8 @@ jobs:
         shell: bash
         run: |
           mkdir -p _site/printable
-          cp index.html styles.css app.js recipes.json _site/
+          cp index.html styles.css app.js recipes.json manifest.webmanifest service-worker.js _site/
+          cp -r assets _site/
           cp outputs/*.pdf _site/printable/
           touch _site/.nojekyll
       - name: Configure GitHub Pages

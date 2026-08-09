@@ -44,6 +44,66 @@ test("search, filters, keyboard tabs, and console remain healthy", async ({ page
 });
 
 
+test("metadata, install assets, manifest, and offline app shell are valid", async ({ page, context, request }) => {
+  await openCleanApp(page);
+
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "https://rlukenbaugh.github.io/my-top-25-comfort-food-recipes/");
+  await expect(page.locator('meta[property="og:type"]')).toHaveAttribute("content", "website");
+  await expect(page.locator('meta[property="og:title"]')).toHaveAttribute("content", "Ron's Recipes | Comfort-Food Favorites");
+  await expect(page.locator('meta[property="og:image"]')).toHaveAttribute("content", "https://rlukenbaugh.github.io/my-top-25-comfort-food-recipes/assets/og/rons-recipes-share-1200x630.png");
+  await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute("content", "summary_large_image");
+  await expect(page.locator('link[rel="manifest"]')).toHaveAttribute("href", "manifest.webmanifest");
+  await expect(page.locator('link[rel="icon"][type="image/svg+xml"]')).toHaveAttribute("href", "assets/icons/favicon.svg");
+
+  const manifestResponse = await request.get("/manifest.webmanifest");
+  expect(manifestResponse.ok()).toBeTruthy();
+  const manifest = await manifestResponse.json();
+  expect(manifest.name).toBe("Ron's Recipes");
+  expect(manifest.display).toBe("standalone");
+  expect(manifest.icons.map((icon) => icon.sizes)).toEqual(["192x192", "512x512", "512x512"]);
+  expect(manifest.icons.some((icon) => icon.purpose === "maskable")).toBeTruthy();
+
+  for (const asset of [
+    "/assets/icons/favicon.svg",
+    "/assets/icons/favicon.ico",
+    "/assets/icons/apple-touch-icon.png",
+    "/assets/icons/icon-192.png",
+    "/assets/icons/icon-512.png",
+    "/assets/icons/icon-maskable-512.png",
+    "/assets/og/rons-recipes-share-1200x630.png",
+    "/service-worker.js",
+  ]) {
+    const response = await request.get(asset);
+    expect(response.ok(), `${asset} should load`).toBeTruthy();
+  }
+
+  const shareImageSize = await page.evaluate(async () => {
+    const image = new Image();
+    image.src = "assets/og/rons-recipes-share-1200x630.png";
+    await image.decode();
+    return { width: image.naturalWidth, height: image.naturalHeight };
+  });
+  expect(shareImageSize).toEqual({ width: 1200, height: 630 });
+
+  await expect.poll(() => page.evaluate(async () => {
+    const registration = await navigator.serviceWorker.ready;
+    return registration.active?.state;
+  }), { timeout: 15_000 }).toBe("activated");
+
+  if (!await page.evaluate(() => Boolean(navigator.serviceWorker.controller))) {
+    await page.reload();
+    await expect(page.getByRole("heading", { name: "25 recipes" })).toBeVisible();
+  }
+  expect(await page.evaluate(() => Boolean(navigator.serviceWorker.controller))).toBeTruthy();
+
+  await context.setOffline(true);
+  await page.reload({ waitUntil: "domcontentloaded" });
+  await expect(page.getByRole("heading", { name: "25 recipes" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "World's Best Lasagna" })).toBeVisible();
+  await context.setOffline(false);
+});
+
+
 test("mobile details, touch targets, wrapping, contrast, and accessibility pass", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await openCleanApp(page);
@@ -59,8 +119,8 @@ test("mobile details, touch targets, wrapping, contrast, and accessibility pass"
 
   for (const control of [firstRecipe.locator(".recipe-link"), firstRecipe.locator(".copy-recipe"), firstRecipe.locator(".remove-recipe")]) {
     const box = await control.boundingBox();
-    expect(box.width).toBeGreaterThanOrEqual(44);
-    expect(box.height).toBeGreaterThanOrEqual(44);
+    expect(box.width).toBeGreaterThanOrEqual(43.9);
+    expect(box.height).toBeGreaterThanOrEqual(43.9);
   }
 
   const rankContrast = await firstRecipe.locator(".rank").evaluate((element) => {

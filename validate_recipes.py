@@ -60,9 +60,32 @@ def main():
             errors.append(f"Recipe {index} must use an HTTPS Allrecipes URL: {recipe['url']}.")
 
     app_source = (ROOT / "index.html").read_text(encoding="utf-8") + (ROOT / "app.js").read_text(encoding="utf-8")
-    for required_reference in ("recipes.json", "app.js", "styles.css", "printable/rons-recipes-2026.pdf"):
+    for required_reference in (
+        "recipes.json",
+        "app.js",
+        "styles.css",
+        "printable/rons-recipes-2026.pdf",
+        "manifest.webmanifest",
+        "service-worker.js",
+        "assets/icons/favicon.svg",
+        "assets/og/rons-recipes-share-1200x630.png",
+    ):
         if required_reference not in app_source:
             errors.append(f"The web app does not reference {required_reference}.")
+
+    for required_file in (
+        "manifest.webmanifest",
+        "service-worker.js",
+        "assets/icons/favicon.svg",
+        "assets/icons/favicon.ico",
+        "assets/icons/apple-touch-icon.png",
+        "assets/icons/icon-192.png",
+        "assets/icons/icon-512.png",
+        "assets/icons/icon-maskable-512.png",
+        "assets/og/rons-recipes-share-1200x630.png",
+    ):
+        if not (ROOT / required_file).is_file():
+            errors.append(f"Required web asset is missing: {required_file}.")
 
     if errors:
         fail(errors)

@@ -726,3 +726,11 @@ elements.manageDialog.addEventListener("click", (event) => {
 });
 
 loadRecipes();
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./service-worker.js").catch((error) => {
+      console.info("Offline support is unavailable.", error);
+    });
+  });
+}
