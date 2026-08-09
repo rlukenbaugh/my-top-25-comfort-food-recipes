@@ -8,7 +8,7 @@ Open the live collection at:
 
 https://rlukenbaugh.github.io/my-top-25-comfort-food-recipes/
 
-The web app reads the same `recipes.json` file as the printable book. It includes sticky search and freezer-rating filters, collection highlights, rating-accented recipe cards, expandable mobile details, a back-to-top control, original-recipe links, a downloadable PDF, and browser-based recipe additions. GitHub Pages validates, tests, rebuilds, and republishes it whenever `main` is updated.
+The web app reads the same `recipes.json` file as the printable book. It includes sticky search and freezer-rating filters, collection highlights, rating-accented recipe cards, expandable mobile details, a back-to-top control, a live kitchen measurement converter, original-recipe links, a downloadable PDF, and browser-based recipe additions. GitHub Pages validates, tests, rebuilds, and republishes it whenever `main` is updated.
 
 The site also includes branded sharing metadata, install icons, a web-app manifest, an install prompt when supported by the browser, and an offline app-shell cache. After the first successful visit, the recipe list and freezer notes remain available without a connection; the printable PDF and original Allrecipes pages still require internet access.
 

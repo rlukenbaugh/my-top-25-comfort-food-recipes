@@ -48,7 +48,7 @@ jobs:
         shell: bash
         run: |
           mkdir -p _site/printable
-          cp index.html styles-v1.2.css app-v1.2.js recipes.json manifest.webmanifest service-worker.js _site/
+          cp index.html styles-v1.3.css app-v1.3.js recipes.json manifest.webmanifest service-worker.js _site/
           cp -r assets _site/
           cp outputs/*.pdf _site/printable/
           touch _site/.nojekyll

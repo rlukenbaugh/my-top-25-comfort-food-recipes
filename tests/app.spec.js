@@ -138,6 +138,47 @@ test("sticky browsing, collection badges, card accents, back-to-top, and install
 });
 
 
+test("measurement converter handles weight, volume, temperature, swapping, and both entry points", async ({ page }) => {
+  await openCleanApp(page);
+
+  const navigation = page.getByRole("navigation", { name: "Main navigation" });
+  await navigation.getByRole("button", { name: "Conversions" }).click();
+  const dialog = page.getByRole("dialog", { name: "Kitchen Conversion Guide" });
+  await expect(dialog).toBeVisible();
+
+  const amount = dialog.getByLabel("Amount");
+  const from = dialog.getByLabel("From");
+  const to = dialog.getByLabel("To");
+  const result = dialog.locator("#conversion-result");
+  await expect(result).toHaveText("3.5274 ounces");
+
+  await amount.fill("1");
+  await from.selectOption("oz");
+  await to.selectOption("g");
+  await expect(result).toHaveText("28.3495 grams");
+  await dialog.getByRole("button", { name: "Swap conversion units" }).click();
+  await expect(result).toHaveText("0.0353 ounces");
+
+  await dialog.getByLabel("Measurement type").selectOption("volume");
+  await expect(from).toHaveValue("cup");
+  await expect(to).toHaveValue("ml");
+  await expect(result).toHaveText("236.5882 milliliters");
+
+  await dialog.getByLabel("Measurement type").selectOption("temperature");
+  await amount.fill("350");
+  await expect(result).toHaveText("176.6667 °C");
+  await expect(dialog.getByRole("row", { name: "1 ounce 28.35 grams" })).toBeVisible();
+
+  const accessibility = await new AxeBuilder({ page }).include("#conversion-dialog").analyze();
+  expect(accessibility.violations).toEqual([]);
+
+  await dialog.getByRole("button", { name: "Close conversion guide" }).click();
+  await expect(dialog).toBeHidden();
+  await page.getByRole("contentinfo").getByRole("button", { name: "Conversions" }).click();
+  await expect(dialog).toBeVisible();
+});
+
+
 test("mobile details, touch targets, wrapping, contrast, and accessibility pass", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await openCleanApp(page);
@@ -150,6 +191,11 @@ test("mobile details, touch targets, wrapping, contrast, and accessibility pass"
   await expect(firstRecipe.locator(".mobile-details")).toBeVisible();
   await expect(firstRecipe.locator(".mobile-why")).toContainText("benchmark lasagna");
   await expect(firstRecipe.locator(".mobile-freeze")).toContainText("freezer-safe pan");
+
+  const mobileConversionButton = page.getByRole("navigation", { name: "Main navigation" }).getByRole("button", { name: "Conversions" });
+  const conversionButtonBox = await mobileConversionButton.boundingBox();
+  expect(conversionButtonBox.width).toBeGreaterThanOrEqual(43.9);
+  expect(conversionButtonBox.height).toBeGreaterThanOrEqual(43.9);
 
   for (const control of [firstRecipe.locator(".recipe-link"), firstRecipe.locator(".copy-recipe"), firstRecipe.locator(".remove-recipe")]) {
     const box = await control.boundingBox();

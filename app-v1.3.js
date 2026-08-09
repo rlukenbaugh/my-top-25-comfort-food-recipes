@@ -3,6 +3,26 @@ const REMOVED_STORAGE_KEY = "rons-recipes.removed.v1";
 const BACKUP_FORMAT = "rons-recipes-backup";
 const BACKUP_VERSION = 1;
 const RATINGS = ["Outstanding", "Excellent", "Very good", "Good", "Fair"];
+const CONVERSION_UNITS = {
+  weight: [
+    { value: "g", label: "Grams", one: "gram", many: "grams", factor: 1 },
+    { value: "oz", label: "Ounces", one: "ounce", many: "ounces", factor: 28.349523125 },
+    { value: "kg", label: "Kilograms", one: "kilogram", many: "kilograms", factor: 1000 },
+    { value: "lb", label: "Pounds", one: "pound", many: "pounds", factor: 453.59237 },
+  ],
+  volume: [
+    { value: "cup", label: "US cups", one: "cup", many: "cups", factor: 236.5882365 },
+    { value: "ml", label: "Milliliters", one: "milliliter", many: "milliliters", factor: 1 },
+    { value: "l", label: "Liters", one: "liter", many: "liters", factor: 1000 },
+    { value: "floz", label: "US fluid ounces", one: "fluid ounce", many: "fluid ounces", factor: 29.5735295625 },
+    { value: "tbsp", label: "US tablespoons", one: "tablespoon", many: "tablespoons", factor: 14.78676478125 },
+    { value: "tsp", label: "US teaspoons", one: "teaspoon", many: "teaspoons", factor: 4.92892159375 },
+  ],
+  temperature: [
+    { value: "f", label: "Fahrenheit (°F)", one: "°F", many: "°F" },
+    { value: "c", label: "Celsius (°C)", one: "°C", many: "°C" },
+  ],
+};
 let deferredInstallPrompt = null;
 
 const state = {
@@ -30,6 +50,15 @@ const elements = {
   backToTop: document.querySelector("#back-to-top"),
   installApp: document.querySelector("#install-app"),
   brand: document.querySelector(".brand"),
+  openConversions: [...document.querySelectorAll("[data-open-conversions]")],
+  conversionDialog: document.querySelector("#conversion-dialog"),
+  closeConversions: document.querySelector("#close-conversions"),
+  conversionType: document.querySelector("#conversion-type"),
+  conversionValue: document.querySelector("#conversion-value"),
+  conversionFrom: document.querySelector("#conversion-from"),
+  conversionTo: document.querySelector("#conversion-to"),
+  conversionResult: document.querySelector("#conversion-result"),
+  swapConversionUnits: document.querySelector("#swap-conversion-units"),
   emptyState: document.querySelector("#empty-state"),
   clearButtons: [...document.querySelectorAll("[data-clear]")],
   pdfLinks: [...document.querySelectorAll("[data-pdf-link]")],
@@ -234,6 +263,63 @@ async function installApp() {
   await prompt.prompt();
   const choice = await prompt.userChoice;
   if (choice.outcome === "accepted") showToast("Ron's Recipes installation started");
+}
+
+function conversionUnit(unitValue) {
+  return CONVERSION_UNITS[elements.conversionType.value].find((unit) => unit.value === unitValue);
+}
+
+function populateConversionUnits() {
+  const units = CONVERSION_UNITS[elements.conversionType.value];
+  const options = units.map((unit) => new Option(unit.label, unit.value));
+  elements.conversionFrom.replaceChildren(...options.map((option) => option.cloneNode(true)));
+  elements.conversionTo.replaceChildren(...options);
+  elements.conversionFrom.value = units[0].value;
+  elements.conversionTo.value = units[1].value;
+}
+
+function convertedValue(value, from, to) {
+  if (elements.conversionType.value === "temperature") {
+    if (from.value === to.value) return value;
+    return from.value === "f" ? (value - 32) * 5 / 9 : value * 9 / 5 + 32;
+  }
+  return value * from.factor / to.factor;
+}
+
+function updateConversion() {
+  const value = Number(elements.conversionValue.value);
+  const from = conversionUnit(elements.conversionFrom.value);
+  const to = conversionUnit(elements.conversionTo.value);
+  if (!Number.isFinite(value) || !from || !to) {
+    elements.conversionResult.textContent = "Enter an amount";
+    return;
+  }
+  const result = convertedValue(value, from, to);
+  const formatted = new Intl.NumberFormat("en-US", { maximumFractionDigits: 4 }).format(result);
+  const unitName = Math.abs(result) === 1 ? to.one : to.many;
+  elements.conversionResult.textContent = `${formatted} ${unitName}`;
+}
+
+function openConversions() {
+  elements.conversionDialog.showModal();
+  elements.conversionValue.focus();
+  elements.conversionValue.select();
+}
+
+function closeConversions() {
+  elements.conversionDialog.close();
+}
+
+function changeConversionType() {
+  populateConversionUnits();
+  updateConversion();
+}
+
+function swapConversionUnits() {
+  const previousFrom = elements.conversionFrom.value;
+  elements.conversionFrom.value = elements.conversionTo.value;
+  elements.conversionTo.value = previousFrom;
+  updateConversion();
 }
 
 async function copyRecipe(recipe) {
@@ -736,6 +822,16 @@ elements.backToTop.addEventListener("click", () => {
   window.scrollTo({ top: 0, behavior });
 });
 elements.installApp.addEventListener("click", installApp);
+elements.openConversions.forEach((button) => button.addEventListener("click", openConversions));
+elements.closeConversions.addEventListener("click", closeConversions);
+elements.conversionType.addEventListener("change", changeConversionType);
+elements.conversionValue.addEventListener("input", updateConversion);
+elements.conversionFrom.addEventListener("change", updateConversion);
+elements.conversionTo.addEventListener("change", updateConversion);
+elements.swapConversionUnits.addEventListener("click", swapConversionUnits);
+elements.conversionDialog.addEventListener("click", (event) => {
+  if (event.target === elements.conversionDialog) closeConversions();
+});
 elements.restoreRemoved.addEventListener("click", restoreRemovedRecipes);
 elements.openManager.addEventListener("click", openManager);
 elements.openAdd.addEventListener("click", () => openDialog());
@@ -788,6 +884,7 @@ window.addEventListener("appinstalled", () => {
 
 loadRecipes();
 updateScrollEnhancements();
+updateConversion();
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {

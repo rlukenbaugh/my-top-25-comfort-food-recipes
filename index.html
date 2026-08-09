@@ -32,8 +32,8 @@
     <link rel="icon" href="assets/icons/favicon.ico" sizes="any" />
     <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" />
     <link rel="manifest" href="manifest.webmanifest" />
-    <link rel="stylesheet" href="styles-v1.2.css" />
-    <script src="app-v1.2.js" defer></script>
+    <link rel="stylesheet" href="styles-v1.3.css" />
+    <script src="app-v1.3.js" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#recipes">Skip to recipes</a>
@@ -45,6 +45,10 @@
       <nav aria-label="Main navigation">
         <a class="nav-link active" href="#recipes">Recipes</a>
         <a class="nav-link" href="#freezer-guide">Freezer Guide</a>
+        <button class="nav-link conversion-nav" type="button" data-open-conversions aria-haspopup="dialog">
+          <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M7 4h10M5 8h14M8 8l-3 11h14L16 8M9 13h6M10 16h4"/></svg>
+          <span>Conversions</span>
+        </button>
         <a class="pdf-link button button-light" href="#" data-pdf-link>
           <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M6 2h8l4 4v16H6V2Zm8 0v5h5M9 12h6M9 16h6"/></svg>
           Printable PDF
@@ -134,11 +138,22 @@
           <article><h3>Reheat fully</h3><p>Thaw in the refrigerator when practical and reheat leftovers to 165 F.</p></article>
         </div>
       </section>
+
+      <section id="conversions" class="conversion-callout" aria-labelledby="conversion-callout-title">
+        <div class="conversion-callout-icon" aria-hidden="true">
+          <svg viewBox="0 0 48 48"><path d="M14 8h20M10 15h28M16 15l-7 25h30l-7-25M18 25h12M16 32h16"/></svg>
+        </div>
+        <div>
+          <h2 id="conversion-callout-title">Kitchen Conversion Guide</h2>
+          <p>Convert grams, ounces, pounds, kilograms, cups, milliliters, and oven temperatures.</p>
+        </div>
+        <button class="button button-primary" type="button" data-open-conversions aria-haspopup="dialog">Open Conversion Chart</button>
+      </section>
     </main>
 
     <footer>
       <div class="footer-brand"><strong>Ron's Recipes</strong><span>Made for home cooks, by a home cook.</span></div>
-      <div class="footer-links"><a href="#recipes">Recipes</a><a href="#freezer-guide">Freezer Guide</a><a class="pdf-link" href="#" data-pdf-link>Printable PDF</a></div>
+      <div class="footer-links"><a href="#recipes">Recipes</a><a href="#freezer-guide">Freezer Guide</a><button type="button" data-open-conversions aria-haspopup="dialog">Conversions</button><a class="pdf-link" href="#" data-pdf-link>Printable PDF</a></div>
       <p>Personal recipe collection - 2026</p>
     </footer>
 
@@ -230,6 +245,105 @@
         <div class="dialog-actions">
           <button id="done-manager" class="button button-secondary" type="button">Done</button>
         </div>
+      </div>
+    </dialog>
+
+    <dialog id="conversion-dialog" class="conversion-dialog" aria-labelledby="conversion-dialog-title">
+      <div class="dialog-header">
+        <div>
+          <h2 id="conversion-dialog-title">Kitchen Conversion Guide</h2>
+          <p>Quick, practical measurements for everyday recipes.</p>
+        </div>
+        <button id="close-conversions" class="icon-button" type="button" aria-label="Close conversion guide">
+          <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg>
+        </button>
+      </div>
+      <div class="conversion-content">
+        <section class="converter-card" aria-labelledby="quick-converter-title">
+          <div class="converter-heading">
+            <div>
+              <h3 id="quick-converter-title">Quick converter</h3>
+              <p>Choose a measurement type, enter an amount, and get the converted value immediately.</p>
+            </div>
+            <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M7 7h11l-3-3M18 7l-3 3M17 17H6l3 3M6 17l3-3"/></svg>
+          </div>
+          <div class="converter-grid">
+            <label class="field">
+              Measurement type
+              <select id="conversion-type">
+                <option value="weight">Weight</option>
+                <option value="volume">Volume</option>
+                <option value="temperature">Temperature</option>
+              </select>
+            </label>
+            <label class="field">
+              Amount
+              <input id="conversion-value" type="number" value="100" step="any" inputmode="decimal" />
+            </label>
+            <label class="field">
+              From
+              <select id="conversion-from">
+                <option value="g">Grams</option>
+                <option value="oz">Ounces</option>
+                <option value="kg">Kilograms</option>
+                <option value="lb">Pounds</option>
+              </select>
+            </label>
+            <button id="swap-conversion-units" class="swap-units" type="button" aria-label="Swap conversion units">
+              <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M7 7h11l-3-3M18 7l-3 3M17 17H6l3 3M6 17l3-3"/></svg>
+            </button>
+            <label class="field">
+              To
+              <select id="conversion-to">
+                <option value="oz">Ounces</option>
+                <option value="g">Grams</option>
+                <option value="kg">Kilograms</option>
+                <option value="lb">Pounds</option>
+              </select>
+            </label>
+          </div>
+          <div class="conversion-result" aria-live="polite">
+            <span>Converted amount</span>
+            <output id="conversion-result" for="conversion-value conversion-from conversion-to">3.5274 ounces</output>
+          </div>
+          <p class="conversion-note">Volume and weight are separate because a cup of flour does not weigh the same as a cup of sugar or butter.</p>
+        </section>
+
+        <section class="conversion-reference" aria-labelledby="quick-reference-title">
+          <div class="reference-heading">
+            <h3 id="quick-reference-title">Quick reference</h3>
+            <p>Common kitchen equivalents rounded for practical cooking.</p>
+          </div>
+          <div class="reference-tables">
+            <div class="reference-card">
+              <h4>Weight</h4>
+              <table><caption class="sr-only">Common weight conversions</caption><tbody>
+                <tr><th scope="row">1 ounce</th><td>28.35 grams</td></tr>
+                <tr><th scope="row">100 grams</th><td>3.53 ounces</td></tr>
+                <tr><th scope="row">1 pound</th><td>453.59 grams</td></tr>
+                <tr><th scope="row">1 kilogram</th><td>2.20 pounds</td></tr>
+              </tbody></table>
+            </div>
+            <div class="reference-card">
+              <h4>Volume</h4>
+              <table><caption class="sr-only">Common US volume conversions</caption><tbody>
+                <tr><th scope="row">1 cup</th><td>236.59 milliliters</td></tr>
+                <tr><th scope="row">1 fluid ounce</th><td>29.57 milliliters</td></tr>
+                <tr><th scope="row">1 tablespoon</th><td>14.79 milliliters</td></tr>
+                <tr><th scope="row">1 teaspoon</th><td>4.93 milliliters</td></tr>
+              </tbody></table>
+            </div>
+            <div class="reference-card">
+              <h4>Oven temperature</h4>
+              <table><caption class="sr-only">Common oven temperature conversions</caption><tbody>
+                <tr><th scope="row">325°F</th><td>163°C</td></tr>
+                <tr><th scope="row">350°F</th><td>177°C</td></tr>
+                <tr><th scope="row">375°F</th><td>191°C</td></tr>
+                <tr><th scope="row">400°F</th><td>204°C</td></tr>
+              </tbody></table>
+            </div>
+          </div>
+        </section>
       </div>
     </dialog>
 
