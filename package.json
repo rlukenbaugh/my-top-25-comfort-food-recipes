@@ -1,0 +1,23 @@
+{
+  "name": "rons-recipes",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Ron's editable comfort-food collection with freezer notes and a printable PDF.",
+  "homepage": "https://rlukenbaugh.github.io/my-top-25-comfort-food-recipes/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rlukenbaugh/my-top-25-comfort-food-recipes.git"
+  },
+  "type": "module",
+  "scripts": {
+    "test": "npm run test:data && npm run test:e2e",
+    "test:data": "python validate_recipes.py",
+    "test:pdf": "python build_recipe_book.py && python verify_book.py",
+    "test:e2e": "playwright test",
+    "test:links": "python check_links.py"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.12.1",
+    "@playwright/test": "1.62.1"
+  }
+}

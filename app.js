@@ -1,5 +1,7 @@
 const STORAGE_KEY = "rons-recipes.custom.v1";
 const REMOVED_STORAGE_KEY = "rons-recipes.removed.v1";
+const BACKUP_FORMAT = "rons-recipes-backup";
+const BACKUP_VERSION = 1;
 const RATINGS = ["Outstanding", "Excellent", "Very good", "Good", "Fair"];
 
 const state = {
@@ -10,6 +12,7 @@ const state = {
   removedKeys: new Set(),
   query: "",
   rating: "All",
+  editingRecipeId: null,
 };
 
 const elements = {
@@ -25,15 +28,20 @@ const elements = {
   emptyState: document.querySelector("#empty-state"),
   clearButtons: [...document.querySelectorAll("[data-clear]")],
   pdfLinks: [...document.querySelectorAll("[data-pdf-link]")],
+  openManager: document.querySelector("#open-manager"),
   openAdd: document.querySelector("#open-add-recipe"),
   dialog: document.querySelector("#recipe-dialog"),
+  dialogTitle: document.querySelector("#dialog-title"),
+  dialogDescription: document.querySelector("#dialog-description"),
   closeDialog: document.querySelector("#close-dialog"),
   cancelAdd: document.querySelector("#cancel-add"),
   form: document.querySelector("#recipe-form"),
+  entryTabs: document.querySelector("#entry-tabs"),
   formTab: document.querySelector("#form-tab"),
   pasteTab: document.querySelector("#paste-tab"),
   pastePanel: document.querySelector("#paste-panel"),
   pasteInput: document.querySelector("#paste-recipe"),
+  cancelPaste: document.querySelector("#cancel-paste"),
   usePasted: document.querySelector("#use-pasted-recipe"),
   pasteMessage: document.querySelector("#paste-message"),
   formMessage: document.querySelector("#form-message"),
@@ -42,8 +50,21 @@ const elements = {
   ratingInput: document.querySelector("#recipe-rating"),
   freezeInput: document.querySelector("#recipe-freeze"),
   urlInput: document.querySelector("#recipe-url"),
+  deviceNote: document.querySelector("#recipe-device-note"),
+  submitRecipe: document.querySelector("#submit-recipe"),
+  manageDialog: document.querySelector("#manage-dialog"),
+  closeManager: document.querySelector("#close-manager"),
+  doneManager: document.querySelector("#done-manager"),
+  manageSummary: document.querySelector("#manage-summary"),
+  exportBackup: document.querySelector("#export-backup"),
+  importBackup: document.querySelector("#import-backup"),
+  importBackupFile: document.querySelector("#import-backup-file"),
+  manageMessage: document.querySelector("#manage-message"),
   toast: document.querySelector("#toast"),
   removeDialog: document.querySelector("#remove-dialog"),
+  removeDialogTitle: document.querySelector("#remove-dialog-title"),
+  removeDialogCopy: document.querySelector("#remove-dialog-copy"),
+  removeDialogNote: document.querySelector("#remove-dialog-note"),
   removeRecipeTitle: document.querySelector("#remove-recipe-title"),
   cancelRemove: document.querySelector("#cancel-remove"),
   confirmRemove: document.querySelector("#confirm-remove"),
@@ -55,6 +76,10 @@ function normalizedRating(rating) {
 
 function normalizeUrl(url) {
   return String(url).trim().replace(/\/$/, "").toLocaleLowerCase();
+}
+
+function makeCustomId() {
+  return globalThis.crypto?.randomUUID?.() || `custom-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
 
 function isValidCustomRecipe(recipe) {
@@ -77,7 +102,14 @@ function loadCustomRecipes() {
 }
 
 function saveCustomRecipes() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state.customRecipes));
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state.customRecipes));
+    return true;
+  } catch (error) {
+    console.error("Saved recipes could not be written.", error);
+    showToast("Changes could not be saved on this device");
+    return false;
+  }
 }
 
 function loadRemovedKeys() {
@@ -91,7 +123,14 @@ function loadRemovedKeys() {
 }
 
 function saveRemovedKeys() {
-  localStorage.setItem(REMOVED_STORAGE_KEY, JSON.stringify([...state.removedKeys]));
+  try {
+    localStorage.setItem(REMOVED_STORAGE_KEY, JSON.stringify([...state.removedKeys]));
+    return true;
+  } catch (error) {
+    console.error("Hidden recipes could not be written.", error);
+    showToast("Changes could not be saved on this device");
+    return false;
+  }
 }
 
 function recipeKey(recipe) {
@@ -168,23 +207,62 @@ async function copyRecipe(recipe) {
 }
 
 let pendingRemoval = null;
-function openRemoveDialog(recipe) {
+let pendingRemovalMode = "hide";
+function openRemoveDialog(recipe, mode = "hide") {
   pendingRemoval = recipe;
+  pendingRemovalMode = mode;
   elements.removeRecipeTitle.textContent = recipe.title;
+  if (mode === "delete") {
+    elements.removeDialogTitle.textContent = "Permanently delete this recipe?";
+    elements.removeDialogCopy.replaceChildren(elements.removeRecipeTitle, document.createTextNode(" will be permanently deleted from this device."));
+    elements.removeDialogNote.textContent = "This cannot be restored unless it is included in a backup you exported earlier.";
+    elements.confirmRemove.textContent = "Delete Recipe";
+  } else {
+    elements.removeDialogTitle.textContent = "Remove this recipe?";
+    elements.removeDialogCopy.replaceChildren(elements.removeRecipeTitle, document.createTextNode(" will be hidden on this device."));
+    elements.removeDialogNote.textContent = "You can bring it back later with Restore Removed. The shared collection and printable PDF will not change.";
+    elements.confirmRemove.textContent = "Remove Recipe";
+  }
   elements.removeDialog.showModal();
   elements.cancelRemove.focus();
 }
 
 function closeRemoveDialog() {
   pendingRemoval = null;
+  pendingRemovalMode = "hide";
   elements.removeDialog.close();
 }
 
 function removeRecipe() {
   if (!pendingRemoval) return;
   const removedTitle = pendingRemoval.title;
+
+  if (pendingRemovalMode === "delete" && pendingRemoval.custom) {
+    const previousCustomRecipes = state.customRecipes;
+    const previousRemovedKeys = new Set(state.removedKeys);
+    state.customRecipes = state.customRecipes.filter((recipe) => recipe.id !== pendingRemoval.id);
+    state.removedKeys.delete(recipeKey(pendingRemoval));
+    mergeRecipes();
+    if (!saveCustomRecipes() || !saveRemovedKeys()) {
+      state.customRecipes = previousCustomRecipes;
+      state.removedKeys = previousRemovedKeys;
+      mergeRecipes();
+      render();
+      return;
+    }
+    render();
+    closeRemoveDialog();
+    updateManageSummary();
+    showToast(`${removedTitle} permanently deleted`);
+    return;
+  }
+
+  const previousRemovedKeys = new Set(state.removedKeys);
   state.removedKeys.add(recipeKey(pendingRemoval));
-  saveRemovedKeys();
+  if (!saveRemovedKeys()) {
+    state.removedKeys = previousRemovedKeys;
+    return;
+  }
   mergeRecipes();
   render();
   closeRemoveDialog();
@@ -194,8 +272,12 @@ function removeRecipe() {
 function restoreRemovedRecipes() {
   const restoredCount = state.removedKeys.size;
   if (!restoredCount) return;
+  const previousRemovedKeys = new Set(state.removedKeys);
   state.removedKeys.clear();
-  saveRemovedKeys();
+  if (!saveRemovedKeys()) {
+    state.removedKeys = previousRemovedKeys;
+    return;
+  }
   mergeRecipes();
   render();
   showToast(`${restoredCount} ${restoredCount === 1 ? "recipe" : "recipes"} restored`);
@@ -209,15 +291,47 @@ function createRecipeRow(recipe, displayRank) {
   row.querySelector(".recipe-why").textContent = recipe.why;
   row.querySelector(".recipe-rating strong").textContent = normalizedRating(recipe.rating);
   row.querySelector(".recipe-freeze p").textContent = recipe.freeze;
+  row.querySelector(".mobile-why").textContent = recipe.why;
+  row.querySelector(".mobile-freeze").textContent = recipe.freeze;
+
+  const mobileDetails = row.querySelector(".mobile-details");
+  const detailsButton = row.querySelector(".details-toggle");
+  const detailsId = `details-${row.dataset.recipeId.replace(/[^a-z0-9_-]/gi, "-")}`;
+  mobileDetails.id = detailsId;
+  detailsButton.setAttribute("aria-controls", detailsId);
+  detailsButton.setAttribute("aria-label", `Show details for ${recipe.title}`);
+  detailsButton.addEventListener("click", () => {
+    const expanded = detailsButton.getAttribute("aria-expanded") === "true";
+    detailsButton.setAttribute("aria-expanded", String(!expanded));
+    detailsButton.setAttribute("aria-label", `${expanded ? "Show" : "Hide"} details for ${recipe.title}`);
+    detailsButton.querySelector("span").textContent = expanded ? "Details" : "Hide details";
+    mobileDetails.hidden = expanded;
+  });
+
   const link = row.querySelector(".recipe-link");
   link.href = recipe.url;
   link.setAttribute("aria-label", `Open original recipe for ${recipe.title}`);
+
   const copyButton = row.querySelector(".copy-recipe");
   copyButton.setAttribute("aria-label", `Copy ${recipe.title}`);
   copyButton.addEventListener("click", () => copyRecipe(recipe));
+
   const removeButton = row.querySelector(".remove-recipe");
   removeButton.setAttribute("aria-label", `Remove ${recipe.title}`);
   removeButton.addEventListener("click", () => openRemoveDialog(recipe));
+
+  if (recipe.custom) {
+    const editButton = row.querySelector(".edit-recipe");
+    const deleteButton = row.querySelector(".delete-recipe");
+    editButton.hidden = false;
+    editButton.setAttribute("aria-label", `Edit ${recipe.title}`);
+    editButton.addEventListener("click", () => openDialog(recipe));
+    deleteButton.hidden = false;
+    deleteButton.setAttribute("aria-label", `Permanently delete ${recipe.title}`);
+    deleteButton.addEventListener("click", () => openRemoveDialog(recipe, "delete"));
+    removeButton.hidden = true;
+  }
+
   return row;
 }
 
@@ -252,7 +366,7 @@ function clearFilters(shouldFocus = true) {
   if (shouldFocus) elements.search.focus();
 }
 
-function setEntryMethod(method) {
+function setEntryMethod(method, shouldFocus = true) {
   const showForm = method === "form";
   elements.form.hidden = !showForm;
   elements.pastePanel.hidden = showForm;
@@ -260,8 +374,28 @@ function setEntryMethod(method) {
   elements.pasteTab.classList.toggle("active", !showForm);
   elements.formTab.setAttribute("aria-selected", String(showForm));
   elements.pasteTab.setAttribute("aria-selected", String(!showForm));
-  if (showForm) elements.titleInput.focus();
-  else elements.pasteInput.focus();
+  elements.formTab.tabIndex = showForm ? 0 : -1;
+  elements.pasteTab.tabIndex = showForm ? -1 : 0;
+  if (shouldFocus) {
+    if (showForm) elements.titleInput.focus();
+    else elements.pasteInput.focus();
+  }
+}
+
+function handleEntryTabKeydown(event) {
+  const tabs = [elements.formTab, elements.pasteTab];
+  const currentIndex = tabs.indexOf(event.currentTarget);
+  let nextIndex = currentIndex;
+  if (["ArrowRight", "ArrowDown"].includes(event.key)) nextIndex = (currentIndex + 1) % tabs.length;
+  else if (["ArrowLeft", "ArrowUp"].includes(event.key)) nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+  else if (event.key === "Home") nextIndex = 0;
+  else if (event.key === "End") nextIndex = tabs.length - 1;
+  else return;
+
+  event.preventDefault();
+  const nextTab = tabs[nextIndex];
+  setEntryMethod(nextTab === elements.formTab ? "form" : "paste", false);
+  nextTab.focus();
 }
 
 function resetDialog() {
@@ -270,11 +404,29 @@ function resetDialog() {
   elements.pasteInput.value = "";
   elements.formMessage.textContent = "";
   elements.pasteMessage.textContent = "";
-  setEntryMethod("form");
+  setEntryMethod("form", false);
 }
 
-function openDialog() {
+function openDialog(recipe = null) {
   resetDialog();
+  state.editingRecipeId = recipe?.id || null;
+  elements.entryTabs.hidden = Boolean(recipe);
+  if (recipe) {
+    elements.dialogTitle.textContent = "Edit Personal Recipe";
+    elements.dialogDescription.textContent = "Update the copy saved in this browser.";
+    elements.deviceNote.textContent = "Changes are saved only in this browser and do not alter the shared printable PDF.";
+    elements.submitRecipe.textContent = "Save Changes";
+    elements.titleInput.value = recipe.title;
+    elements.whyInput.value = recipe.why;
+    elements.ratingInput.value = normalizedRating(recipe.rating);
+    elements.freezeInput.value = recipe.freeze;
+    elements.urlInput.value = recipe.url;
+  } else {
+    elements.dialogTitle.textContent = "Add a Recipe";
+    elements.dialogDescription.textContent = "Save it on this device and include it in search and filters.";
+    elements.deviceNote.textContent = "New recipes are saved only in this browser. They are not added to the shared printable PDF.";
+    elements.submitRecipe.textContent = "Add to Ron's Recipes";
+  }
   elements.dialog.showModal();
   elements.titleInput.focus();
 }
@@ -335,11 +487,14 @@ function usePastedRecipe() {
   elements.formMessage.textContent = "Pasted details loaded. Review them, then add the recipe.";
 }
 
-function addRecipe(event) {
+function saveRecipe(event) {
   event.preventDefault();
   if (!elements.form.reportValidity()) return;
+  const editingRecipe = state.editingRecipeId
+    ? state.customRecipes.find((recipe) => recipe.id === state.editingRecipeId)
+    : null;
   const recipe = {
-    id: globalThis.crypto?.randomUUID?.() || `custom-${Date.now()}`,
+    id: editingRecipe?.id || makeCustomId(),
     title: elements.titleInput.value.trim(),
     why: elements.whyInput.value.trim(),
     rating: elements.ratingInput.value,
@@ -348,23 +503,163 @@ function addRecipe(event) {
   };
 
   const duplicate = state.allRecipes.some((existing) =>
-    normalizeUrl(existing.url) === normalizeUrl(recipe.url) ||
-    existing.title.trim().toLocaleLowerCase() === recipe.title.toLocaleLowerCase()
+    existing.id !== recipe.id && (
+      normalizeUrl(existing.url) === normalizeUrl(recipe.url) ||
+      existing.title.trim().toLocaleLowerCase() === recipe.title.toLocaleLowerCase()
+    )
   );
   if (duplicate) {
     elements.formMessage.textContent = "That recipe is already in the collection.";
     return;
   }
 
-  state.customRecipes.push(recipe);
+  const previousCustomRecipes = state.customRecipes;
+  if (editingRecipe) {
+    state.customRecipes = state.customRecipes.map((existing) => existing.id === recipe.id ? recipe : existing);
+  } else {
+    state.customRecipes = [...state.customRecipes, recipe];
+  }
   mergeRecipes();
-  saveCustomRecipes();
+  if (!saveCustomRecipes()) {
+    state.customRecipes = previousCustomRecipes;
+    mergeRecipes();
+    render();
+    return;
+  }
   clearFilters(false);
   closeDialog();
-  showToast(`${recipe.title} added`);
+  updateManageSummary();
+  showToast(`${recipe.title} ${editingRecipe ? "updated" : "added"}`);
   requestAnimationFrame(() => {
     document.querySelector(`[data-recipe-id="${recipe.id}"]`)?.scrollIntoView({ behavior: "smooth", block: "center" });
   });
+}
+
+function backupRecipe(recipe) {
+  return {
+    id: recipe.id,
+    title: recipe.title,
+    why: recipe.why,
+    rating: normalizedRating(recipe.rating),
+    freeze: recipe.freeze,
+    url: recipe.url,
+  };
+}
+
+function updateManageSummary() {
+  const customCount = state.customRecipes.length;
+  const hiddenCount = state.removedKeys.size;
+  elements.manageSummary.textContent = `${customCount} personal ${customCount === 1 ? "recipe" : "recipes"} and ${hiddenCount} hidden ${hiddenCount === 1 ? "recipe" : "recipes"} are saved on this device.`;
+}
+
+function openManager() {
+  updateManageSummary();
+  elements.manageMessage.textContent = "";
+  elements.manageDialog.showModal();
+  elements.exportBackup.focus();
+}
+
+function closeManager() {
+  elements.manageDialog.close();
+}
+
+function exportBackup() {
+  const backup = {
+    format: BACKUP_FORMAT,
+    version: BACKUP_VERSION,
+    exportedAt: new Date().toISOString(),
+    customRecipes: state.customRecipes.map(backupRecipe),
+    removedKeys: [...state.removedKeys],
+  };
+  const date = backup.exportedAt.slice(0, 10);
+  const blob = new Blob([`${JSON.stringify(backup, null, 2)}\n`], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const download = document.createElement("a");
+  download.href = url;
+  download.download = `rons-recipes-backup-${date}.json`;
+  document.body.append(download);
+  download.click();
+  download.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  elements.manageMessage.textContent = "Backup exported. Keep the downloaded JSON file somewhere safe.";
+}
+
+function normalizeImportedRecipe(recipe) {
+  const normalized = {
+    id: typeof recipe?.id === "string" && recipe.id.trim() ? recipe.id.trim() : makeCustomId(),
+    title: String(recipe?.title || "").trim(),
+    why: String(recipe?.why || "").trim(),
+    rating: normalizedRating(recipe?.rating || ""),
+    freeze: String(recipe?.freeze || "").trim(),
+    url: String(recipe?.url || "").trim(),
+  };
+  return isValidCustomRecipe(normalized) ? normalized : null;
+}
+
+async function importBackupFile(file) {
+  try {
+    const backup = JSON.parse(await file.text());
+    if (backup?.format !== BACKUP_FORMAT || backup?.version !== BACKUP_VERSION || !Array.isArray(backup.customRecipes) || !Array.isArray(backup.removedKeys)) {
+      throw new Error("This is not a supported Ron's Recipes backup.");
+    }
+
+    const previousCustomRecipes = state.customRecipes;
+    const previousRemovedKeys = new Set(state.removedKeys);
+    const merged = state.customRecipes.map(backupRecipe);
+    let added = 0;
+    let updated = 0;
+    let skipped = 0;
+
+    for (const importedValue of backup.customRecipes) {
+      const imported = normalizeImportedRecipe(importedValue);
+      if (!imported) {
+        skipped += 1;
+        continue;
+      }
+      const matchingId = merged.findIndex((recipe) => recipe.id === imported.id);
+      if (matchingId >= 0) {
+        merged[matchingId] = imported;
+        updated += 1;
+        continue;
+      }
+      const duplicate = merged.some((recipe) =>
+        normalizeUrl(recipe.url) === normalizeUrl(imported.url) ||
+        recipe.title.toLocaleLowerCase() === imported.title.toLocaleLowerCase()
+      );
+      if (duplicate) {
+        skipped += 1;
+        continue;
+      }
+      merged.push(imported);
+      added += 1;
+    }
+
+    state.customRecipes = merged;
+    state.removedKeys = new Set([
+      ...state.removedKeys,
+      ...backup.removedKeys.filter((key) => typeof key === "string"),
+    ]);
+    mergeRecipes();
+    if (!saveCustomRecipes() || !saveRemovedKeys()) {
+      state.customRecipes = previousCustomRecipes;
+      state.removedKeys = previousRemovedKeys;
+      mergeRecipes();
+      saveCustomRecipes();
+      saveRemovedKeys();
+      render();
+      elements.manageMessage.textContent = "The backup could not be saved on this device.";
+      return;
+    }
+
+    render();
+    updateManageSummary();
+    elements.manageMessage.textContent = `Import complete: ${added} added, ${updated} updated, ${skipped} skipped.`;
+  } catch (error) {
+    console.error("Backup could not be imported.", error);
+    elements.manageMessage.textContent = error.message || "That backup could not be imported.";
+  } finally {
+    elements.importBackupFile.value = "";
+  }
 }
 
 async function loadRecipes() {
@@ -394,21 +689,40 @@ elements.filters.forEach((button) => button.addEventListener("click", () => setR
 elements.clearFilters.addEventListener("click", () => clearFilters());
 elements.clearButtons.forEach((button) => button.addEventListener("click", () => clearFilters()));
 elements.restoreRemoved.addEventListener("click", restoreRemovedRecipes);
-elements.openAdd.addEventListener("click", openDialog);
+elements.openManager.addEventListener("click", openManager);
+elements.openAdd.addEventListener("click", () => openDialog());
 elements.closeDialog.addEventListener("click", closeDialog);
 elements.cancelAdd.addEventListener("click", closeDialog);
 elements.formTab.addEventListener("click", () => setEntryMethod("form"));
 elements.pasteTab.addEventListener("click", () => setEntryMethod("paste"));
+elements.formTab.addEventListener("keydown", handleEntryTabKeydown);
+elements.pasteTab.addEventListener("keydown", handleEntryTabKeydown);
+elements.cancelPaste.addEventListener("click", closeDialog);
 elements.usePasted.addEventListener("click", usePastedRecipe);
-elements.form.addEventListener("submit", addRecipe);
+elements.form.addEventListener("submit", saveRecipe);
+elements.closeManager.addEventListener("click", closeManager);
+elements.doneManager.addEventListener("click", closeManager);
+elements.exportBackup.addEventListener("click", exportBackup);
+elements.importBackup.addEventListener("click", () => elements.importBackupFile.click());
+elements.importBackupFile.addEventListener("change", (event) => {
+  const [file] = event.target.files;
+  if (file) importBackupFile(file);
+});
 elements.cancelRemove.addEventListener("click", closeRemoveDialog);
 elements.confirmRemove.addEventListener("click", removeRecipe);
 elements.removeDialog.addEventListener("click", (event) => {
   if (event.target === elements.removeDialog) closeRemoveDialog();
 });
-elements.removeDialog.addEventListener("close", () => { pendingRemoval = null; });
+elements.removeDialog.addEventListener("close", () => {
+  pendingRemoval = null;
+  pendingRemovalMode = "hide";
+});
 elements.dialog.addEventListener("click", (event) => {
   if (event.target === elements.dialog) closeDialog();
+});
+elements.dialog.addEventListener("close", () => { state.editingRecipeId = null; });
+elements.manageDialog.addEventListener("click", (event) => {
+  if (event.target === elements.manageDialog) closeManager();
 });
 
 loadRecipes();

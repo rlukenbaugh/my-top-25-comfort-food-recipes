@@ -8,14 +8,16 @@ Open the live collection at:
 
 https://rlukenbaugh.github.io/my-top-25-comfort-food-recipes/
 
-The web app reads the same `recipes.json` file as the printable book. It includes search, freezer-rating filters, mobile layout, original-recipe links, a downloadable PDF, and browser-based recipe additions. GitHub Pages rebuilds and republishes it whenever `main` is updated.
+The web app reads the same `recipes.json` file as the printable book. It includes search, freezer-rating filters, expandable mobile details, original-recipe links, a downloadable PDF, and browser-based recipe additions. GitHub Pages validates, tests, rebuilds, and republishes it whenever `main` is updated.
 
 ### Add, copy, and paste recipes
 
 - Select **Add Recipe** to enter a recipe with a simple form.
 - Select **Paste recipe** to import labeled recipe text or a JSON recipe object.
 - Select **Copy recipe** on any entry to copy it in the exact labeled format accepted by the paste tool.
+- Personal recipes have **Edit** and permanent **Delete** actions.
 - Select **Remove** to hide a recipe on that browser after confirmation. Select **Restore Removed** to bring hidden recipes back.
+- Select **Manage** to export a JSON backup or safely merge a previously exported backup.
 - Recipe numbers automatically close any gaps when recipes are removed and return to their original order when restored.
 - Recipes added in the web app are saved only in that browser on that device. They are private to that visitor and do not modify the shared GitHub list or printable PDF.
 - Removed recipes are also remembered only by that browser. They are never deleted from the shared GitHub list or printable PDF.
@@ -50,6 +52,23 @@ verify.cmd
 
 This confirms the page count, embedded source links, and recipe count.
 
+## Run all web-app checks
+
+Install the test dependencies and Chromium once:
+
+```text
+npm.cmd install
+npx.cmd playwright install chromium
+```
+
+Then run:
+
+```text
+npm.cmd test
+```
+
+This validates the recipe data and exercises search, filters, keyboard tabs, mobile details, touch targets, color contrast, accessibility, add/edit/delete, and backup export/import. `npm.cmd run test:links` performs the external-link audit; Allrecipes may report protected HTTP 403 responses when it blocks automated requests.
+
 ## Project files
 
 - `recipes.json` - the recipe list you edit
@@ -57,6 +76,9 @@ This confirms the page count, embedded source links, and recipe count.
 - `build.cmd` - installs the needed Python packages and builds the PDF
 - `verify_book.py` - checks the generated PDF
 - `verify.cmd` - runs the verification check
+- `validate_recipes.py` - validates ranks, fields, ratings, and source URLs
+- `check_links.py` - performs the scheduled external-link audit
+- `tests/app.spec.js` - browser interaction and accessibility tests
 
 Full recipe instructions remain on the linked Allrecipes pages. This project stores your ranking, notes, freezer guidance, and source links.
 

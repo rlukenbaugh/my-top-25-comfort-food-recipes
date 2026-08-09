@@ -6,8 +6,8 @@
     <meta name="description" content="Ron's ranked comfort-food recipes with practical freezer notes and links to every original recipe." />
     <meta name="theme-color" content="#651f27" />
     <title>Ron's Recipes</title>
-    <link rel="stylesheet" href="styles.css?v=recipe-rank-1" />
-    <script src="app.js?v=recipe-rank-1" defer></script>
+    <link rel="stylesheet" href="styles.css?v=recipe-manager-1" />
+    <script src="app.js?v=recipe-manager-1" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#recipes">Skip to recipes</a>
@@ -55,6 +55,10 @@
           <div class="results-actions">
             <button id="clear-filters" class="text-button" type="button" hidden>Clear filters</button>
             <button id="restore-removed" class="text-button" type="button" hidden>Restore Removed (<span id="removed-count">0</span>)</button>
+            <button id="open-manager" class="button button-secondary" type="button">
+              <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h16M7 7V4h10v3M6 7v13h12V7M9 11h6M9 15h6"/></svg>
+              Manage
+            </button>
             <button id="open-add-recipe" class="button button-primary" type="button">
               <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
               Add Recipe
@@ -93,16 +97,16 @@
       <div class="dialog-header">
         <div>
           <h2 id="dialog-title">Add a Recipe</h2>
-          <p>Save it on this device and include it in search and filters.</p>
+          <p id="dialog-description">Save it on this device and include it in search and filters.</p>
         </div>
         <button id="close-dialog" class="icon-button" type="button" aria-label="Close add recipe window">
           <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg>
         </button>
       </div>
 
-      <div class="entry-tabs" role="tablist" aria-label="Recipe entry method">
-        <button id="form-tab" class="entry-tab active" type="button" role="tab" aria-selected="true" aria-controls="form-panel">Fill in form</button>
-        <button id="paste-tab" class="entry-tab" type="button" role="tab" aria-selected="false" aria-controls="paste-panel">Paste recipe</button>
+      <div id="entry-tabs" class="entry-tabs" role="tablist" aria-label="Recipe entry method">
+        <button id="form-tab" class="entry-tab active" type="button" role="tab" aria-selected="true" aria-controls="form-panel" tabindex="0">Fill in form</button>
+        <button id="paste-tab" class="entry-tab" type="button" role="tab" aria-selected="false" aria-controls="paste-panel" tabindex="-1">Paste recipe</button>
       </div>
 
       <section id="paste-panel" class="paste-panel" role="tabpanel" aria-labelledby="paste-tab" hidden>
@@ -110,6 +114,7 @@
         <p>Paste text copied from any recipe in this app, or use labeled lines such as <strong>Title:</strong>, <strong>Why:</strong>, <strong>Freezer rating:</strong>, <strong>Freeze smart:</strong>, and <strong>URL:</strong>.</p>
         <textarea id="paste-recipe" rows="9" placeholder="Title: Sunday Pot Roast&#10;Why: Tender beef and vegetables in rich gravy.&#10;Freezer rating: Excellent&#10;Freeze smart: Cool completely and freeze in meal-size portions.&#10;URL: https://example.com/pot-roast"></textarea>
         <div class="paste-actions">
+          <button id="cancel-paste" class="button button-secondary" type="button">Cancel</button>
           <button id="use-pasted-recipe" class="button button-secondary" type="button">Use Pasted Details</button>
           <span id="paste-message" class="form-message" role="status"></span>
         </div>
@@ -139,13 +144,44 @@
             <input id="recipe-url" name="url" type="url" required placeholder="https://..." />
           </label>
         </div>
-        <p class="device-note">New recipes are saved only in this browser. They are not added to the shared printable PDF.</p>
+        <p id="recipe-device-note" class="device-note">New recipes are saved only in this browser. They are not added to the shared printable PDF.</p>
         <div class="dialog-actions">
           <span id="form-message" class="form-message" role="status"></span>
           <button id="cancel-add" class="button button-secondary" type="button">Cancel</button>
-          <button class="button button-primary" type="submit">Add to Ron's Recipes</button>
+          <button id="submit-recipe" class="button button-primary" type="submit">Add to Ron's Recipes</button>
         </div>
       </form>
+    </dialog>
+
+    <dialog id="manage-dialog" aria-labelledby="manage-dialog-title">
+      <div class="dialog-header">
+        <div>
+          <h2 id="manage-dialog-title">Manage Personal Recipes</h2>
+          <p>Back up or restore the changes saved in this browser.</p>
+        </div>
+        <button id="close-manager" class="icon-button" type="button" aria-label="Close recipe manager">
+          <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg>
+        </button>
+      </div>
+      <div class="manage-content">
+        <p id="manage-summary" class="manage-summary"></p>
+        <div class="manage-actions">
+          <button id="export-backup" class="button button-primary" type="button">
+            <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M5 20h14"/></svg>
+            Export Backup
+          </button>
+          <button id="import-backup" class="button button-secondary" type="button">
+            <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 17V5M7 10l5-5 5 5M5 20h14"/></svg>
+            Import &amp; Merge
+          </button>
+          <input id="import-backup-file" type="file" accept=".json,application/json" hidden />
+        </div>
+        <p class="device-note">Backups include personal recipes and hidden-recipe choices. Importing merges safely with the collection already on this device.</p>
+        <p id="manage-message" class="form-message manage-message" role="status"></p>
+        <div class="dialog-actions">
+          <button id="done-manager" class="button button-secondary" type="button">Done</button>
+        </div>
+      </div>
     </dialog>
 
     <dialog id="remove-dialog" class="confirm-dialog" aria-labelledby="remove-dialog-title">
@@ -155,8 +191,8 @@
         </div>
         <div>
           <h2 id="remove-dialog-title">Remove this recipe?</h2>
-          <p><strong id="remove-recipe-title"></strong> will be hidden on this device.</p>
-          <p class="confirm-note">You can bring it back later with <strong>Restore Removed</strong>. The shared collection and printable PDF will not change.</p>
+          <p id="remove-dialog-copy"><strong id="remove-recipe-title"></strong> will be hidden on this device.</p>
+          <p id="remove-dialog-note" class="confirm-note">You can bring it back later with <strong>Restore Removed</strong>. The shared collection and printable PDF will not change.</p>
         </div>
       </div>
       <div class="confirm-actions">
@@ -175,9 +211,19 @@
         <div class="recipe-actions">
           <a class="recipe-link" target="_blank" rel="noopener noreferrer"><span>Open original recipe</span><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 13v7H4V6h7"/></svg></a>
           <div class="secondary-actions">
+            <button class="edit-recipe" type="button" hidden><span>Edit</span><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m4 16-1 5 5-1L19 9l-4-4L4 16ZM13 7l4 4"/></svg></button>
             <button class="copy-recipe" type="button"><span>Copy</span><svg aria-hidden="true" viewBox="0 0 24 24"><rect x="8" y="8" width="11" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h2"/></svg></button>
             <button class="remove-recipe" type="button"><span>Remove</span><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M7 7l1 13h8l1-13M10 11v5M14 11v5"/></svg></button>
+            <button class="delete-recipe" type="button" hidden><span>Delete</span><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M7 7l1 13h8l1-13M10 11v5M14 11v5"/></svg></button>
           </div>
+        </div>
+        <button class="details-toggle" type="button" aria-expanded="false">
+          <span>Details</span>
+          <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m7 9 5 5 5-5"/></svg>
+        </button>
+        <div class="mobile-details" hidden>
+          <div><span class="section-label">Why it belongs</span><p class="mobile-why"></p></div>
+          <div><span class="section-label">Freeze smart</span><p class="mobile-freeze"></p></div>
         </div>
       </article>
     </template>
