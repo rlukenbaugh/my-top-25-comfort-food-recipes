@@ -6,7 +6,7 @@ import { expect, test } from "@playwright/test";
 async function openCleanApp(page) {
   await page.addInitScript(() => localStorage.clear());
   await page.goto("/");
-  await expect(page.getByRole("heading", { name: "25 recipes" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "26 recipes" })).toBeVisible();
 }
 
 
@@ -19,7 +19,7 @@ test("search, filters, keyboard tabs, and console remain healthy", async ({ page
 
   await openCleanApp(page);
   await expect(page).toHaveTitle("Ron's Recipes");
-  await expect(page.locator("#recipe-list article")).toHaveCount(25);
+  await expect(page.locator("#recipe-list article")).toHaveCount(26);
 
   await page.getByRole("searchbox", { name: "Search recipes" }).fill("chicken");
   await expect(page.getByRole("heading", { name: "13 recipes" })).toBeVisible();
@@ -95,13 +95,13 @@ test("metadata, install assets, manifest, and offline app shell are valid", asyn
 
   if (!await page.evaluate(() => Boolean(navigator.serviceWorker.controller))) {
     await page.reload();
-    await expect(page.getByRole("heading", { name: "25 recipes" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "26 recipes" })).toBeVisible();
   }
   expect(await page.evaluate(() => Boolean(navigator.serviceWorker.controller))).toBeTruthy();
 
   await context.setOffline(true);
   await page.reload({ waitUntil: "domcontentloaded" });
-  await expect(page.getByRole("heading", { name: "25 recipes" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "26 recipes" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "World's Best Lasagna" })).toBeVisible();
   await context.setOffline(false);
 });
@@ -110,7 +110,7 @@ test("metadata, install assets, manifest, and offline app shell are valid", asyn
 test("sticky browsing, collection badges, card accents, back-to-top, and install prompt work", async ({ page }) => {
   await openCleanApp(page);
 
-  await expect(page.getByText("25 Favorites", { exact: true })).toBeVisible();
+  await expect(page.getByText("26 Favorites", { exact: true })).toBeVisible();
   await expect(page.getByText("Freezer Rated", { exact: true })).toBeVisible();
   await expect(page.getByText("Works Offline", { exact: true })).toBeVisible();
   await expect(page.locator("#recipe-list article").first()).toHaveAttribute("data-rating", "excellent");
@@ -208,7 +208,7 @@ test("cooking shortcuts, pantry matching, and surprise selection work", async ({
   await expect(page.getByRole("heading", { name: "1 recipe" })).toBeVisible();
 
   await page.locator("#quick-my-recipes").click();
-  await expect(page.getByRole("heading", { name: "25 recipes" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "26 recipes" })).toBeVisible();
   await page.locator("#quick-surprise").click();
   await expect(page.locator("#recipe-list article.is-surprise")).toHaveCount(1);
   await expect(page.getByRole("status")).toContainText("Tonight's pick:");
@@ -249,7 +249,7 @@ test("collections can be created, assigned, and used as a recipe filter", async 
   await expect(page.getByRole("heading", { name: "1 recipe" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "World's Best Lasagna" })).toBeVisible();
   await page.getByRole("button", { name: "Clear collection filter: Favorites" }).click();
-  await expect(page.getByRole("heading", { name: "25 recipes" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "26 recipes" })).toBeVisible();
 });
 
 
@@ -386,7 +386,7 @@ test("personal recipes can be added, edited, exported, deleted, and imported", a
   await page.locator("#recipe-ingredients").fill("2 pounds chuck roast\n1 onion, chopped");
   await page.getByLabel("Original recipe link").fill("https://example.com/pot-roast");
   await page.getByRole("button", { name: "Add to Ron's Recipes" }).click();
-  await expect(page.getByRole("heading", { name: "26 recipes" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "27 recipes" })).toBeVisible();
 
   await page.getByRole("button", { name: "Edit Sunday Pot Roast" }).click();
   await expect(page.locator("#recipe-ingredients")).toHaveValue("2 pounds chuck roast\n1 onion, chopped");
@@ -410,7 +410,7 @@ test("personal recipes can be added, edited, exported, deleted, and imported", a
   await page.getByRole("button", { name: "Permanently delete Sunday Pot Roast Updated" }).click();
   await expect(page.getByRole("heading", { name: "Permanently delete this recipe?" })).toBeVisible();
   await page.getByRole("button", { name: "Delete Recipe" }).click();
-  await expect(page.getByRole("heading", { name: "25 recipes" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "26 recipes" })).toBeVisible();
 
   await page.getByRole("button", { name: "Manage" }).click();
   await page.locator("#import-backup-file").setInputFiles({
@@ -420,7 +420,7 @@ test("personal recipes can be added, edited, exported, deleted, and imported", a
   });
   await expect(page.getByRole("status").filter({ hasText: "Import complete: 1 added" })).toBeVisible();
   await page.getByRole("button", { name: "Done" }).click();
-  await expect(page.getByRole("heading", { name: "26 recipes" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "27 recipes" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Sunday Pot Roast Updated" })).toBeVisible();
   await page.getByRole("button", { name: "Add ingredients for Sunday Pot Roast Updated to the shopping list" }).click();
   await expect(page.getByRole("checkbox", { name: "2 pounds chuck roast" })).toBeVisible();

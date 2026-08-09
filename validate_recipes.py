@@ -60,8 +60,8 @@ def main():
         if recipe["rating"].replace("*", "").strip() not in RATINGS:
             errors.append(f"Recipe {index} has unsupported freezer rating: {recipe['rating']}.")
         parsed_url = urlparse(recipe["url"])
-        if parsed_url.scheme != "https" or parsed_url.hostname not in {"allrecipes.com", "www.allrecipes.com"}:
-            errors.append(f"Recipe {index} must use an HTTPS Allrecipes URL: {recipe['url']}.")
+        if parsed_url.scheme != "https" or not parsed_url.hostname:
+            errors.append(f"Recipe {index} must use a valid HTTPS source URL: {recipe['url']}.")
 
     app_source = (ROOT / "index.html").read_text(encoding="utf-8") + (ROOT / "app-v1.5.js").read_text(encoding="utf-8")
     for required_reference in (
@@ -95,7 +95,7 @@ def main():
         fail(errors)
 
     print(f"PASS: {len(recipes)} recipes validated")
-    print("Ranks, required fields, ratings, titles, and source URLs are valid.")
+    print("Ranks, required fields, ratings, titles, and HTTPS source URLs are valid.")
 
 
 if __name__ == "__main__":

@@ -80,7 +80,7 @@ def make_share_card():
     draw.ellipse((-160, 420, 260, 840), fill=BURGUNDY_DARK)
     draw.ellipse((210, -100, 440, 130), fill=GOLD)
     draw_pot(draw, (58, 142, 272, 382), width=11)
-    draw.text((69, 425), "25 favorites", font=font(29, bold=True), fill=CREAM)
+    draw.text((69, 425), "26 favorites", font=font(29, bold=True), fill=CREAM)
     draw.text((69, 469), "ranked for comfort", font=font(20), fill="#f1dedf")
 
     draw.text((402, 104), "Ron's Recipes", font=font(74, bold=True, serif=True), fill=BURGUNDY_DARK)

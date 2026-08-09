@@ -170,7 +170,7 @@ def cover(c):
 
     c.setFillColor(MUTED)
     c.setFont("Helvetica", 8)
-    c.drawString(56, 58, "Source links verified August 8, 2026")
+    c.drawString(56, 58, "Source links verified August 9, 2026")
     c.drawString(56, 44, "Designed for US Letter printing")
     c.showPage()
 
