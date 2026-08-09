@@ -1107,13 +1107,17 @@ async function bridgeRequest(path, options = {}) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 65000);
   try {
-    const response = await fetch(`${MEALIE_BRIDGE_URL}${path}`, { ...options, cache: "no-store", signal: controller.signal });
+    const response = await fetch(`${MEALIE_BRIDGE_URL}${path}`, {
+      ...options,
+      cache: "no-store",
+      signal: controller.signal,
+    });
     const data = await response.json().catch(() => ({}));
     if (!response.ok || data.ok === false) throw new Error(data.error || `Importer returned HTTP ${response.status}.`);
     return data;
   } catch (error) {
     if (error.name === "AbortError") throw new Error("Mealie took too long to read that recipe.");
-    if (error instanceof TypeError) throw new Error("The private importer is not running. Double-click start_mealie_bridge.cmd on this PC.");
+    if (error instanceof TypeError) throw new Error("Could not reach the private importer. Allow Local Network Access for this site if your browser asks, and make sure start_mealie_bridge.cmd is running.");
     throw error;
   } finally {
     clearTimeout(timeout);

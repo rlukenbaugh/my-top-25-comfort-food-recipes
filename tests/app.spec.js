@@ -101,6 +101,7 @@ test("Mealie URL import previews and fills the curated recipe form", async ({ pa
   await page.getByRole("button", { name: "Add Recipe" }).click();
   await page.getByRole("tab", { name: "Import URL" }).click();
   await expect(page.locator("#import-message")).toHaveText("Connected securely to Mealie on this PC.");
+  await expect(page.locator(".import-heading")).toContainText("allow this site to access your local network");
   await page.getByLabel("Recipe webpage").fill(importedRecipe.sourceUrl);
   await page.getByRole("button", { name: "Preview Recipe" }).click();
 

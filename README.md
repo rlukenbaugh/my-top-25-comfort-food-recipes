@@ -32,10 +32,11 @@ The GitHub Pages app never receives or stores the Mealie API token. A small loop
 1. Keep the API token in `.env`. The recommended format is `MEALIE_API_TOKEN=your-token`; the bridge also accepts the existing single raw-token line.
 2. Confirm `MEALIE_URL` in `.env` if Mealie is not at `http://192.168.1.60:9925`.
 3. Double-click `start_mealie_bridge.cmd`, or run `npm.cmd run start:mealie` from this folder.
-4. In Ron's Recipes, select **Add Recipe**, **Import URL**, paste a public recipe URL, and select **Preview Recipe**.
-5. Select **Use Imported Recipe**, add a freezer note, review the form, and save.
+4. In Ron's Recipes, select **Add Recipe** and **Import URL**. On first use, Chrome or Edge asks to find and connect to devices on the local network; select **Allow** so the hosted site can reach the bridge on this PC.
+5. Paste a public recipe URL and select **Preview Recipe**.
+6. Select **Use Imported Recipe**, add a freezer note, review the form, and save.
 
-The bridge listens only on `127.0.0.1:9931`, permits only the live Ron's Recipes site and documented local preview origins, rate-limits requests, and blocks private/local target URLs. It must be running whenever you import. Because it uses this PC's loopback address, URL importing is PC-only; phones and tablets can still use every other site feature.
+The bridge listens only on `127.0.0.1:9931`, permits only the live Ron's Recipes site and documented local preview origins, rate-limits requests, and blocks private/local target URLs. It must be running whenever you import. If local access was previously blocked in Chrome or Edge, select the site-controls icon beside the address, open **Site settings**, set **Local network access** to **Allow**, and reload the page. Because the bridge uses this PC's loopback address, URL importing is PC-only; phones and tablets can still use every other site feature.
 
 ### Collections and shopping list
 
