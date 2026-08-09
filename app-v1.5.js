@@ -1655,7 +1655,7 @@ async function importBackupFile(file) {
 
 async function loadRecipes() {
   try {
-    const response = await fetch("recipes.json", { cache: "no-store" });
+    const response = await fetch("recipes.json?v=1.5.0", { cache: "no-store" });
     if (!response.ok) throw new Error(`Recipe data request failed: ${response.status}`);
     state.baseRecipes = (await response.json()).sort((a, b) => Number(a.rank) - Number(b.rank));
     state.customRecipes = loadCustomRecipes();

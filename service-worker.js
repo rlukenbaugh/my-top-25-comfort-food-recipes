@@ -1,11 +1,11 @@
 const CACHE_PREFIX = "rons-recipes-";
-const CACHE_NAME = `${CACHE_PREFIX}pwa-7`;
+const CACHE_NAME = `${CACHE_PREFIX}pwa-8`;
 const APP_SHELL = [
   "./",
   "./index.html",
   "./styles-v1.5.css",
   "./app-v1.5.js",
-  "./recipes.json",
+  "./recipes.json?v=1.5.0",
   "./manifest.webmanifest",
   "./assets/icons/favicon.svg",
   "./assets/icons/favicon.ico",
