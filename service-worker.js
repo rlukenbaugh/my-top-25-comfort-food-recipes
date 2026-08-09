@@ -1,10 +1,10 @@
 const CACHE_PREFIX = "rons-recipes-";
-const CACHE_NAME = `${CACHE_PREFIX}pwa-3`;
+const CACHE_NAME = `${CACHE_PREFIX}pwa-4`;
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./styles.css?v=pwa-3",
-  "./app.js?v=pwa-3",
+  "./styles-v1.2.css",
+  "./app-v1.2.js",
   "./recipes.json",
   "./manifest.webmanifest",
   "./assets/icons/favicon.svg",
@@ -50,7 +50,7 @@ async function networkFirstNavigation(request) {
 
 async function cacheFirst(request, event) {
   const cache = await caches.open(CACHE_NAME);
-  const cached = await cache.match(request, { ignoreSearch: true });
+  const cached = await cache.match(request);
   const network = fetch(request).then(async (response) => {
     if (response.ok) await cache.put(request, response.clone());
     return response;

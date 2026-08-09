@@ -59,11 +59,11 @@ def main():
         if parsed_url.scheme != "https" or parsed_url.hostname not in {"allrecipes.com", "www.allrecipes.com"}:
             errors.append(f"Recipe {index} must use an HTTPS Allrecipes URL: {recipe['url']}.")
 
-    app_source = (ROOT / "index.html").read_text(encoding="utf-8") + (ROOT / "app.js").read_text(encoding="utf-8")
+    app_source = (ROOT / "index.html").read_text(encoding="utf-8") + (ROOT / "app-v1.2.js").read_text(encoding="utf-8")
     for required_reference in (
         "recipes.json",
-        "app.js",
-        "styles.css",
+        "app-v1.2.js",
+        "styles-v1.2.css",
         "printable/rons-recipes-2026.pdf",
         "manifest.webmanifest",
         "service-worker.js",
