@@ -16,6 +16,7 @@ The web app reads the same `recipes.json` file as the printable book. It include
 - Select **Paste recipe** to import labeled recipe text or a JSON recipe object.
 - Select **Copy recipe** on any entry to copy it in the exact labeled format accepted by the paste tool.
 - Select **Remove** to hide a recipe on that browser after confirmation. Select **Restore Removed** to bring hidden recipes back.
+- Recipe numbers automatically close any gaps when recipes are removed and return to their original order when restored.
 - Recipes added in the web app are saved only in that browser on that device. They are private to that visitor and do not modify the shared GitHub list or printable PDF.
 - Removed recipes are also remembered only by that browser. They are never deleted from the shared GitHub list or printable PDF.
 

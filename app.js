@@ -201,10 +201,10 @@ function restoreRemovedRecipes() {
   showToast(`${restoredCount} ${restoredCount === 1 ? "recipe" : "recipes"} restored`);
 }
 
-function createRecipeRow(recipe) {
+function createRecipeRow(recipe, displayRank) {
   const row = elements.template.content.firstElementChild.cloneNode(true);
   row.dataset.recipeId = recipe.id || `base-${recipe.rank}`;
-  row.querySelector(".rank").textContent = recipe.rank;
+  row.querySelector(".rank").textContent = displayRank;
   row.querySelector(".recipe-title").textContent = recipe.title;
   row.querySelector(".recipe-why").textContent = recipe.why;
   row.querySelector(".recipe-rating strong").textContent = normalizedRating(recipe.rating);
@@ -223,8 +223,9 @@ function createRecipeRow(recipe) {
 
 function render() {
   const recipes = filteredRecipes();
+  const displayRanks = new Map(state.recipes.map((recipe, index) => [recipeKey(recipe), index + 1]));
   const fragment = document.createDocumentFragment();
-  recipes.forEach((recipe) => fragment.append(createRecipeRow(recipe)));
+  recipes.forEach((recipe) => fragment.append(createRecipeRow(recipe, displayRanks.get(recipeKey(recipe)))));
   elements.list.replaceChildren(fragment);
   elements.list.setAttribute("aria-busy", "false");
   elements.resultCount.textContent = recipes.length;
