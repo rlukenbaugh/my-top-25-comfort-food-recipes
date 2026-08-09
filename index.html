@@ -6,8 +6,8 @@
     <meta name="description" content="Ron's ranked comfort-food recipes with practical freezer notes and links to every original recipe." />
     <meta name="theme-color" content="#651f27" />
     <title>Ron's Recipes</title>
-    <link rel="stylesheet" href="styles.css?v=recipe-tools-1" />
-    <script src="app.js?v=recipe-tools-1" defer></script>
+    <link rel="stylesheet" href="styles.css?v=recipe-remove-1" />
+    <script src="app.js?v=recipe-remove-1" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#recipes">Skip to recipes</a>
@@ -54,6 +54,7 @@
           <h2 id="results-title"><span id="result-count">25</span> recipes</h2>
           <div class="results-actions">
             <button id="clear-filters" class="text-button" type="button" hidden>Clear filters</button>
+            <button id="restore-removed" class="text-button" type="button" hidden>Restore Removed (<span id="removed-count">0</span>)</button>
             <button id="open-add-recipe" class="button button-primary" type="button">
               <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
               Add Recipe
@@ -147,6 +148,23 @@
       </form>
     </dialog>
 
+    <dialog id="remove-dialog" class="confirm-dialog" aria-labelledby="remove-dialog-title">
+      <div class="confirm-content">
+        <div class="confirm-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M7 7l1 13h8l1-13M10 11v5M14 11v5"/></svg>
+        </div>
+        <div>
+          <h2 id="remove-dialog-title">Remove this recipe?</h2>
+          <p><strong id="remove-recipe-title"></strong> will be hidden on this device.</p>
+          <p class="confirm-note">You can bring it back later with <strong>Restore Removed</strong>. The shared collection and printable PDF will not change.</p>
+        </div>
+      </div>
+      <div class="confirm-actions">
+        <button id="cancel-remove" class="button button-secondary" type="button">Cancel</button>
+        <button id="confirm-remove" class="button button-danger" type="button">Remove Recipe</button>
+      </div>
+    </dialog>
+
     <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
 
     <template id="recipe-template">
@@ -156,7 +174,10 @@
         <div class="recipe-freeze"><span class="section-label">Freeze smart</span><p></p></div>
         <div class="recipe-actions">
           <a class="recipe-link" target="_blank" rel="noopener noreferrer"><span>Open original recipe</span><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 13v7H4V6h7"/></svg></a>
-          <button class="copy-recipe" type="button"><span>Copy recipe</span><svg aria-hidden="true" viewBox="0 0 24 24"><rect x="8" y="8" width="11" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h2"/></svg></button>
+          <div class="secondary-actions">
+            <button class="copy-recipe" type="button"><span>Copy</span><svg aria-hidden="true" viewBox="0 0 24 24"><rect x="8" y="8" width="11" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h2"/></svg></button>
+            <button class="remove-recipe" type="button"><span>Remove</span><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M7 7l1 13h8l1-13M10 11v5M14 11v5"/></svg></button>
+          </div>
         </div>
       </article>
     </template>

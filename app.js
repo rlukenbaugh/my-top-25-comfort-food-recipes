@@ -1,10 +1,13 @@
 const STORAGE_KEY = "rons-recipes.custom.v1";
+const REMOVED_STORAGE_KEY = "rons-recipes.removed.v1";
 const RATINGS = ["Outstanding", "Excellent", "Very good", "Good", "Fair"];
 
 const state = {
   baseRecipes: [],
   customRecipes: [],
+  allRecipes: [],
   recipes: [],
+  removedKeys: new Set(),
   query: "",
   rating: "All",
 };
@@ -17,6 +20,8 @@ const elements = {
   resultCount: document.querySelector("#result-count"),
   recipeCounts: [...document.querySelectorAll("[data-recipe-count]")],
   clearFilters: document.querySelector("#clear-filters"),
+  restoreRemoved: document.querySelector("#restore-removed"),
+  removedCount: document.querySelector("#removed-count"),
   emptyState: document.querySelector("#empty-state"),
   clearButtons: [...document.querySelectorAll("[data-clear]")],
   pdfLinks: [...document.querySelectorAll("[data-pdf-link]")],
@@ -38,6 +43,10 @@ const elements = {
   freezeInput: document.querySelector("#recipe-freeze"),
   urlInput: document.querySelector("#recipe-url"),
   toast: document.querySelector("#toast"),
+  removeDialog: document.querySelector("#remove-dialog"),
+  removeRecipeTitle: document.querySelector("#remove-recipe-title"),
+  cancelRemove: document.querySelector("#cancel-remove"),
+  confirmRemove: document.querySelector("#confirm-remove"),
 };
 
 function normalizedRating(rating) {
@@ -71,6 +80,24 @@ function saveCustomRecipes() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state.customRecipes));
 }
 
+function loadRemovedKeys() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(REMOVED_STORAGE_KEY) || "[]");
+    return new Set(Array.isArray(saved) ? saved.filter((key) => typeof key === "string") : []);
+  } catch (error) {
+    console.warn("Removed recipes could not be read.", error);
+    return new Set();
+  }
+}
+
+function saveRemovedKeys() {
+  localStorage.setItem(REMOVED_STORAGE_KEY, JSON.stringify([...state.removedKeys]));
+}
+
+function recipeKey(recipe) {
+  return recipe.id ? `custom:${recipe.id}` : `base:${normalizeUrl(recipe.url)}`;
+}
+
 function mergeRecipes() {
   const highestBaseRank = Math.max(0, ...state.baseRecipes.map((recipe) => Number(recipe.rank) || 0));
   state.customRecipes = state.customRecipes.map((recipe, index) => ({
@@ -78,8 +105,13 @@ function mergeRecipes() {
     rank: highestBaseRank + index + 1,
     custom: true,
   }));
-  state.recipes = [...state.baseRecipes, ...state.customRecipes].sort((a, b) => Number(a.rank) - Number(b.rank));
+  state.allRecipes = [...state.baseRecipes, ...state.customRecipes].sort((a, b) => Number(a.rank) - Number(b.rank));
+  const validKeys = new Set(state.allRecipes.map(recipeKey));
+  state.removedKeys = new Set([...state.removedKeys].filter((key) => validKeys.has(key)));
+  state.recipes = state.allRecipes.filter((recipe) => !state.removedKeys.has(recipeKey(recipe)));
   elements.recipeCounts.forEach((element) => { element.textContent = state.recipes.length; });
+  elements.removedCount.textContent = state.removedKeys.size;
+  elements.restoreRemoved.hidden = state.removedKeys.size === 0;
 }
 
 function filteredRecipes() {
@@ -135,6 +167,40 @@ async function copyRecipe(recipe) {
   }
 }
 
+let pendingRemoval = null;
+function openRemoveDialog(recipe) {
+  pendingRemoval = recipe;
+  elements.removeRecipeTitle.textContent = recipe.title;
+  elements.removeDialog.showModal();
+  elements.cancelRemove.focus();
+}
+
+function closeRemoveDialog() {
+  pendingRemoval = null;
+  elements.removeDialog.close();
+}
+
+function removeRecipe() {
+  if (!pendingRemoval) return;
+  const removedTitle = pendingRemoval.title;
+  state.removedKeys.add(recipeKey(pendingRemoval));
+  saveRemovedKeys();
+  mergeRecipes();
+  render();
+  closeRemoveDialog();
+  showToast(`${removedTitle} removed`);
+}
+
+function restoreRemovedRecipes() {
+  const restoredCount = state.removedKeys.size;
+  if (!restoredCount) return;
+  state.removedKeys.clear();
+  saveRemovedKeys();
+  mergeRecipes();
+  render();
+  showToast(`${restoredCount} ${restoredCount === 1 ? "recipe" : "recipes"} restored`);
+}
+
 function createRecipeRow(recipe) {
   const row = elements.template.content.firstElementChild.cloneNode(true);
   row.dataset.recipeId = recipe.id || `base-${recipe.rank}`;
@@ -149,6 +215,9 @@ function createRecipeRow(recipe) {
   const copyButton = row.querySelector(".copy-recipe");
   copyButton.setAttribute("aria-label", `Copy ${recipe.title}`);
   copyButton.addEventListener("click", () => copyRecipe(recipe));
+  const removeButton = row.querySelector(".remove-recipe");
+  removeButton.setAttribute("aria-label", `Remove ${recipe.title}`);
+  removeButton.addEventListener("click", () => openRemoveDialog(recipe));
   return row;
 }
 
@@ -277,7 +346,7 @@ function addRecipe(event) {
     url: elements.urlInput.value.trim(),
   };
 
-  const duplicate = state.recipes.some((existing) =>
+  const duplicate = state.allRecipes.some((existing) =>
     normalizeUrl(existing.url) === normalizeUrl(recipe.url) ||
     existing.title.trim().toLocaleLowerCase() === recipe.title.toLocaleLowerCase()
   );
@@ -303,7 +372,9 @@ async function loadRecipes() {
     if (!response.ok) throw new Error(`Recipe data request failed: ${response.status}`);
     state.baseRecipes = (await response.json()).sort((a, b) => Number(a.rank) - Number(b.rank));
     state.customRecipes = loadCustomRecipes();
+    state.removedKeys = loadRemovedKeys();
     mergeRecipes();
+    saveRemovedKeys();
     elements.pdfLinks.forEach((link) => { link.href = "printable/rons-recipes-2026.pdf"; });
     document.title = "Ron's Recipes";
     render();
@@ -321,6 +392,7 @@ elements.search.addEventListener("input", (event) => {
 elements.filters.forEach((button) => button.addEventListener("click", () => setRating(button.dataset.rating)));
 elements.clearFilters.addEventListener("click", () => clearFilters());
 elements.clearButtons.forEach((button) => button.addEventListener("click", () => clearFilters()));
+elements.restoreRemoved.addEventListener("click", restoreRemovedRecipes);
 elements.openAdd.addEventListener("click", openDialog);
 elements.closeDialog.addEventListener("click", closeDialog);
 elements.cancelAdd.addEventListener("click", closeDialog);
@@ -328,6 +400,12 @@ elements.formTab.addEventListener("click", () => setEntryMethod("form"));
 elements.pasteTab.addEventListener("click", () => setEntryMethod("paste"));
 elements.usePasted.addEventListener("click", usePastedRecipe);
 elements.form.addEventListener("submit", addRecipe);
+elements.cancelRemove.addEventListener("click", closeRemoveDialog);
+elements.confirmRemove.addEventListener("click", removeRecipe);
+elements.removeDialog.addEventListener("click", (event) => {
+  if (event.target === elements.removeDialog) closeRemoveDialog();
+});
+elements.removeDialog.addEventListener("close", () => { pendingRemoval = null; });
 elements.dialog.addEventListener("click", (event) => {
   if (event.target === elements.dialog) closeDialog();
 });
