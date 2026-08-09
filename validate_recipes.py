@@ -67,11 +67,11 @@ def main():
         if parsed_url.scheme != "https" or not parsed_url.hostname:
             errors.append(f"Recipe {index} must use a valid HTTPS source URL: {recipe['url']}.")
 
-    app_source = (ROOT / "index.html").read_text(encoding="utf-8") + (ROOT / "app-v1.6.js").read_text(encoding="utf-8")
+    app_source = (ROOT / "index.html").read_text(encoding="utf-8") + (ROOT / "app-v1.7.js").read_text(encoding="utf-8")
     for required_reference in (
         "recipes.json",
-        "app-v1.6.js",
-        "styles-v1.6.css",
+        "app-v1.7.js",
+        "styles-v1.7.css",
         "printable/rons-recipes-2026.pdf",
         "manifest.webmanifest",
         "service-worker.js",

@@ -151,19 +151,42 @@ dialog::backdrop { background: rgba(35, 18, 16, 0.58); backdrop-filter: blur(2px
 .entry-tabs { display: flex; gap: 8px; padding: 20px 26px 0; border-bottom: 1px solid var(--line); }
 .entry-tab { padding: 10px 14px; border: 0; border-bottom: 3px solid transparent; background: transparent; color: var(--muted); cursor: pointer; font-weight: 700; }
 .entry-tab.active { border-bottom-color: var(--burgundy); color: var(--burgundy); }
-.paste-panel { padding: 22px 26px 4px; }
+.paste-panel, .import-panel { padding: 22px 26px 4px; }
 .paste-panel > label { display: block; color: var(--burgundy-dark); font-weight: 700; }
 .paste-panel > p { margin: 6px 0 13px; color: var(--muted); font-size: 0.88rem; }
 .paste-panel textarea { width: 100%; resize: vertical; }
+.import-heading { display: flex; align-items: flex-start; gap: 13px; padding: 15px 16px; border: 1px solid #c7dbd0; border-radius: 10px; background: var(--mint); }
+.import-heading-icon { width: 38px; height: 38px; flex: 0 0 38px; display: grid; place-items: center; border-radius: 9px; background: #fff; color: var(--green); }
+.import-heading-icon svg { width: 22px; height: 22px; }
+.import-heading h3 { margin: 0; color: var(--burgundy-dark); font-size: 1.03rem; }
+.import-heading p { margin: 3px 0 0; color: var(--muted); font-size: 0.88rem; }
+.url-import-form { margin-top: 18px; }
+.url-import-form > label { display: block; margin-bottom: 7px; color: var(--burgundy-dark); font-weight: 700; }
+.url-import-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; }
+.url-import-row input { width: 100%; }
+.import-message { min-height: 22px; margin: 11px 0; color: var(--green); font-size: 0.88rem; font-weight: 650; }
+.import-preview { margin: 12px 0 20px; padding: 17px; border: 1px solid var(--line); border-left: 4px solid var(--gold); border-radius: 10px; background: #fff; box-shadow: var(--shadow-soft); }
+.import-preview-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; }
+.import-preview-heading span { color: var(--gold-dark); font-size: 0.7rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
+.import-preview-heading h3 { margin: 3px 0 0; color: var(--burgundy-dark); font-size: 1.25rem; }
+.import-preview-heading a { color: var(--green); font-weight: 700; white-space: nowrap; }
+.import-preview > p { margin: 12px 0; color: var(--muted); }
+.import-facts { display: grid; grid-template-columns: repeat(3, 1fr); margin: 14px 0; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.import-facts div { padding: 10px 12px; }
+.import-facts div + div { border-left: 1px solid var(--line); }
+.import-facts dt { color: var(--muted); font-size: 0.68rem; font-weight: 800; letter-spacing: 0.07em; text-transform: uppercase; }
+.import-facts dd { margin: 3px 0 0; color: var(--ink); font-weight: 700; }
+.import-preview-summary { font-size: 0.86rem; }
+.import-preview-actions { display: flex; justify-content: flex-end; gap: 10px; }
 .paste-actions { min-height: 48px; display: flex; align-items: center; gap: 14px; margin-top: 10px; }
 #recipe-form { padding: 22px 26px 26px; }
 .form-grid { display: grid; grid-template-columns: minmax(0, 1fr) 180px; gap: 17px; }
 .field { display: grid; gap: 6px; color: var(--burgundy-dark); font-size: 0.88rem; font-weight: 700; }
 .field-hint { color: var(--muted); font-size: 0.76rem; font-weight: 500; }
 .field-wide { grid-column: 1 / -1; }
-.field input, .field select, .field textarea, .paste-panel textarea { min-height: 44px; padding: 10px 12px; background: #fff; border: 1px solid #cbbfb2; border-radius: 8px; color: var(--ink); font-weight: 400; }
+.field input, .field select, .field textarea, .paste-panel textarea, .url-import-row input { min-height: 44px; padding: 10px 12px; background: #fff; border: 1px solid #cbbfb2; border-radius: 8px; color: var(--ink); font-weight: 400; }
 .field textarea { resize: vertical; }
-.field input:focus, .field select:focus, .field textarea:focus, .paste-panel textarea:focus { border-color: var(--gold); outline: 0; box-shadow: 0 0 0 3px rgba(155, 101, 0, 0.18); }
+.field input:focus, .field select:focus, .field textarea:focus, .paste-panel textarea:focus, .url-import-row input:focus { border-color: var(--gold); outline: 0; box-shadow: 0 0 0 3px rgba(155, 101, 0, 0.18); }
 .device-note { margin: 17px 0 0; padding: 11px 13px; background: var(--green-soft); border-radius: 8px; color: var(--green); font-size: 0.84rem; }
 .dialog-actions { display: flex; align-items: center; justify-content: flex-end; gap: 10px; margin-top: 18px; }
 .form-message { flex: 1; color: var(--burgundy); font-size: 0.84rem; font-weight: 650; }
@@ -428,7 +451,15 @@ footer > p { margin: 0; text-align: right; }
   .dialog-header { padding: 19px 18px 16px; }
   .dialog-header h2 { font-size: 1.55rem; }
   .entry-tabs { padding: 14px 18px 0; }
-  .paste-panel, #recipe-form { padding-left: 18px; padding-right: 18px; }
+  .paste-panel, .import-panel, #recipe-form { padding-left: 18px; padding-right: 18px; }
+  .url-import-row { grid-template-columns: 1fr; }
+  .url-import-row .button { width: 100%; }
+  .import-preview-heading { display: block; }
+  .import-preview-heading a { display: inline-block; margin-top: 8px; }
+  .import-facts { grid-template-columns: 1fr; }
+  .import-facts div + div { border-left: 0; border-top: 1px solid var(--line); }
+  .import-preview-actions { flex-direction: column-reverse; }
+  .import-preview-actions .button { width: 100%; }
   .form-grid { grid-template-columns: 1fr; }
   .field-wide { grid-column: 1; }
   .dialog-actions { flex-wrap: wrap; }

@@ -16,6 +16,12 @@ test("search, filters, keyboard tabs, and console remain healthy", async ({ page
     if (["error", "warning"].includes(message.type())) errors.push(message.text());
   });
   page.on("pageerror", (error) => errors.push(error.message));
+  await page.route("http://127.0.0.1:9931/health", (route) => route.fulfill({
+    status: 200,
+    contentType: "application/json",
+    headers: { "Access-Control-Allow-Origin": "http://127.0.0.1:4173" },
+    body: JSON.stringify({ ok: true }),
+  }));
 
   await openCleanApp(page);
   await expect(page).toHaveTitle("Ron's Recipes");
@@ -37,9 +43,13 @@ test("search, filters, keyboard tabs, and console remain healthy", async ({ page
 
   await page.getByRole("button", { name: "Add Recipe" }).click();
   const formTab = page.getByRole("tab", { name: "Fill in form" });
+  const importTab = page.getByRole("tab", { name: "Import URL" });
   const pasteTab = page.getByRole("tab", { name: "Paste recipe" });
   await formTab.focus();
   await formTab.press("ArrowRight");
+  await expect(importTab).toBeFocused();
+  await expect(importTab).toHaveAttribute("aria-selected", "true");
+  await importTab.press("ArrowRight");
   await expect(pasteTab).toBeFocused();
   await expect(pasteTab).toHaveAttribute("aria-selected", "true");
   await page.locator("#paste-recipe").fill("Title: Test Soup\nWhy: Cozy.\nFreezer rating: Good\nFreeze smart: Freeze flat.\nIngredients:\n2 cups stock\n1 onion\nURL: https://example.com/test-soup");
@@ -48,6 +58,76 @@ test("search, filters, keyboard tabs, and console remain healthy", async ({ page
   await page.getByRole("button", { name: "Cancel" }).click();
 
   expect(errors).toEqual([]);
+});
+
+
+test("Mealie URL import previews and fills the curated recipe form", async ({ page }) => {
+  const importedRecipe = {
+    title: "Test Kitchen Harvest Soup",
+    description: "Tender vegetables in a rich tomato broth.",
+    sourceUrl: "https://www.example.com/test-kitchen-harvest-soup",
+    image: "https://www.cookingclassy.com/example.jpg",
+    recipeYield: "8 servings",
+    prepTime: "PT25M",
+    cookTime: "PT1H35M",
+    totalTime: "PT2H",
+    ingredients: ["1 1/2 pounds beef stew meat", "2 tablespoons olive oil", "1 yellow onion, chopped"],
+    instructions: ["Brown the beef.", "Add vegetables.", "Simmer until tender."],
+    tags: ["American", "Soup", "Weeknight"],
+  };
+  await page.route("http://127.0.0.1:9931/**", async (route) => {
+    const corsHeaders = {
+      "Access-Control-Allow-Origin": "http://127.0.0.1:4173",
+      "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type",
+    };
+    if (route.request().method() === "OPTIONS") {
+      await route.fulfill({ status: 204, headers: corsHeaders });
+      return;
+    }
+    const requestUrl = new URL(route.request().url());
+    const body = requestUrl.pathname === "/health"
+      ? { ok: true, service: "Ron's Recipes Mealie Bridge" }
+      : { ok: true, recipe: importedRecipe };
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      headers: corsHeaders,
+      body: JSON.stringify(body),
+    });
+  });
+
+  await openCleanApp(page);
+  await page.getByRole("button", { name: "Add Recipe" }).click();
+  await page.getByRole("tab", { name: "Import URL" }).click();
+  await expect(page.locator("#import-message")).toHaveText("Connected securely to Mealie on this PC.");
+  await page.getByLabel("Recipe webpage").fill(importedRecipe.sourceUrl);
+  await page.getByRole("button", { name: "Preview Recipe" }).click();
+
+  const preview = page.locator("#import-preview");
+  await expect(preview).toBeVisible();
+  await expect(preview.getByRole("heading", { name: importedRecipe.title })).toBeVisible();
+  await expect(preview.locator("#import-preview-yield")).toHaveText("8 servings");
+  await expect(preview.locator("#import-preview-prep")).toHaveText("25 min");
+  await expect(preview.locator("#import-preview-total")).toHaveText("2 hr");
+  await expect(preview.locator("#import-preview-summary")).toContainText("3 ingredients, 3 instruction steps, and 3 suggested tags");
+  const accessibility = await new AxeBuilder({ page }).include("#recipe-dialog").analyze();
+  expect(accessibility.violations).toEqual([]);
+
+  await preview.getByRole("button", { name: "Use Imported Recipe" }).click();
+  await expect(page.getByLabel("Recipe name")).toHaveValue(importedRecipe.title);
+  await expect(page.getByLabel("Why it belongs in the collection")).toHaveValue(importedRecipe.description);
+  await expect(page.locator("#recipe-tags")).toHaveValue("American, Soup, Weeknight");
+  await expect(page.locator("#recipe-ingredients")).toHaveValue(importedRecipe.ingredients.join("\n"));
+  await expect(page.getByLabel("Original recipe link")).toHaveValue(importedRecipe.sourceUrl);
+  await expect(page.getByLabel("Freeze smart note")).toBeFocused();
+  await expect(page.getByLabel("Freeze smart note")).toHaveValue("");
+  await expect(page.locator("#form-message")).toContainText("Add your freezer note");
+
+  await page.getByLabel("Freeze smart note").fill("Cool completely and freeze in meal-size portions.");
+  await page.getByRole("button", { name: "Add to Ron's Recipes" }).click();
+  await expect(page.getByRole("heading", { name: "27 recipes" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: importedRecipe.title })).toBeVisible();
 });
 
 

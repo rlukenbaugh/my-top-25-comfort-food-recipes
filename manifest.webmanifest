@@ -2,7 +2,7 @@
   "id": "./",
   "name": "Ron's Recipes",
   "short_name": "Recipes",
-  "description": "A tagged comfort-food collection with recipe scaling, pantry matching, aisle-sorted shopping, backups, and freezer notes.",
+  "description": "A tagged comfort-food collection with Mealie-assisted URL importing, recipe scaling, pantry matching, aisle-sorted shopping, backups, and freezer notes.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

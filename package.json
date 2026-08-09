@@ -1,8 +1,8 @@
 {
   "name": "rons-recipes",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "private": true,
-  "description": "Ron's editable comfort-food collection with shopping lists, pantry matching, freezer notes, and a printable PDF.",
+  "description": "Ron's editable comfort-food collection with Mealie-assisted URL importing, shopping lists, pantry matching, freezer notes, and a printable PDF.",
   "homepage": "https://rlukenbaugh.github.io/my-top-25-comfort-food-recipes/",
   "repository": {
     "type": "git",
@@ -10,13 +10,15 @@
   },
   "type": "module",
   "scripts": {
-    "test": "npm run test:data && npm run test:e2e",
+    "test": "npm run test:data && npm run test:bridge && npm run test:e2e",
     "build:web": "python assemble_site.py --output _site",
     "test:web-build": "python verify_web_build.py --site _site --version local-dev",
     "test:data": "python validate_recipes.py",
+    "test:bridge": "python -m unittest discover -s tests -p \"test_mealie_bridge.py\"",
     "test:pdf": "python build_recipe_book.py && python verify_book.py",
     "test:e2e": "playwright test",
-    "test:links": "python check_links.py"
+    "test:links": "python check_links.py",
+    "start:mealie": "python mealie_bridge.py"
   },
   "devDependencies": {
     "@axe-core/playwright": "4.12.1",

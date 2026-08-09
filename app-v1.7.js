@@ -9,6 +9,7 @@ const BACKUP_FORMAT = "rons-recipes-backup";
 const BACKUP_VERSION = 2;
 const BACKUP_REMINDER_DAYS = 14;
 const BACKUP_SNOOZE_DAYS = 3;
+const MEALIE_BRIDGE_URL = "http://127.0.0.1:9931";
 const STARTER_COLLECTIONS = ["Crockpot", "Easy", "New", "Favorites", "Weeknight"];
 const RATINGS = ["Outstanding", "Excellent", "Very good", "Good", "Fair"];
 const AISLE_ORDER = ["Produce", "Meat & seafood", "Dairy & eggs", "Bakery", "Frozen", "Pantry", "Spices & seasonings", "Other"];
@@ -68,6 +69,7 @@ const state = {
   ingredientScale: 1,
   surpriseRecipeKey: null,
   editingRecipeId: null,
+  importedRecipe: null,
 };
 
 const elements = {
@@ -124,7 +126,24 @@ const elements = {
   form: document.querySelector("#recipe-form"),
   entryTabs: document.querySelector("#entry-tabs"),
   formTab: document.querySelector("#form-tab"),
+  importTab: document.querySelector("#import-tab"),
   pasteTab: document.querySelector("#paste-tab"),
+  entryMethodTabs: [...document.querySelectorAll("[data-entry-method]")],
+  importPanel: document.querySelector("#import-panel"),
+  importForm: document.querySelector("#url-import-form"),
+  importUrl: document.querySelector("#import-recipe-url"),
+  previewImport: document.querySelector("#preview-import"),
+  importMessage: document.querySelector("#import-message"),
+  importPreview: document.querySelector("#import-preview"),
+  importPreviewTitle: document.querySelector("#import-preview-title"),
+  importPreviewSource: document.querySelector("#import-preview-source"),
+  importPreviewDescription: document.querySelector("#import-preview-description"),
+  importPreviewYield: document.querySelector("#import-preview-yield"),
+  importPreviewPrep: document.querySelector("#import-preview-prep"),
+  importPreviewTotal: document.querySelector("#import-preview-total"),
+  importPreviewSummary: document.querySelector("#import-preview-summary"),
+  cancelImport: document.querySelector("#cancel-import"),
+  useImportedRecipe: document.querySelector("#use-imported-recipe"),
   pastePanel: document.querySelector("#paste-panel"),
   pasteInput: document.querySelector("#paste-recipe"),
   cancelPaste: document.querySelector("#cancel-paste"),
@@ -979,23 +998,25 @@ function clearFilters(shouldFocus = true) {
 }
 
 function setEntryMethod(method, shouldFocus = true) {
-  const showForm = method === "form";
-  elements.form.hidden = !showForm;
-  elements.pastePanel.hidden = showForm;
-  elements.formTab.classList.toggle("active", showForm);
-  elements.pasteTab.classList.toggle("active", !showForm);
-  elements.formTab.setAttribute("aria-selected", String(showForm));
-  elements.pasteTab.setAttribute("aria-selected", String(!showForm));
-  elements.formTab.tabIndex = showForm ? 0 : -1;
-  elements.pasteTab.tabIndex = showForm ? -1 : 0;
+  elements.form.hidden = method !== "form";
+  elements.importPanel.hidden = method !== "import";
+  elements.pastePanel.hidden = method !== "paste";
+  elements.entryMethodTabs.forEach((tab) => {
+    const active = tab.dataset.entryMethod === method;
+    tab.classList.toggle("active", active);
+    tab.setAttribute("aria-selected", String(active));
+    tab.tabIndex = active ? 0 : -1;
+  });
   if (shouldFocus) {
-    if (showForm) elements.titleInput.focus();
+    if (method === "form") elements.titleInput.focus();
+    else if (method === "import") elements.importUrl.focus();
     else elements.pasteInput.focus();
   }
+  if (method === "import") checkMealieBridge();
 }
 
 function handleEntryTabKeydown(event) {
-  const tabs = [elements.formTab, elements.pasteTab];
+  const tabs = elements.entryMethodTabs;
   const currentIndex = tabs.indexOf(event.currentTarget);
   let nextIndex = currentIndex;
   if (["ArrowRight", "ArrowDown"].includes(event.key)) nextIndex = (currentIndex + 1) % tabs.length;
@@ -1006,7 +1027,7 @@ function handleEntryTabKeydown(event) {
 
   event.preventDefault();
   const nextTab = tabs[nextIndex];
-  setEntryMethod(nextTab === elements.formTab ? "form" : "paste", false);
+  setEntryMethod(nextTab.dataset.entryMethod, false);
   nextTab.focus();
 }
 
@@ -1014,6 +1035,11 @@ function resetDialog() {
   elements.form.reset();
   elements.ratingInput.value = "Excellent";
   elements.pasteInput.value = "";
+  elements.importForm.reset();
+  elements.importPreview.hidden = true;
+  elements.importMessage.textContent = "Checking the private Mealie connection…";
+  elements.previewImport.disabled = false;
+  state.importedRecipe = null;
   elements.formMessage.textContent = "";
   elements.pasteMessage.textContent = "";
   setEntryMethod("form", false);
@@ -1055,6 +1081,104 @@ function labeledValue(text, labels) {
     if (match) return match[1].trim();
   }
   return "";
+}
+
+function formatImportedDuration(value) {
+  const text = String(value || "").trim();
+  const match = text.match(/^P(?:([\d.]+)D)?(?:T(?:(\d+)H)?(?:(\d+)M)?)?$/i);
+  if (!match) return text || "Not listed";
+  const parts = [];
+  if (Number(match[1])) parts.push(`${Number(match[1])} ${Number(match[1]) === 1 ? "day" : "days"}`);
+  if (Number(match[2])) parts.push(`${Number(match[2])} hr`);
+  if (Number(match[3])) parts.push(`${Number(match[3])} min`);
+  return parts.join(" ") || "Not listed";
+}
+
+function importedDescription(recipe) {
+  if (recipe.description) return recipe.description;
+  try {
+    return `Imported from ${new URL(recipe.sourceUrl).hostname.replace(/^www\./, "")}.`;
+  } catch {
+    return "Imported with Mealie.";
+  }
+}
+
+async function bridgeRequest(path, options = {}) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 65000);
+  try {
+    const response = await fetch(`${MEALIE_BRIDGE_URL}${path}`, { ...options, cache: "no-store", signal: controller.signal });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok || data.ok === false) throw new Error(data.error || `Importer returned HTTP ${response.status}.`);
+    return data;
+  } catch (error) {
+    if (error.name === "AbortError") throw new Error("Mealie took too long to read that recipe.");
+    if (error instanceof TypeError) throw new Error("The private importer is not running. Double-click start_mealie_bridge.cmd on this PC.");
+    throw error;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+async function checkMealieBridge() {
+  elements.importMessage.textContent = "Checking the private Mealie connection…";
+  try {
+    await bridgeRequest("/health");
+    elements.importMessage.textContent = "Connected securely to Mealie on this PC.";
+  } catch (error) {
+    elements.importMessage.textContent = error.message;
+  }
+}
+
+function renderImportedPreview(recipe) {
+  state.importedRecipe = recipe;
+  elements.importPreviewTitle.textContent = recipe.title;
+  elements.importPreviewSource.href = recipe.sourceUrl;
+  elements.importPreviewDescription.textContent = importedDescription(recipe);
+  elements.importPreviewYield.textContent = recipe.recipeYield || "Not listed";
+  elements.importPreviewPrep.textContent = formatImportedDuration(recipe.prepTime);
+  elements.importPreviewTotal.textContent = formatImportedDuration(recipe.totalTime || recipe.cookTime);
+  const ingredientCount = parseIngredientLines(recipe.ingredients).length;
+  const instructionCount = Array.isArray(recipe.instructions) ? recipe.instructions.length : 0;
+  const tagCount = parseTags(recipe.tags).length;
+  elements.importPreviewSummary.textContent = `${ingredientCount} ingredients, ${instructionCount} instruction ${instructionCount === 1 ? "step" : "steps"}, and ${tagCount} suggested ${tagCount === 1 ? "tag" : "tags"}. Full directions remain on the original page.`;
+  elements.importPreview.hidden = false;
+}
+
+async function previewRecipeUrl(event) {
+  event.preventDefault();
+  if (!elements.importForm.reportValidity()) return;
+  elements.previewImport.disabled = true;
+  elements.importPreview.hidden = true;
+  elements.importMessage.textContent = "Mealie is reading that recipe…";
+  try {
+    const data = await bridgeRequest("/preview", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ url: elements.importUrl.value.trim() }),
+    });
+    renderImportedPreview(data.recipe);
+    elements.importMessage.textContent = "Recipe preview ready. Nothing has been saved yet.";
+  } catch (error) {
+    elements.importMessage.textContent = error.message;
+  } finally {
+    elements.previewImport.disabled = false;
+  }
+}
+
+function useImportedRecipe() {
+  const recipe = state.importedRecipe;
+  if (!recipe) return;
+  elements.titleInput.value = recipe.title;
+  elements.whyInput.value = importedDescription(recipe);
+  elements.ratingInput.value = "Excellent";
+  elements.tagsInput.value = parseTags(recipe.tags).join(", ");
+  elements.freezeInput.value = "";
+  elements.urlInput.value = recipe.sourceUrl;
+  elements.ingredientsInput.value = parseIngredientLines(recipe.ingredients).join("\n");
+  setEntryMethod("form");
+  elements.formMessage.textContent = "Imported from Mealie. Add your freezer note, review the details, then save.";
+  elements.freezeInput.focus();
 }
 
 function labeledBlock(text, label, followingLabels) {
@@ -2121,9 +2245,12 @@ elements.openAdd.addEventListener("click", () => openDialog());
 elements.closeDialog.addEventListener("click", closeDialog);
 elements.cancelAdd.addEventListener("click", closeDialog);
 elements.formTab.addEventListener("click", () => setEntryMethod("form"));
+elements.importTab.addEventListener("click", () => setEntryMethod("import"));
 elements.pasteTab.addEventListener("click", () => setEntryMethod("paste"));
-elements.formTab.addEventListener("keydown", handleEntryTabKeydown);
-elements.pasteTab.addEventListener("keydown", handleEntryTabKeydown);
+elements.entryMethodTabs.forEach((tab) => tab.addEventListener("keydown", handleEntryTabKeydown));
+elements.importForm.addEventListener("submit", previewRecipeUrl);
+elements.cancelImport.addEventListener("click", closeDialog);
+elements.useImportedRecipe.addEventListener("click", useImportedRecipe);
 elements.cancelPaste.addEventListener("click", closeDialog);
 elements.usePasted.addEventListener("click", usePastedRecipe);
 elements.form.addEventListener("submit", saveRecipe);

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="Ron's 26 tagged comfort-food favorites with scaled ingredient checklists, an aisle-sorted shopping list, pantry matching, and freezer notes." />
+    <meta name="description" content="Ron's 26 tagged comfort-food favorites with Mealie-assisted URL importing, scaled ingredient checklists, an aisle-sorted shopping list, pantry matching, and freezer notes." />
     <meta name="theme-color" content="#651f27" />
     <meta name="application-name" content="Ron's Recipes" />
     <meta name="apple-mobile-web-app-title" content="Ron's Recipes" />
@@ -32,8 +32,8 @@
     <link rel="icon" href="assets/icons/favicon.ico" sizes="any" />
     <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" />
     <link rel="manifest" href="manifest.webmanifest" />
-    <link rel="stylesheet" href="styles-v1.6.css?v=__BUILD_VERSION__" />
-    <script src="app-v1.6.js?v=__BUILD_VERSION__" defer></script>
+    <link rel="stylesheet" href="styles-v1.7.css?v=__BUILD_VERSION__" />
+    <script src="app-v1.7.js?v=__BUILD_VERSION__" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#recipes">Skip to recipes</a>
@@ -230,9 +230,44 @@
       </div>
 
       <div id="entry-tabs" class="entry-tabs" role="tablist" aria-label="Recipe entry method">
-        <button id="form-tab" class="entry-tab active" type="button" role="tab" aria-selected="true" aria-controls="form-panel" tabindex="0">Fill in form</button>
-        <button id="paste-tab" class="entry-tab" type="button" role="tab" aria-selected="false" aria-controls="paste-panel" tabindex="-1">Paste recipe</button>
+        <button id="form-tab" class="entry-tab active" type="button" role="tab" data-entry-method="form" aria-selected="true" aria-controls="form-panel" tabindex="0">Fill in form</button>
+        <button id="import-tab" class="entry-tab" type="button" role="tab" data-entry-method="import" aria-selected="false" aria-controls="import-panel" tabindex="-1">Import URL</button>
+        <button id="paste-tab" class="entry-tab" type="button" role="tab" data-entry-method="paste" aria-selected="false" aria-controls="paste-panel" tabindex="-1">Paste recipe</button>
       </div>
+
+      <section id="import-panel" class="import-panel" role="tabpanel" aria-labelledby="import-tab" hidden>
+        <div class="import-heading">
+          <div class="import-heading-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.5.5l2-2a5 5 0 0 0-7-7l-1.1 1.1M14 11a5 5 0 0 0-7.5-.5l-2 2a5 5 0 0 0 7 7l1.1-1.1"/></svg>
+          </div>
+          <div><h3>Scrape with Mealie</h3><p>Mealie reads the recipe page privately on this PC. Nothing is added until you review and save it.</p></div>
+        </div>
+        <form id="url-import-form" class="url-import-form">
+          <label for="import-recipe-url">Recipe webpage</label>
+          <div class="url-import-row">
+            <input id="import-recipe-url" name="recipe-url" type="url" required placeholder="https://www.example.com/favorite-recipe" autocomplete="url" />
+            <button id="preview-import" class="button button-primary" type="submit">Preview Recipe</button>
+          </div>
+        </form>
+        <p id="import-message" class="import-message" role="status">Checking the private Mealie connection…</p>
+        <article id="import-preview" class="import-preview" hidden>
+          <div class="import-preview-heading">
+            <div><span>Mealie found</span><h3 id="import-preview-title"></h3></div>
+            <a id="import-preview-source" href="#" target="_blank" rel="noopener noreferrer">View source ↗</a>
+          </div>
+          <p id="import-preview-description"></p>
+          <dl class="import-facts">
+            <div><dt>Yield</dt><dd id="import-preview-yield">Not listed</dd></div>
+            <div><dt>Prep</dt><dd id="import-preview-prep">Not listed</dd></div>
+            <div><dt>Total</dt><dd id="import-preview-total">Not listed</dd></div>
+          </dl>
+          <p id="import-preview-summary" class="import-preview-summary"></p>
+          <div class="import-preview-actions">
+            <button id="cancel-import" class="button button-secondary" type="button">Cancel</button>
+            <button id="use-imported-recipe" class="button button-primary" type="button">Use Imported Recipe</button>
+          </div>
+        </article>
+      </section>
 
       <section id="paste-panel" class="paste-panel" role="tabpanel" aria-labelledby="paste-tab" hidden>
         <label for="paste-recipe">Paste recipe details</label>

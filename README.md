@@ -8,13 +8,14 @@ Open the live collection at:
 
 https://rlukenbaugh.github.io/my-top-25-comfort-food-recipes/
 
-The web app reads the same `recipes.json` file as the printable book. It includes a time-aware cooking dashboard, sticky search plus rating and recipe-tag filters, personal recipe collections, an aisle-sorted recipe-linked shopping list, a synonym-aware pantry matcher, per-recipe serving scaling, a random-recipe picker, rating-accented recipe cards, expandable mobile details, a back-to-top control, a live kitchen measurement converter, original-recipe links, a downloadable PDF, and browser-based recipe additions. GitHub Pages validates, tests, rebuilds, and republishes it whenever `main` is updated.
+The web app reads the same `recipes.json` file as the printable book. It includes a time-aware cooking dashboard, sticky search plus rating and recipe-tag filters, private Mealie-assisted recipe importing by URL, personal recipe collections, an aisle-sorted recipe-linked shopping list, a synonym-aware pantry matcher, per-recipe serving scaling, a random-recipe picker, rating-accented recipe cards, expandable mobile details, a back-to-top control, a live kitchen measurement converter, original-recipe links, a downloadable PDF, and browser-based recipe additions. GitHub Pages validates, tests, rebuilds, and republishes it whenever `main` is updated.
 
 The site also includes branded sharing metadata, install icons, a web-app manifest, an install prompt when supported by the browser, and a tested offline app-shell cache. The Pages build injects the current Git commit into cache-sensitive URLs and the service-worker cache name, so deployments cannot depend on a hand-edited cache-busting number. After the first successful visit, the recipe list and freezer notes remain available without a connection; the printable PDF and original Allrecipes pages still require internet access.
 
 ### Add, copy, and paste recipes
 
 - Select **Add Recipe** to enter a recipe with a simple form.
+- Select **Import URL** to have the Mealie server on this PC preview a public recipe page and fill the form. Review the imported fields and add a freezer note before saving.
 - Select **Paste recipe** to import labeled recipe text or a JSON recipe object.
 - Select **Copy recipe** on any entry to copy it in the exact labeled format accepted by the paste tool.
 - Personal recipes have **Edit** and permanent **Delete** actions.
@@ -23,6 +24,18 @@ The site also includes branded sharing metadata, install icons, a web-app manife
 - Recipe numbers automatically close any gaps when recipes are removed and return to their original order when restored.
 - Recipes added in the web app are saved only in that browser on that device. They are private to that visitor and do not modify the shared GitHub list or printable PDF.
 - Removed recipes are also remembered only by that browser. They are never deleted from the shared GitHub list or printable PDF.
+
+### Import a recipe URL with Mealie
+
+The GitHub Pages app never receives or stores the Mealie API token. A small loopback-only bridge on this PC holds the token, validates public recipe URLs, and asks Mealie for a preview. Previewing does not add a recipe to Mealie, and saving adds only the curated recipe fields to this browser.
+
+1. Keep the API token in `.env`. The recommended format is `MEALIE_API_TOKEN=your-token`; the bridge also accepts the existing single raw-token line.
+2. Confirm `MEALIE_URL` in `.env` if Mealie is not at `http://192.168.1.60:9925`.
+3. Double-click `start_mealie_bridge.cmd`, or run `npm.cmd run start:mealie` from this folder.
+4. In Ron's Recipes, select **Add Recipe**, **Import URL**, paste a public recipe URL, and select **Preview Recipe**.
+5. Select **Use Imported Recipe**, add a freezer note, review the form, and save.
+
+The bridge listens only on `127.0.0.1:9931`, permits only the live Ron's Recipes site and documented local preview origins, rate-limits requests, and blocks private/local target URLs. It must be running whenever you import. Because it uses this PC's loopback address, URL importing is PC-only; phones and tablets can still use every other site feature.
 
 ### Collections and shopping list
 
@@ -81,7 +94,7 @@ Then run:
 npm.cmd test
 ```
 
-This validates the recipe data and exercises search, tags, filters, dashboard shortcuts, synonym and fuzzy pantry matching, missing-ingredient actions, recipe scaling, duplicate shopping-item merging, aisle grouping, backup reminders, surprise selection, collections, keyboard tabs, mobile details, touch targets, color contrast, accessibility, add/edit/delete, true offline reload, and backup export/import. `npm.cmd run test:links` performs the external-link audit; Allrecipes may report protected HTTP 403 responses when it blocks automated requests.
+This validates the recipe data and the private Mealie bridge, then exercises URL-import previews, search, tags, filters, dashboard shortcuts, synonym and fuzzy pantry matching, missing-ingredient actions, recipe scaling, duplicate shopping-item merging, aisle grouping, backup reminders, surprise selection, collections, keyboard tabs, mobile details, touch targets, color contrast, accessibility, add/edit/delete, true offline reload, and backup export/import. `npm.cmd run test:links` performs the external-link audit; Allrecipes may report protected HTTP 403 responses when it blocks automated requests.
 
 ## Project files
 
@@ -94,6 +107,8 @@ This validates the recipe data and exercises search, tags, filters, dashboard sh
 - `assemble_site.py` - injects the deployment commit hash and assembles the Pages artifact
 - `verify_web_build.py` - verifies the generated files and versioned offline cache
 - `check_links.py` - performs the scheduled external-link audit
+- `mealie_bridge.py` and `start_mealie_bridge.cmd` - run the private loopback importer without exposing the API token
+- `.env.example` - documents bridge configuration; the real `.env` is ignored by Git
 - `manifest.webmanifest` and `service-worker.js` - install and offline support
 - `assets/` - favicon, app icons, and social sharing image
 - `generate_web_assets.py` - reproducibly rebuilds the branded web assets

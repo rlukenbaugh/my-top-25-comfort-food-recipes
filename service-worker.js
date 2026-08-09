@@ -4,8 +4,8 @@ const CACHE_NAME = `${CACHE_PREFIX}${BUILD_VERSION}`;
 const APP_SHELL = [
   "./",
   "./index.html",
-  `./styles-v1.6.css?v=${BUILD_VERSION}`,
-  `./app-v1.6.js?v=${BUILD_VERSION}`,
+  `./styles-v1.7.css?v=${BUILD_VERSION}`,
+  `./app-v1.7.js?v=${BUILD_VERSION}`,
   `./recipes.json?v=${BUILD_VERSION}`,
   "./manifest.webmanifest",
   "./assets/icons/favicon.svg",

@@ -25,8 +25,8 @@ def main() -> None:
 
     expected_files = (
         "index.html",
-        "app-v1.6.js",
-        "styles-v1.6.css",
+        "app-v1.7.js",
+        "styles-v1.7.css",
         "service-worker.js",
         "recipes.json",
         "manifest.webmanifest",
@@ -37,7 +37,7 @@ def main() -> None:
     if missing:
         fail(f"Generated site is missing: {', '.join(missing)}")
 
-    rendered_files = (site / "index.html", site / "app-v1.6.js", site / "service-worker.js")
+    rendered_files = (site / "index.html", site / "app-v1.7.js", site / "service-worker.js")
     rendered = "\n".join(path.read_text(encoding="utf-8") for path in rendered_files)
     if TOKEN in rendered:
         fail("An unreplaced build-version token remains in the generated site.")
