@@ -8,7 +8,14 @@ Open the live collection at:
 
 https://rlukenbaugh.github.io/my-top-25-comfort-food-recipes/
 
-The web app reads the same `recipes.json` file as the printable book. It includes search, freezer-rating filters, mobile layout, original-recipe links, and a downloadable PDF. GitHub Pages rebuilds and republishes it whenever `main` is updated.
+The web app reads the same `recipes.json` file as the printable book. It includes search, freezer-rating filters, mobile layout, original-recipe links, a downloadable PDF, and browser-based recipe additions. GitHub Pages rebuilds and republishes it whenever `main` is updated.
+
+### Add, copy, and paste recipes
+
+- Select **Add Recipe** to enter a recipe with a simple form.
+- Select **Paste recipe** to import labeled recipe text or a JSON recipe object.
+- Select **Copy recipe** on any entry to copy it in the exact labeled format accepted by the paste tool.
+- Recipes added in the web app are saved only in that browser on that device. They are private to that visitor and do not modify the shared GitHub list or printable PDF.
 
 ## Add or change a recipe
 

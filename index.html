@@ -6,8 +6,8 @@
     <meta name="description" content="Ron's ranked comfort-food recipes with practical freezer notes and links to every original recipe." />
     <meta name="theme-color" content="#651f27" />
     <title>Ron's Recipes</title>
-    <link rel="stylesheet" href="styles.css?v=rons-recipes" />
-    <script src="app.js?v=rons-recipes" defer></script>
+    <link rel="stylesheet" href="styles.css?v=recipe-tools-1" />
+    <script src="app.js?v=recipe-tools-1" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#recipes">Skip to recipes</a>
@@ -52,7 +52,13 @@
       <section id="recipes" class="recipe-section" aria-labelledby="results-title">
         <div class="results-heading">
           <h2 id="results-title"><span id="result-count">25</span> recipes</h2>
-          <button id="clear-filters" class="text-button" type="button" hidden>Clear filters</button>
+          <div class="results-actions">
+            <button id="clear-filters" class="text-button" type="button" hidden>Clear filters</button>
+            <button id="open-add-recipe" class="button button-primary" type="button">
+              <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+              Add Recipe
+            </button>
+          </div>
         </div>
         <div id="recipe-list" class="recipe-list" aria-live="polite" aria-busy="true"></div>
         <div id="empty-state" class="empty-state" hidden>
@@ -82,12 +88,76 @@
       <p>Personal recipe collection - 2026</p>
     </footer>
 
+    <dialog id="recipe-dialog" aria-labelledby="dialog-title">
+      <div class="dialog-header">
+        <div>
+          <h2 id="dialog-title">Add a Recipe</h2>
+          <p>Save it on this device and include it in search and filters.</p>
+        </div>
+        <button id="close-dialog" class="icon-button" type="button" aria-label="Close add recipe window">
+          <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg>
+        </button>
+      </div>
+
+      <div class="entry-tabs" role="tablist" aria-label="Recipe entry method">
+        <button id="form-tab" class="entry-tab active" type="button" role="tab" aria-selected="true" aria-controls="form-panel">Fill in form</button>
+        <button id="paste-tab" class="entry-tab" type="button" role="tab" aria-selected="false" aria-controls="paste-panel">Paste recipe</button>
+      </div>
+
+      <section id="paste-panel" class="paste-panel" role="tabpanel" aria-labelledby="paste-tab" hidden>
+        <label for="paste-recipe">Paste recipe details</label>
+        <p>Paste text copied from any recipe in this app, or use labeled lines such as <strong>Title:</strong>, <strong>Why:</strong>, <strong>Freezer rating:</strong>, <strong>Freeze smart:</strong>, and <strong>URL:</strong>.</p>
+        <textarea id="paste-recipe" rows="9" placeholder="Title: Sunday Pot Roast&#10;Why: Tender beef and vegetables in rich gravy.&#10;Freezer rating: Excellent&#10;Freeze smart: Cool completely and freeze in meal-size portions.&#10;URL: https://example.com/pot-roast"></textarea>
+        <div class="paste-actions">
+          <button id="use-pasted-recipe" class="button button-secondary" type="button">Use Pasted Details</button>
+          <span id="paste-message" class="form-message" role="status"></span>
+        </div>
+      </section>
+
+      <form id="recipe-form">
+        <div id="form-panel" class="form-grid" role="tabpanel" aria-labelledby="form-tab">
+          <label class="field field-wide">Recipe name
+            <input id="recipe-title" name="title" required maxlength="100" autocomplete="off" />
+          </label>
+          <label class="field">Freezer rating
+            <select id="recipe-rating" name="rating" required>
+              <option value="Outstanding">Outstanding</option>
+              <option value="Excellent" selected>Excellent</option>
+              <option value="Very good">Very good</option>
+              <option value="Good">Good</option>
+              <option value="Fair">Fair</option>
+            </select>
+          </label>
+          <label class="field field-wide">Why it belongs in the collection
+            <textarea id="recipe-why" name="why" rows="3" required maxlength="350"></textarea>
+          </label>
+          <label class="field field-wide">Freeze smart note
+            <textarea id="recipe-freeze" name="freeze" rows="3" required maxlength="350"></textarea>
+          </label>
+          <label class="field field-wide">Original recipe link
+            <input id="recipe-url" name="url" type="url" required placeholder="https://..." />
+          </label>
+        </div>
+        <p class="device-note">New recipes are saved only in this browser. They are not added to the shared printable PDF.</p>
+        <div class="dialog-actions">
+          <span id="form-message" class="form-message" role="status"></span>
+          <button id="cancel-add" class="button button-secondary" type="button">Cancel</button>
+          <button class="button button-primary" type="submit">Add to Ron's Recipes</button>
+        </div>
+      </form>
+    </dialog>
+
+    <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
     <template id="recipe-template">
       <article class="recipe-row">
         <div class="recipe-identity"><span class="rank"></span><div><h3 class="recipe-title"></h3><p class="recipe-why"></p></div></div>
         <div class="recipe-rating"><span class="section-label">Freezer rating</span><strong></strong></div>
         <div class="recipe-freeze"><span class="section-label">Freeze smart</span><p></p></div>
-        <a class="recipe-link" target="_blank" rel="noopener noreferrer"><span>Open original recipe</span><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 13v7H4V6h7"/></svg></a>
+        <div class="recipe-actions">
+          <a class="recipe-link" target="_blank" rel="noopener noreferrer"><span>Open original recipe</span><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 13v7H4V6h7"/></svg></a>
+          <button class="copy-recipe" type="button"><span>Copy recipe</span><svg aria-hidden="true" viewBox="0 0 24 24"><rect x="8" y="8" width="11" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h2"/></svg></button>
+        </div>
       </article>
     </template>
   </body>
