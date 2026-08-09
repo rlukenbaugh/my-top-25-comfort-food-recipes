@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="Ron's 26 comfort-food favorites with ingredient checklists, a shopping list, pantry matching, and practical freezer notes." />
+    <meta name="description" content="Ron's 26 tagged comfort-food favorites with scaled ingredient checklists, an aisle-sorted shopping list, pantry matching, and freezer notes." />
     <meta name="theme-color" content="#651f27" />
     <meta name="application-name" content="Ron's Recipes" />
     <meta name="apple-mobile-web-app-title" content="Ron's Recipes" />
@@ -14,7 +14,7 @@
     <meta property="og:locale" content="en_US" />
     <meta property="og:site_name" content="Ron's Recipes" />
     <meta property="og:title" content="Ron's Recipes | Comfort-Food Favorites" />
-    <meta property="og:description" content="26 comfort-food favorites with ingredient checklists, a shopping list, pantry matching, and practical freezer notes." />
+    <meta property="og:description" content="26 tagged comfort-food favorites with scaled ingredient checklists, an aisle-sorted shopping list, pantry matching, and freezer notes." />
     <meta property="og:url" content="https://rlukenbaugh.github.io/my-top-25-comfort-food-recipes/" />
     <meta property="og:image" content="https://rlukenbaugh.github.io/my-top-25-comfort-food-recipes/assets/og/rons-recipes-share-1200x630.png" />
     <meta property="og:image:secure_url" content="https://rlukenbaugh.github.io/my-top-25-comfort-food-recipes/assets/og/rons-recipes-share-1200x630.png" />
@@ -24,7 +24,7 @@
     <meta property="og:image:alt" content="Ron's Recipes, a ranked collection of 26 comfort-food favorites with freezer guidance." />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Ron's Recipes | Comfort-Food Favorites" />
-    <meta name="twitter:description" content="26 comfort-food favorites with ingredient checklists, a shopping list, pantry matching, and practical freezer notes." />
+    <meta name="twitter:description" content="26 tagged comfort-food favorites with scaled ingredient checklists, an aisle-sorted shopping list, pantry matching, and freezer notes." />
     <meta name="twitter:image" content="https://rlukenbaugh.github.io/my-top-25-comfort-food-recipes/assets/og/rons-recipes-share-1200x630.png" />
     <meta name="twitter:image:alt" content="Ron's Recipes, a ranked collection of 26 comfort-food favorites with freezer guidance." />
     <title>Ron's Recipes</title>
@@ -32,8 +32,8 @@
     <link rel="icon" href="assets/icons/favicon.ico" sizes="any" />
     <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" />
     <link rel="manifest" href="manifest.webmanifest" />
-    <link rel="stylesheet" href="styles-v1.5.css" />
-    <script src="app-v1.5.js" defer></script>
+    <link rel="stylesheet" href="styles-v1.6.css?v=__BUILD_VERSION__" />
+    <script src="app-v1.6.js?v=__BUILD_VERSION__" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#recipes">Skip to recipes</a>
@@ -67,7 +67,7 @@
     <main id="top">
       <section class="intro" aria-labelledby="page-title">
         <h1 id="page-title">Ron's Recipes</h1>
-        <p><span data-recipe-count>26</span> ranked comfort-food favorites with ingredient checklists, a shopping list, pantry matching, and practical freezer notes.</p>
+        <p><span data-recipe-count>26</span> tagged comfort-food favorites with scalable ingredients, a smarter shopping list, pantry matching, and practical freezer notes.</p>
         <div class="hero-meta">
           <ul class="summary-badges" aria-label="Collection highlights">
             <li>
@@ -88,6 +88,16 @@
             Install Ron's Recipes
           </button>
         </div>
+      </section>
+
+      <section id="backup-reminder" class="backup-reminder" aria-labelledby="backup-reminder-title" hidden>
+        <div class="backup-reminder-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3v11M7 9l5 5 5-5M5 20h14"/></svg></div>
+        <div class="backup-reminder-copy">
+          <h2 id="backup-reminder-title">Protect your saved recipes</h2>
+          <p id="backup-reminder-message">Your personal changes live only on this device.</p>
+        </div>
+        <button id="backup-now" class="button button-primary" type="button">Download Backup</button>
+        <button id="backup-later" class="text-button" type="button">Remind me in 3 days</button>
       </section>
 
       <section class="day-starter" aria-labelledby="day-greeting">
@@ -141,6 +151,10 @@
               <button class="filter" type="button" data-rating="Fair" aria-pressed="false">Fair</button>
             </div>
           </div>
+          <label class="tag-filter" for="tag-filter">
+            <span>Recipe tag</span>
+            <select id="tag-filter"><option value="All">All tags</option></select>
+          </label>
         </div>
       </section>
 
@@ -168,7 +182,7 @@
         <div id="recipe-list" class="recipe-list" aria-live="polite" aria-busy="true"></div>
         <div id="empty-state" class="empty-state" hidden>
           <h3>No recipes found</h3>
-          <p>Try a different search or freezer rating.</p>
+          <p>Try a different search, freezer rating, or recipe tag.</p>
           <button class="button button-primary" type="button" data-clear>Show all recipes</button>
         </div>
       </section>
@@ -222,7 +236,7 @@
 
       <section id="paste-panel" class="paste-panel" role="tabpanel" aria-labelledby="paste-tab" hidden>
         <label for="paste-recipe">Paste recipe details</label>
-        <p>Paste text copied from any recipe in this app, or use labels such as <strong>Title:</strong>, <strong>Why:</strong>, <strong>Freezer rating:</strong>, <strong>Freeze smart:</strong>, <strong>Ingredients:</strong>, and <strong>URL:</strong>.</p>
+        <p>Paste text copied from any recipe in this app, or use labels such as <strong>Title:</strong>, <strong>Tags:</strong>, <strong>Why:</strong>, <strong>Freezer rating:</strong>, <strong>Freeze smart:</strong>, <strong>Ingredients:</strong>, and <strong>URL:</strong>.</p>
         <textarea id="paste-recipe" rows="9" placeholder="Title: Sunday Pot Roast&#10;Why: Tender beef and vegetables in rich gravy.&#10;Freezer rating: Excellent&#10;Freeze smart: Cool completely and freeze in meal-size portions.&#10;Ingredients:&#10;2 pounds chuck roast&#10;1 onion, chopped&#10;URL: https://example.com/pot-roast"></textarea>
         <div class="paste-actions">
           <button id="cancel-paste" class="button button-secondary" type="button">Cancel</button>
@@ -244,6 +258,9 @@
               <option value="Good">Good</option>
               <option value="Fair">Fair</option>
             </select>
+          </label>
+          <label class="field field-wide">Recipe tags <span class="field-hint">separate with commas</span>
+            <input id="recipe-tags" name="tags" maxlength="160" placeholder="Italian, Chicken, Weeknight" />
           </label>
           <label class="field field-wide">Why it belongs in the collection
             <textarea id="recipe-why" name="why" rows="3" required maxlength="350"></textarea>
@@ -279,6 +296,7 @@
       </div>
       <div class="manage-content">
         <p id="manage-summary" class="manage-summary"></p>
+        <p id="backup-status" class="backup-status"></p>
         <div class="manage-actions">
           <button id="export-backup" class="button button-primary" type="button">
             <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M5 20h14"/></svg>
@@ -341,6 +359,15 @@
           <p id="ingredients-source-note"></p>
           <a id="ingredients-source-link" href="#" target="_blank" rel="noopener noreferrer">View original recipe <span aria-hidden="true">↗</span></a>
         </div>
+        <div id="ingredient-scale" class="ingredient-scale" hidden>
+          <div><strong>Scale this recipe</strong><span id="ingredient-scale-note">Original amounts</span></div>
+          <div class="scale-options" role="group" aria-label="Recipe quantity scale">
+            <button type="button" data-scale="0.5" aria-pressed="false">½×</button>
+            <button type="button" data-scale="1" class="active" aria-pressed="true">1×</button>
+            <button type="button" data-scale="2" aria-pressed="false">2×</button>
+            <button type="button" data-scale="3" aria-pressed="false">3×</button>
+          </div>
+        </div>
         <section id="ingredients-editor" class="ingredients-editor" aria-labelledby="ingredients-editor-title">
           <h3 id="ingredients-editor-title">Paste ingredients once</h3>
           <p>Use one ingredient per line. They stay on this device and can be edited later.</p>
@@ -357,7 +384,7 @@
 
     <dialog id="shopping-dialog" class="personal-tools-dialog" aria-labelledby="shopping-dialog-title">
       <div class="dialog-header">
-        <div><h2 id="shopping-dialog-title">Shopping List</h2><p>Recipe ingredients and anything else you need at the store.</p></div>
+        <div><h2 id="shopping-dialog-title">Shopping List</h2><p>Duplicates are merged and everything is grouped by grocery aisle.</p></div>
         <button id="close-shopping" class="icon-button" type="button" aria-label="Close shopping list"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
       </div>
       <div class="personal-tools-content shopping-content">
@@ -375,7 +402,7 @@
 
     <dialog id="pantry-dialog" class="personal-tools-dialog" aria-labelledby="pantry-dialog-title">
       <div class="dialog-header">
-        <div><h2 id="pantry-dialog-title">What Can I Make?</h2><p>Match ingredients you already have with Ron's recipes.</p></div>
+        <div><h2 id="pantry-dialog-title">What Can I Make?</h2><p>Matches common synonyms and shows what each recipe is still missing.</p></div>
         <button id="close-pantry" class="icon-button" type="button" aria-label="Close pantry matcher"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
       </div>
       <div class="personal-tools-content">
@@ -383,7 +410,7 @@
           <label class="field" for="pantry-ingredients">What ingredients do you have?
             <textarea id="pantry-ingredients" rows="4" placeholder="chicken, potatoes, cheddar cheese"></textarea>
           </label>
-          <p>Separate ingredients with commas or put one on each line.</p>
+          <p>Separate ingredients with commas or put one on each line. “Scallion” matches “green onion,” and close spellings are recognized.</p>
           <button class="button button-primary" type="submit">Find Recipes</button>
         </form>
         <p id="pantry-message" class="form-message pantry-message" role="status"></p>
@@ -519,7 +546,7 @@
 
     <template id="recipe-template">
       <article class="recipe-row">
-        <div class="recipe-identity"><span class="rank"></span><div><h3 class="recipe-title"></h3><p class="recipe-why"></p></div></div>
+        <div class="recipe-identity"><span class="rank"></span><div><h3 class="recipe-title"></h3><p class="recipe-why"></p><ul class="recipe-tags" aria-label="Recipe tags"></ul></div></div>
         <div class="recipe-rating"><span class="section-label">Freezer rating</span><strong></strong></div>
         <div class="recipe-freeze"><span class="section-label">Freeze smart</span><p></p></div>
         <div class="recipe-actions">

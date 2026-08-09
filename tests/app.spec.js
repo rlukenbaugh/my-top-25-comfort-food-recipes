@@ -27,6 +27,10 @@ test("search, filters, keyboard tabs, and console remain healthy", async ({ page
   await page.getByRole("button", { name: "Outstanding", exact: true }).click();
   await expect(page.getByRole("heading", { name: "3 recipes" })).toBeVisible();
   await page.getByRole("button", { name: "All", exact: true }).click();
+  await page.locator("#tag-filter").selectOption("Chicken");
+  await expect(page.getByRole("heading", { name: "13 recipes" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Chicken Pot Pie" })).toBeVisible();
+  await page.getByRole("button", { name: "Clear filters" }).click();
 
   const accessibility = await new AxeBuilder({ page }).analyze();
   expect(accessibility.violations).toEqual([]);
@@ -198,10 +202,21 @@ test("cooking shortcuts, pantry matching, and surprise selection work", async ({
 
   await page.locator("#quick-pantry-match").click();
   const pantryDialog = page.getByRole("dialog", { name: "What Can I Make?" });
-  await pantryDialog.getByLabel("What ingredients do you have?").fill("chicken, potatoes, cheddar");
+  await pantryDialog.getByLabel("What ingredients do you have?").fill("coriander");
   await pantryDialog.getByRole("button", { name: "Find Recipes" }).click();
-  await expect(pantryDialog.getByRole("status")).toContainText("matches found");
+  await expect(pantryDialog.getByRole("status")).toContainText("synonyms and close spellings");
+  await expect(pantryDialog.locator(".pantry-result")).toContainText("White Chicken Chili Enchilada Casserole");
+
+  await pantryDialog.getByLabel("What ingredients do you have?").fill("chicken, potatoes, cheddr");
+  await pantryDialog.getByRole("button", { name: "Find Recipes" }).click();
+  await expect(pantryDialog.getByRole("status")).toContainText("matches");
   await expect(pantryDialog.locator(".pantry-result").first()).toContainText("Million Dollar Soup");
+  await expect(pantryDialog.locator(".pantry-result").first()).toContainText(/Still needed:/);
+  const addMissing = pantryDialog.locator(".pantry-result").first().getByRole("button", { name: /Add missing ingredients/ });
+  await addMissing.click();
+  await expect(addMissing).toHaveText("Added to List");
+  await expect(pantryDialog.getByRole("status")).toContainText("added");
+  await expect(page.locator("#quick-shopping-count")).not.toHaveText("0");
   const accessibility = await new AxeBuilder({ page }).include("#pantry-dialog").analyze();
   expect(accessibility.violations).toEqual([]);
   await pantryDialog.locator(".pantry-result").first().getByRole("button", { name: /View/ }).click();
@@ -253,7 +268,7 @@ test("collections can be created, assigned, and used as a recipe filter", async 
 });
 
 
-test("recipe ingredients build a persistent grouped shopping list", async ({ page, context }) => {
+test("recipe scaling, aisle grouping, and duplicate merging build a persistent shopping list", async ({ page, context }) => {
   await context.grantPermissions(["clipboard-read", "clipboard-write"]);
   await openCleanApp(page);
 
@@ -264,20 +279,47 @@ test("recipe ingredients build a persistent grouped shopping list", async ({ pag
   const ingredientCheckboxes = ingredientsDialog.getByRole("checkbox");
   await expect(ingredientCheckboxes).toHaveCount(20);
   for (const checkbox of await ingredientCheckboxes.all()) await checkbox.uncheck();
-  await ingredientsDialog.getByRole("checkbox", { name: "1 pound sweet Italian sausage" }).check();
-  await ingredientsDialog.getByRole("checkbox", { name: "12 lasagna noodles" }).check();
+  await ingredientsDialog.getByRole("button", { name: "2×" }).click();
+  await expect(ingredientsDialog.locator("#ingredient-scale-note")).toHaveText("Double the original amounts");
+  await expect(ingredientsDialog.getByRole("checkbox", { name: "2 (28 ounce) cans crushed tomatoes" })).toBeVisible();
+  await ingredientsDialog.getByRole("checkbox", { name: "2 pounds sweet Italian sausage" }).check();
+  await ingredientsDialog.getByRole("checkbox", { name: "1 cup minced onion" }).check();
   await ingredientsDialog.getByRole("button", { name: "Add to Shopping List" }).click();
 
   const shoppingDialog = page.getByRole("dialog", { name: "Shopping List" });
   await expect(shoppingDialog).toBeVisible();
-  await expect(shoppingDialog.getByRole("heading", { name: "World's Best Lasagna" })).toBeVisible();
+  await expect(shoppingDialog.getByRole("heading", { name: "Meat & seafood" })).toBeVisible();
+  await expect(shoppingDialog.getByRole("heading", { name: "Produce" })).toBeVisible();
   await expect(shoppingDialog.locator(".shopping-item")).toHaveCount(2);
+  await shoppingDialog.getByRole("button", { name: "Done" }).click();
+
+  await page.getByRole("button", { name: "Add ingredients for Salisbury Steak Meatballs to the shopping list" }).click();
+  for (const checkbox of await ingredientCheckboxes.all()) await checkbox.uncheck();
+  await ingredientsDialog.getByRole("checkbox", { name: "1/2 cup onion, grated" }).check();
+  await ingredientsDialog.getByRole("button", { name: "Add to Shopping List" }).click();
+  await expect(shoppingDialog.locator(".shopping-item")).toHaveCount(2);
+  await shoppingDialog.getByRole("button", { name: "Done" }).click();
+
+  await page.getByRole("button", { name: "Add ingredients for Slow Cooker Zuppa Toscana to the shopping list" }).click();
+  for (const checkbox of await ingredientCheckboxes.all()) await checkbox.uncheck();
+  await ingredientsDialog.getByRole("checkbox", { name: "1 large yellow onion, chopped" }).check();
+  await ingredientsDialog.getByRole("button", { name: "Add to Shopping List" }).click();
+  await expect(shoppingDialog.locator(".shopping-item")).toHaveCount(2);
+  const mergedOnion = shoppingDialog.locator(".shopping-item").filter({ hasText: "1 cup minced onion" });
+  await expect(mergedOnion.getByRole("checkbox", { name: "Onion" })).toBeVisible();
+  await expect(mergedOnion).toContainText("1 cup minced onion");
+  await expect(mergedOnion).toContainText("World's Best Lasagna");
+  await expect(mergedOnion).toContainText("1/2 cup onion, grated");
+  await expect(mergedOnion).toContainText("Salisbury Steak Meatballs");
+  await expect(mergedOnion).toContainText("1 large yellow onion, chopped");
+  await expect(mergedOnion).toContainText("Slow Cooker Zuppa Toscana");
+
   await shoppingDialog.getByLabel("Add an item").fill("Aluminum foil");
   await shoppingDialog.getByRole("button", { name: "Add", exact: true }).click();
-  await expect(shoppingDialog.getByRole("heading", { name: "Other items" })).toBeVisible();
+  await expect(shoppingDialog.getByRole("heading", { name: "Other" })).toBeVisible();
   await expect(shoppingDialog.locator(".shopping-item")).toHaveCount(3);
 
-  await shoppingDialog.getByRole("checkbox", { name: "1 pound sweet Italian sausage" }).check();
+  await shoppingDialog.getByRole("checkbox", { name: "2 pounds sweet Italian sausage" }).check();
   await shoppingDialog.getByRole("button", { name: "Clear Checked" }).click();
   await expect(shoppingDialog.locator(".shopping-item")).toHaveCount(2);
   await shoppingDialog.getByRole("button", { name: "Copy List" }).click();
@@ -290,6 +332,7 @@ test("recipe ingredients build a persistent grouped shopping list", async ({ pag
   }));
   expect(savedData.ingredients).toBeNull();
   expect(savedData.shopping).toHaveLength(2);
+  expect(savedData.shopping.find((item) => item.canonical === "onion").details).toHaveLength(3);
   const accessibility = await new AxeBuilder({ page }).include("#shopping-dialog").analyze();
   expect(accessibility.violations).toEqual([]);
 
@@ -297,6 +340,36 @@ test("recipe ingredients build a persistent grouped shopping list", async ({ pag
   await page.getByRole("button", { name: "Add ingredients for Chicken Pot Pie to the shopping list" }).click();
   await ingredientsDialog.getByRole("button", { name: "Cancel" }).click();
   await expect(ingredientsDialog).toBeHidden();
+});
+
+
+test("backup reminders can be downloaded and snoozed", async ({ page }) => {
+  await openCleanApp(page);
+  await page.locator("#quick-shopping-list").click();
+  const shoppingDialog = page.getByRole("dialog", { name: "Shopping List" });
+  await shoppingDialog.getByLabel("Add an item").fill("Coffee filters");
+  await shoppingDialog.getByRole("button", { name: "Add", exact: true }).click();
+  await shoppingDialog.getByRole("button", { name: "Done" }).click();
+
+  const reminder = page.locator("#backup-reminder");
+  await expect(reminder).toBeVisible();
+  await expect(reminder).toContainText("no backup yet");
+  const downloadPromise = page.waitForEvent("download");
+  await reminder.getByRole("button", { name: "Download Backup" }).click();
+  const download = await downloadPromise;
+  expect(download.suggestedFilename()).toMatch(/^rons-recipes-backup-\d{4}-\d{2}-\d{2}\.json$/);
+  await expect(reminder).toBeHidden();
+
+  await page.evaluate(() => {
+    localStorage.setItem("rons-recipes.backup.last.v1", new Date(Date.now() - 15 * 86400000).toISOString());
+    localStorage.removeItem("rons-recipes.backup.snooze.v1");
+  });
+  await page.locator("#quick-shopping-list").click();
+  await shoppingDialog.getByRole("button", { name: "Done" }).click();
+  await expect(reminder).toBeVisible();
+  await expect(reminder).toContainText("15 days ago");
+  await reminder.getByRole("button", { name: "Remind me in 3 days" }).click();
+  await expect(reminder).toBeHidden();
 });
 
 
@@ -384,6 +457,7 @@ test("personal recipes can be added, edited, exported, deleted, and imported", a
   await page.getByLabel("Why it belongs in the collection").fill("Tender beef and vegetables in rich gravy.");
   await page.getByLabel("Freeze smart note").fill("Cool completely and freeze in meal-size portions.");
   await page.locator("#recipe-ingredients").fill("2 pounds chuck roast\n1 onion, chopped");
+  await page.locator("#recipe-tags").fill("American, Beef, Slow cooker");
   await page.getByLabel("Original recipe link").fill("https://example.com/pot-roast");
   await page.getByRole("button", { name: "Add to Ron's Recipes" }).click();
   await expect(page.getByRole("heading", { name: "27 recipes" })).toBeVisible();
@@ -405,6 +479,7 @@ test("personal recipes can be added, edited, exported, deleted, and imported", a
   expect(backup.version).toBe(2);
   expect(backup).toMatchObject({ collections: expect.any(Array), shoppingItems: expect.any(Array), ingredientOverrides: expect.any(Object) });
   expect(backup.customRecipes[0].ingredients).toEqual(["2 pounds chuck roast", "1 onion, chopped"]);
+  expect(backup.customRecipes[0].tags).toEqual(["American", "Beef", "Slow cooker"]);
   await page.getByRole("button", { name: "Done" }).click();
 
   await page.getByRole("button", { name: "Permanently delete Sunday Pot Roast Updated" }).click();

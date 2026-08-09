@@ -1,11 +1,12 @@
 const CACHE_PREFIX = "rons-recipes-";
-const CACHE_NAME = `${CACHE_PREFIX}pwa-9`;
+const BUILD_VERSION = "__BUILD_VERSION__";
+const CACHE_NAME = `${CACHE_PREFIX}${BUILD_VERSION}`;
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./styles-v1.5.css",
-  "./app-v1.5.js",
-  "./recipes.json?v=1.5.1",
+  `./styles-v1.6.css?v=${BUILD_VERSION}`,
+  `./app-v1.6.js?v=${BUILD_VERSION}`,
+  `./recipes.json?v=${BUILD_VERSION}`,
   "./manifest.webmanifest",
   "./assets/icons/favicon.svg",
   "./assets/icons/favicon.ico",

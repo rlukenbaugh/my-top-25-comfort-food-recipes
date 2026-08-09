@@ -8,9 +8,9 @@ Open the live collection at:
 
 https://rlukenbaugh.github.io/my-top-25-comfort-food-recipes/
 
-The web app reads the same `recipes.json` file as the printable book. It includes a time-aware cooking dashboard, sticky search and freezer-rating filters, personal recipe collections, a recipe-linked shopping list, a pantry matcher, a random-recipe picker, rating-accented recipe cards, expandable mobile details, a back-to-top control, a live kitchen measurement converter, original-recipe links, a downloadable PDF, and browser-based recipe additions. GitHub Pages validates, tests, rebuilds, and republishes it whenever `main` is updated.
+The web app reads the same `recipes.json` file as the printable book. It includes a time-aware cooking dashboard, sticky search plus rating and recipe-tag filters, personal recipe collections, an aisle-sorted recipe-linked shopping list, a synonym-aware pantry matcher, per-recipe serving scaling, a random-recipe picker, rating-accented recipe cards, expandable mobile details, a back-to-top control, a live kitchen measurement converter, original-recipe links, a downloadable PDF, and browser-based recipe additions. GitHub Pages validates, tests, rebuilds, and republishes it whenever `main` is updated.
 
-The site also includes branded sharing metadata, install icons, a web-app manifest, an install prompt when supported by the browser, and an offline app-shell cache. After the first successful visit, the recipe list and freezer notes remain available without a connection; the printable PDF and original Allrecipes pages still require internet access.
+The site also includes branded sharing metadata, install icons, a web-app manifest, an install prompt when supported by the browser, and a tested offline app-shell cache. The Pages build injects the current Git commit into cache-sensitive URLs and the service-worker cache name, so deployments cannot depend on a hand-edited cache-busting number. After the first successful visit, the recipe list and freezer notes remain available without a connection; the printable PDF and original Allrecipes pages still require internet access.
 
 ### Add, copy, and paste recipes
 
@@ -19,7 +19,7 @@ The site also includes branded sharing metadata, install icons, a web-app manife
 - Select **Copy recipe** on any entry to copy it in the exact labeled format accepted by the paste tool.
 - Personal recipes have **Edit** and permanent **Delete** actions.
 - Select **Remove** to hide a recipe on that browser after confirmation. Select **Restore Removed** to bring hidden recipes back.
-- Select **Manage** to export a JSON backup or safely merge a previously exported backup.
+- Select **Manage** to export a JSON backup or safely merge a previously exported backup. After personal data is saved, the home page also reminds you when no backup exists or the latest backup is at least 14 days old; the reminder can be snoozed for three days.
 - Recipe numbers automatically close any gaps when recipes are removed and return to their original order when restored.
 - Recipes added in the web app are saved only in that browser on that device. They are private to that visitor and do not modify the shared GitHub list or printable PDF.
 - Removed recipes are also remembered only by that browser. They are never deleted from the shared GitHub list or printable PDF.
@@ -29,9 +29,10 @@ The site also includes branded sharing metadata, install icons, a web-app manife
 - Select **Collections** to use the starter folders (Crockpot, Easy, New, Favorites, and Weeknight) or create your own.
 - Select **Collections** on a recipe card to assign that recipe to one or more folders. The **View** action filters the main recipe list to that folder.
 - Select **Add to Shopping List** on any built-in recipe to choose directly from the ingredient list loaded from its linked original recipe. Personal recipes still support the paste-once ingredient editor.
-- The shopping list supports manual items, checkboxes, individual removal, clearing checked items, copying, and printing.
+- Ingredient amounts can be scaled to ½×, 1×, 2×, or 3× before adding them to the shopping list; package sizes inside parentheses stay unchanged.
+- The shopping list merges duplicate ingredients, preserves each recipe's amount, groups items by grocery aisle, and supports manual items, checkboxes, individual removal, clearing checked items, copying, and printing.
 - Ingredients, collections, and the shopping list are private to the current browser and are included in exported backups.
-- The home-page shortcuts open Add Recipe and Shopping List, return to all recipes, match pantry terms against recipe ingredients, or highlight a random favorite.
+- The home-page shortcuts open Add Recipe and Shopping List, return to all recipes, match pantry terms against recipe ingredients, or highlight a random favorite. Pantry matching understands common synonyms and close spellings, shows missing ingredients for near-matches, and can add those missing items to the shopping list.
 
 ## Add or change a recipe
 
@@ -45,6 +46,7 @@ The site also includes branded sharing metadata, install icons, a web-app manife
    - `url`
    - `freeze`
    - `ingredients` (an array with one ingredient per line)
+   - `tags` (an array such as `American`, `Chicken`, and `Weeknight`)
 4. Keep the commas between recipe blocks and save the file.
 5. Double-click `build.cmd`, or open a terminal in this folder and run:
 
@@ -79,7 +81,7 @@ Then run:
 npm.cmd test
 ```
 
-This validates the recipe data and exercises search, filters, dashboard shortcuts, pantry matching, surprise selection, collections, ingredients, shopping-list actions, keyboard tabs, mobile details, touch targets, color contrast, accessibility, add/edit/delete, and backup export/import. `npm.cmd run test:links` performs the external-link audit; Allrecipes may report protected HTTP 403 responses when it blocks automated requests.
+This validates the recipe data and exercises search, tags, filters, dashboard shortcuts, synonym and fuzzy pantry matching, missing-ingredient actions, recipe scaling, duplicate shopping-item merging, aisle grouping, backup reminders, surprise selection, collections, keyboard tabs, mobile details, touch targets, color contrast, accessibility, add/edit/delete, true offline reload, and backup export/import. `npm.cmd run test:links` performs the external-link audit; Allrecipes may report protected HTTP 403 responses when it blocks automated requests.
 
 ## Project files
 
@@ -89,6 +91,8 @@ This validates the recipe data and exercises search, filters, dashboard shortcut
 - `verify_book.py` - checks the generated PDF
 - `verify.cmd` - runs the verification check
 - `validate_recipes.py` - validates ranks, fields, ratings, and source URLs
+- `assemble_site.py` - injects the deployment commit hash and assembles the Pages artifact
+- `verify_web_build.py` - verifies the generated files and versioned offline cache
 - `check_links.py` - performs the scheduled external-link audit
 - `manifest.webmanifest` and `service-worker.js` - install and offline support
 - `assets/` - favicon, app icons, and social sharing image

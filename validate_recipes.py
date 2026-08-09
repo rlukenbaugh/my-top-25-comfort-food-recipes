@@ -5,7 +5,7 @@ import json
 
 ROOT = Path(__file__).resolve().parent
 RATINGS = {"Outstanding", "Excellent", "Very good", "Good", "Fair"}
-REQUIRED_FIELDS = {"rank", "title", "why", "rating", "url", "freeze", "ingredients"}
+REQUIRED_FIELDS = {"rank", "title", "why", "rating", "url", "freeze", "ingredients", "tags"}
 
 
 def fail(messages):
@@ -47,6 +47,10 @@ def main():
             errors.append(f"Recipe {index} must have a non-empty ingredients list.")
         elif any(not isinstance(item, str) or not item.strip() for item in recipe["ingredients"]):
             errors.append(f"Recipe {index} has an empty or invalid ingredient.")
+        if not isinstance(recipe["tags"], list) or not recipe["tags"]:
+            errors.append(f"Recipe {index} must have at least one recipe tag.")
+        elif len(recipe["tags"]) > 8 or any(not isinstance(tag, str) or not tag.strip() for tag in recipe["tags"]):
+            errors.append(f"Recipe {index} has invalid recipe tags.")
 
         title_key = recipe["title"].strip().casefold()
         url_key = recipe["url"].strip().rstrip("/").casefold()
@@ -63,11 +67,11 @@ def main():
         if parsed_url.scheme != "https" or not parsed_url.hostname:
             errors.append(f"Recipe {index} must use a valid HTTPS source URL: {recipe['url']}.")
 
-    app_source = (ROOT / "index.html").read_text(encoding="utf-8") + (ROOT / "app-v1.5.js").read_text(encoding="utf-8")
+    app_source = (ROOT / "index.html").read_text(encoding="utf-8") + (ROOT / "app-v1.6.js").read_text(encoding="utf-8")
     for required_reference in (
         "recipes.json",
-        "app-v1.5.js",
-        "styles-v1.5.css",
+        "app-v1.6.js",
+        "styles-v1.6.css",
         "printable/rons-recipes-2026.pdf",
         "manifest.webmanifest",
         "service-worker.js",
@@ -95,7 +99,7 @@ def main():
         fail(errors)
 
     print(f"PASS: {len(recipes)} recipes validated")
-    print("Ranks, required fields, ratings, titles, and HTTPS source URLs are valid.")
+    print("Ranks, required fields, tags, ratings, titles, ingredients, and HTTPS source URLs are valid.")
 
 
 if __name__ == "__main__":

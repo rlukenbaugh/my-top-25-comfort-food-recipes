@@ -2,7 +2,7 @@
   "id": "./",
   "name": "Ron's Recipes",
   "short_name": "Recipes",
-  "description": "A ranked comfort-food collection with practical freezer notes and links to every original recipe.",
+  "description": "A tagged comfort-food collection with recipe scaling, pantry matching, aisle-sorted shopping, backups, and freezer notes.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

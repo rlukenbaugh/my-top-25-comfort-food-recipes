@@ -45,13 +45,9 @@ jobs:
       - name: Run interaction and accessibility tests
         run: npm run test:e2e
       - name: Assemble website
-        shell: bash
-        run: |
-          mkdir -p _site/printable
-          cp index.html styles-v1.5.css app-v1.5.js recipes.json manifest.webmanifest service-worker.js _site/
-          cp -r assets _site/
-          cp outputs/*.pdf _site/printable/
-          touch _site/.nojekyll
+        run: python assemble_site.py --output _site --version ${{ github.sha }}
+      - name: Verify versioned website output
+        run: python verify_web_build.py --site _site --version ${{ github.sha }}
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v6
       - name: Upload Pages artifact

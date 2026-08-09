@@ -4,6 +4,7 @@
     "title": "World's Best Lasagna",
     "why": "The benchmark lasagna: beef, Italian sausage, and three cheeses.",
     "rating": "Excellent",
+    "tags": ["Italian", "Pasta", "Beef"],
     "url": "https://www.allrecipes.com/recipe/23600/worlds-best-lasagna/",
     "freeze": "Assemble in a freezer-safe pan and freeze before baking, or freeze baked portions. Thaw overnight before reheating.",
     "ingredients": [
@@ -34,6 +35,7 @@
     "title": "Salisbury Steak Meatballs",
     "why": "A 2026 most-saved favorite with meatballs, mushroom gravy, and mashed potatoes.",
     "rating": "Excellent",
+    "tags": ["American", "Beef", "Weeknight"],
     "url": "https://www.allrecipes.com/salisbury-steak-meatballs-recipe-11844152",
     "freeze": "Freeze the meatballs in their gravy. For the best texture, make fresh mashed potatoes when serving.",
     "ingredients": [
@@ -61,6 +63,7 @@
     "title": "Chicken Pot Pie",
     "why": "Classic chicken, vegetables, and creamy gravy under pastry.",
     "rating": "Excellent",
+    "tags": ["American", "Chicken", "Pie"],
     "url": "https://www.allrecipes.com/recipe/26317/chicken-pot-pie-ix/",
     "freeze": "Freeze assembled and unbaked. Wrap tightly, label, and bake from thawed so the filling heats evenly.",
     "ingredients": [
@@ -84,6 +87,7 @@
     "title": "Million Dollar Chicken Casserole",
     "why": "Rich, creamy rotisserie-chicken casserole and a 2026 most-saved favorite.",
     "rating": "Excellent",
+    "tags": ["American", "Chicken", "Casserole"],
     "url": "https://www.allrecipes.com/recipe/8422645/million-dollar-chicken-casserole/",
     "freeze": "Freeze before baking and add any crisp cracker topping just before it goes into the oven.",
     "ingredients": [
@@ -107,6 +111,7 @@
     "title": "Beef and Guinness Stew",
     "why": "Deep beef flavor, vegetables, and stout - ideal cold-weather food.",
     "rating": "Outstanding",
+    "tags": ["Irish", "Beef", "Stew"],
     "url": "https://www.allrecipes.com/recipe/234534/beef-and-guinness-stew/",
     "freeze": "Cool completely, portion with plenty of broth, and freeze. Reheat gently; add a splash of stock if needed.",
     "ingredients": [
@@ -132,6 +137,7 @@
     "title": "Chef John's Italian Meatballs",
     "why": "Beef-and-pork meatballs baked instead of fried, with 2,500+ ratings when compiled.",
     "rating": "Outstanding",
+    "tags": ["Italian", "Beef", "Meatballs"],
     "url": "https://www.allrecipes.com/recipe/220854/chef-johns-italian-meatballs/",
     "freeze": "Freeze cooked meatballs on a tray, then bag them. They can be reheated directly in simmering sauce.",
     "ingredients": [
@@ -156,6 +162,7 @@
     "title": "Chicken Cobbler",
     "why": "Creamy chicken casserole topped with Cheddar Bay-style biscuits.",
     "rating": "Very good",
+    "tags": ["American", "Chicken", "Easy"],
     "url": "https://www.allrecipes.com/chicken-cobbler-recipe-7966464",
     "freeze": "Freeze the filling separately when possible. Add the biscuit layer fresh for the lightest, crispest topping.",
     "ingredients": [
@@ -174,6 +181,7 @@
     "title": "Slow Cooker Shepherd's Pie",
     "why": "Meat, vegetables, gravy, and mashed potatoes - serious cold-weather comfort.",
     "rating": "Excellent",
+    "tags": ["British", "Beef", "Slow cooker"],
     "url": "https://www.allrecipes.com/slow-cooker-shepherd-s-pie-recipe-11695630",
     "freeze": "Cool and freeze in meal-size portions. Thaw overnight and reheat covered so the potatoes stay moist.",
     "ingredients": [
@@ -199,6 +207,7 @@
     "title": "Brown Sugar Meatloaf",
     "why": "Old-school meatloaf with a sweet and tangy ketchup glaze.",
     "rating": "Outstanding",
+    "tags": ["American", "Beef", "Meatloaf"],
     "url": "https://www.allrecipes.com/recipe/238904/brown-sugar-meatloaf-with-ketchup-glaze/",
     "freeze": "Freeze the shaped loaf raw or freeze cooked slices individually. Keep extra glaze in a separate container.",
     "ingredients": [
@@ -219,6 +228,7 @@
     "title": "Angela's Awesome Chicken Enchiladas",
     "why": "A creamy, cheesy, easy favorite from Allrecipes' 2026 most-saved lists.",
     "rating": "Excellent",
+    "tags": ["Mexican-inspired", "Chicken", "Casserole"],
     "url": "https://www.allrecipes.com/recipe/83549/angelas-awesome-enchiladas/",
     "freeze": "Assemble without baking, cover tightly, and freeze. Thaw overnight; add fresh cheese before baking.",
     "ingredients": [
@@ -246,6 +256,7 @@
     "title": "Slow Cooker Zuppa Toscana",
     "why": "Sausage, potatoes, greens, and creamy broth in one cozy bowl.",
     "rating": "Good",
+    "tags": ["Italian", "Sausage", "Slow cooker"],
     "url": "https://www.allrecipes.com/recipe/261337/slow-cooker-zuppa-toscana/",
     "freeze": "For best results, freeze before adding cream and greens. Stir both in after reheating the soup base.",
     "ingredients": [
@@ -268,6 +279,7 @@
     "title": "Copycat Panera Broccoli Cheddar Soup",
     "why": "Rich cheddar-broccoli soup with nearly 2,100 ratings when compiled.",
     "rating": "Good",
+    "tags": ["American", "Cheese", "Soup"],
     "url": "https://www.allrecipes.com/recipe/235874/copycat-panera-broccoli-cheddar-soup/",
     "freeze": "Cool fully and thaw in the refrigerator. Reheat slowly while stirring to help the dairy return to a smooth texture.",
     "ingredients": [
@@ -289,6 +301,7 @@
     "title": "Million Dollar Soup",
     "why": "A 2026 breakout favorite with chicken, potatoes, bacon, cheese, and sour cream.",
     "rating": "Good",
+    "tags": ["American", "Chicken", "Soup"],
     "url": "https://www.allrecipes.com/million-dollar-soup-recipe-11823470",
     "freeze": "Freeze the soup base without sour cream or cheese when possible. Add dairy after reheating for a smoother finish.",
     "ingredients": [
@@ -318,6 +331,7 @@
     "title": "White Chicken Chili Enchilada Casserole",
     "why": "A 2026 most-saved mash-up of white chili and enchilada casserole.",
     "rating": "Excellent",
+    "tags": ["Mexican-inspired", "Chicken", "Casserole"],
     "url": "https://www.allrecipes.com/white-chicken-chili-enchilada-casserole-recipe-11898775",
     "freeze": "Assemble and freeze unbaked. Thaw overnight, then bake until bubbling and hot in the center.",
     "ingredients": [
@@ -339,6 +353,7 @@
     "title": "Chicken Parmesan",
     "why": "One of Chef John's most-saved dinners, reportedly saved 140,000+ times.",
     "rating": "Very good",
+    "tags": ["Italian", "Chicken", "Weeknight"],
     "url": "https://www.allrecipes.com/recipe/223042/chicken-parmesan/",
     "freeze": "Freeze breaded cooked cutlets without sauce. Add sauce and cheese during reheating so the coating stays crisper.",
     "ingredients": [
@@ -361,6 +376,7 @@
     "title": "Hearty Italian Meatball Soup",
     "why": "Meatballs, vegetables, and pasta in a hearty broth.",
     "rating": "Very good*",
+    "tags": ["Italian", "Beef", "Soup"],
     "url": "https://www.allrecipes.com/recipe/231282/hearty-italian-meatball-soup/",
     "freeze": "Freeze the soup without pasta. Cook fresh pasta separately and add it to each bowl after reheating.",
     "ingredients": [
@@ -379,6 +395,7 @@
     "title": "Italian Penicillin Soup",
     "why": "Chicken pastina soup with Parmesan and one of 2026's popularity leaders.",
     "rating": "Very good*",
+    "tags": ["Italian", "Chicken", "Soup"],
     "url": "https://www.allrecipes.com/italian-penicillin-soup-recipe-8751324",
     "freeze": "Freeze the broth, chicken, and vegetables without pastina. Add freshly cooked pastina and Parmesan when serving.",
     "ingredients": [
@@ -401,6 +418,7 @@
     "title": "Instant Pot Chicken and Dumplings",
     "why": "Chicken-stew richness without an all-day simmer.",
     "rating": "Good",
+    "tags": ["American", "Chicken", "Instant Pot"],
     "url": "https://www.allrecipes.com/recipe/276647/instant-pot-chicken-and-dumplings/",
     "freeze": "Freeze the chicken-and-gravy base. Make fresh dumplings after reheating for the best texture.",
     "ingredients": [
@@ -434,6 +452,7 @@
     "title": "Aaahh! Potato Soup",
     "why": "Bacon, cheese, and potatoes - another 2026 most-saved entry.",
     "rating": "Fair",
+    "tags": ["American", "Potato", "Easy"],
     "url": "https://www.allrecipes.com/recipe/23996/aaahh-potato-soup/",
     "freeze": "Potatoes and dairy can turn grainy. If freezing, cool quickly, thaw overnight, and reheat gently while stirring.",
     "ingredients": [
@@ -449,6 +468,7 @@
     "title": "Neiman Marcus Chicken Casserole",
     "why": "Chicken, bacon, and cheese made with ordinary pantry ingredients.",
     "rating": "Excellent",
+    "tags": ["American", "Chicken", "Casserole"],
     "url": "https://www.allrecipes.com/neiman-marcus-chicken-casserole-recipe-11693255",
     "freeze": "Assemble and freeze before baking. Hold back any crunchy topping and add it just before baking.",
     "ingredients": [
@@ -469,6 +489,7 @@
     "title": "Famous Butter Chicken",
     "why": "Extremely simple baked chicken and one of 2026's most-saved recipes.",
     "rating": "Very good",
+    "tags": ["Indian-inspired", "Chicken", "Weeknight"],
     "url": "https://www.allrecipes.com/recipe/24002/famous-butter-chicken/",
     "freeze": "Freeze cooked portions tightly wrapped. Reheat covered, then uncover briefly to restore the crumb topping.",
     "ingredients": [
@@ -485,6 +506,7 @@
     "title": "Greek Lemon Chicken Soup",
     "why": "Bright but still comforting, with chicken, rice, and lemon.",
     "rating": "Good",
+    "tags": ["Greek", "Chicken", "Soup"],
     "url": "https://www.allrecipes.com/recipe/12963/greek-lemon-chicken-soup/",
     "freeze": "Freeze without rice when possible. Add freshly cooked rice after reheating to prevent a soft, swollen texture.",
     "ingredients": [
@@ -508,6 +530,7 @@
     "title": "Chicken au Poivre",
     "why": "Creamy peppercorn chicken with steakhouse DNA.",
     "rating": "Good",
+    "tags": ["French", "Chicken", "Weeknight"],
     "url": "https://www.allrecipes.com/chicken-au-poivre-recipe-11861726",
     "freeze": "Freeze chicken and sauce together, then thaw overnight. Reheat gently so the cream sauce does not separate.",
     "ingredients": [
@@ -529,6 +552,7 @@
     "title": "Country Club Potatoes",
     "why": "Chef John's rich potato gratin and a 2026 most-saved side dish.",
     "rating": "Good",
+    "tags": ["American", "Potato", "Side dish"],
     "url": "https://www.allrecipes.com/country-club-potatoes-recipe-11872410",
     "freeze": "Freeze after baking and cooling completely. Reheat covered, then uncover at the end to refresh the browned top.",
     "ingredients": [
@@ -550,6 +574,7 @@
     "title": "Cinnamon Roll Butter Swim Biscuits",
     "why": "A dessert-and-breakfast comfort bomb from 2026's most-saved recipes.",
     "rating": "Very good",
+    "tags": ["American", "Breakfast", "Baking"],
     "url": "https://www.allrecipes.com/cinnamon-roll-butter-swim-biscuits-recipe-11905339",
     "freeze": "Freeze cooled individual biscuits. Thaw at room temperature and warm briefly; add fresh glaze after reheating.",
     "ingredients": [
@@ -571,6 +596,7 @@
     "title": "Vegetable Beef Soup",
     "why": "A deeply comforting reader favorite with tender beef, potatoes, and a full garden of vegetables.",
     "rating": "Excellent",
+    "tags": ["American", "Beef", "Soup"],
     "url": "https://www.cookingclassy.com/vegetable-beef-soup/",
     "freeze": "Cool completely and freeze in meal-size airtight containers for up to 3 months. Thaw overnight and reheat gently.",
     "ingredients": [
