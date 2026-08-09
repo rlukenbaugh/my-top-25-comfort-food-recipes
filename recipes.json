@@ -5,7 +5,29 @@
     "why": "The benchmark lasagna: beef, Italian sausage, and three cheeses.",
     "rating": "Excellent",
     "url": "https://www.allrecipes.com/recipe/23600/worlds-best-lasagna/",
-    "freeze": "Assemble in a freezer-safe pan and freeze before baking, or freeze baked portions. Thaw overnight before reheating."
+    "freeze": "Assemble in a freezer-safe pan and freeze before baking, or freeze baked portions. Thaw overnight before reheating.",
+    "ingredients": [
+      "1 pound sweet Italian sausage",
+      "3/4 pound lean ground beef",
+      "1/2 cup minced onion",
+      "2 cloves garlic, crushed",
+      "1 (28 ounce) can crushed tomatoes",
+      "2 (6.5 ounce) cans canned tomato sauce",
+      "2 (6 ounce) cans tomato paste",
+      "1/2 cup water",
+      "2 tablespoons white sugar",
+      "4 tablespoons chopped fresh parsley, divided",
+      "1 1/2 teaspoons dried basil leaves",
+      "1 1/2 teaspoons salt, divided, or to taste",
+      "1 teaspoon Italian seasoning",
+      "1/2 teaspoon fennel seeds",
+      "1/4 teaspoon ground black pepper",
+      "12 lasagna noodles",
+      "16 ounces ricotta cheese",
+      "1 egg",
+      "3/4 pound mozzarella cheese, sliced",
+      "3/4 cup grated Parmesan cheese"
+    ]
   },
   {
     "rank": 2,
@@ -13,7 +35,26 @@
     "why": "A 2026 most-saved favorite with meatballs, mushroom gravy, and mashed potatoes.",
     "rating": "Excellent",
     "url": "https://www.allrecipes.com/salisbury-steak-meatballs-recipe-11844152",
-    "freeze": "Freeze the meatballs in their gravy. For the best texture, make fresh mashed potatoes when serving."
+    "freeze": "Freeze the meatballs in their gravy. For the best texture, make fresh mashed potatoes when serving.",
+    "ingredients": [
+      "1 pound lean ground beef",
+      "3/4 cup panko bread crumbs",
+      "1/2 cup onion, grated",
+      "1 egg",
+      "1 tablespoon plus 2 teaspoons ketchup, divided",
+      "3 1/2 teaspoons Worcestershire sauce, divided",
+      "2 teaspoons mustard powder",
+      "1/2 teaspoon salt",
+      "1/4 teaspoon ground black pepper",
+      "2 tablespoons olive oil",
+      "2 tablespoons butter",
+      "12 ounces crimini mushrooms, sliced",
+      "2 tablespoons all-purpose flour",
+      "2 cups beef stock",
+      "2 teaspoons ketchup",
+      "Parsley, for garnish",
+      "Mashed potatoes, for serving"
+    ]
   },
   {
     "rank": 3,
@@ -21,7 +62,22 @@
     "why": "Classic chicken, vegetables, and creamy gravy under pastry.",
     "rating": "Excellent",
     "url": "https://www.allrecipes.com/recipe/26317/chicken-pot-pie-ix/",
-    "freeze": "Freeze assembled and unbaked. Wrap tightly, label, and bake from thawed so the filling heats evenly."
+    "freeze": "Freeze assembled and unbaked. Wrap tightly, label, and bake from thawed so the filling heats evenly.",
+    "ingredients": [
+      "1 pound skinless, boneless chicken breast halves - cubed",
+      "1 cup sliced carrots",
+      "1 cup frozen green peas",
+      "1/2 cup sliced celery",
+      "1/3 cup butter",
+      "1/3 cup chopped onion",
+      "1/3 cup all-purpose flour",
+      "1/2 teaspoon salt",
+      "1/4 teaspoon black pepper",
+      "1/4 teaspoon celery seed",
+      "1 3/4 cups chicken broth",
+      "2/3 cup milk",
+      "2 (9 inch) unbaked pie crusts"
+    ]
   },
   {
     "rank": 4,
@@ -29,7 +85,22 @@
     "why": "Rich, creamy rotisserie-chicken casserole and a 2026 most-saved favorite.",
     "rating": "Excellent",
     "url": "https://www.allrecipes.com/recipe/8422645/million-dollar-chicken-casserole/",
-    "freeze": "Freeze before baking and add any crisp cracker topping just before it goes into the oven."
+    "freeze": "Freeze before baking and add any crisp cracker topping just before it goes into the oven.",
+    "ingredients": [
+      "1 (10.5 ounce) can cream of chicken soup",
+      "1 cup cottage cheese",
+      "1/2 cup sour cream",
+      "4 ounces cream cheese, at room temperature",
+      "1 1/2 teaspoons Creole seasoning",
+      "1/2 teaspoon onion powder",
+      "1 teaspoon garlic powder, divided",
+      "5 cups shredded rotisserie chicken",
+      "1 tablespoon chopped fresh parsley",
+      "30 buttery round crackers (such as Ritz®), crushed",
+      "4 tablespoons unsalted butter, melted",
+      "1 cup shredded mozzarella cheese",
+      "1 teaspoon sliced scallions, or to taste"
+    ]
   },
   {
     "rank": 5,
@@ -37,7 +108,24 @@
     "why": "Deep beef flavor, vegetables, and stout - ideal cold-weather food.",
     "rating": "Outstanding",
     "url": "https://www.allrecipes.com/recipe/234534/beef-and-guinness-stew/",
-    "freeze": "Cool completely, portion with plenty of broth, and freeze. Reheat gently; add a splash of stock if needed."
+    "freeze": "Cool completely, portion with plenty of broth, and freeze. Reheat gently; add a splash of stock if needed.",
+    "ingredients": [
+      "4 slices bacon, cut into small pieces",
+      "2 1/2 pounds boneless beef chuck, cut into 2-inch pieces",
+      "1 1/2 teaspoons salt, divided, or more to taste",
+      "freshly ground black pepper to taste",
+      "2 onions, coarsely chopped",
+      "4 cloves garlic, minced",
+      "1 (14.9 ounce) can dark beer (such as Guinness®)",
+      "1/4 cup tomato paste",
+      "3 carrots, cut into 1-inch pieces",
+      "2 stalks celery, cut into 1-inch pieces",
+      "4 sprigs fresh thyme",
+      "1 teaspoon white sugar",
+      "1/2 teaspoon freshly ground black pepper, or to taste",
+      "2 1/2 cups chicken stock, or as needed to cover",
+      "4 cups mashed potatoes"
+    ]
   },
   {
     "rank": 6,
@@ -45,7 +133,23 @@
     "why": "Beef-and-pork meatballs baked instead of fried, with 2,500+ ratings when compiled.",
     "rating": "Outstanding",
     "url": "https://www.allrecipes.com/recipe/220854/chef-johns-italian-meatballs/",
-    "freeze": "Freeze cooked meatballs on a tray, then bag them. They can be reheated directly in simmering sauce."
+    "freeze": "Freeze cooked meatballs on a tray, then bag them. They can be reheated directly in simmering sauce.",
+    "ingredients": [
+      "1/3 cup plain bread crumbs",
+      "1/2 cup milk",
+      "2 tablespoons olive oil",
+      "1 onion, diced",
+      "1 pound ground beef",
+      "1 pound ground pork",
+      "2 eggs",
+      "2 tablespoons grated Parmesan cheese",
+      "1/4 bunch fresh parsley, chopped",
+      "3 cloves garlic, crushed",
+      "2 teaspoons salt",
+      "1 teaspoon ground black pepper",
+      "1 teaspoon dried Italian herb seasoning",
+      "1/2 teaspoon red pepper flakes"
+    ]
   },
   {
     "rank": 7,
@@ -53,7 +157,17 @@
     "why": "Creamy chicken casserole topped with Cheddar Bay-style biscuits.",
     "rating": "Very good",
     "url": "https://www.allrecipes.com/chicken-cobbler-recipe-7966464",
-    "freeze": "Freeze the filling separately when possible. Add the biscuit layer fresh for the lightest, crispest topping."
+    "freeze": "Freeze the filling separately when possible. Add the biscuit layer fresh for the lightest, crispest topping.",
+    "ingredients": [
+      "1 stick (1/2 cup) butter",
+      "1 rotisserie chicken, meat removed and shredded (about 4 cups)",
+      "1 15-oz bag frozen mixed vegetables (such as corn, peas, carrots and beans)",
+      "1 11.36-oz package cheddar bay biscuit mix, such as Red Lobster Cheddar Bay Biscuit Mix",
+      "2 cups milk",
+      "1 10.5 oz. can cream of chicken soup",
+      "2 cups chicken stock",
+      "2 Tbsp. fresh chopped parsley (optional)"
+    ]
   },
   {
     "rank": 8,
@@ -61,7 +175,24 @@
     "why": "Meat, vegetables, gravy, and mashed potatoes - serious cold-weather comfort.",
     "rating": "Excellent",
     "url": "https://www.allrecipes.com/slow-cooker-shepherd-s-pie-recipe-11695630",
-    "freeze": "Cool and freeze in meal-size portions. Thaw overnight and reheat covered so the potatoes stay moist."
+    "freeze": "Cool and freeze in meal-size portions. Thaw overnight and reheat covered so the potatoes stay moist.",
+    "ingredients": [
+      "2 pounds 85% lean ground beef",
+      "1 cup chopped onion",
+      "3 cloves garlic, minced",
+      "1 (12-ounce) package frozen mixed vegetables",
+      "1 1/2 cups lower-sodium beef broth",
+      "1/4 cup tomato paste",
+      "1 tablespoon Worcestershire sauce",
+      "1 tablespoon quick-cooking tapioca, finely crushed",
+      "1 teaspoon dried Italian seasoning",
+      "1/2 teaspoon salt",
+      "1/2 teaspoon ground black pepper",
+      "2 (24-ounce) packages refrigerated mashed potatoes",
+      "1 cup shredded cheddar cheese (4 ounces)",
+      "Paprika",
+      "Chopped fresh parsley"
+    ]
   },
   {
     "rank": 9,
@@ -69,7 +200,19 @@
     "why": "Old-school meatloaf with a sweet and tangy ketchup glaze.",
     "rating": "Outstanding",
     "url": "https://www.allrecipes.com/recipe/238904/brown-sugar-meatloaf-with-ketchup-glaze/",
-    "freeze": "Freeze the shaped loaf raw or freeze cooked slices individually. Keep extra glaze in a separate container."
+    "freeze": "Freeze the shaped loaf raw or freeze cooked slices individually. Keep extra glaze in a separate container.",
+    "ingredients": [
+      "1/2 cup ketchup",
+      "1/2 cup packed brown sugar",
+      "1 1/2 teaspoons salt",
+      "1/2 teaspoon chili powder",
+      "1 1/2 pounds lean ground beef",
+      "1 1/2 cups croutons, crushed",
+      "1 small onion, chopped",
+      "2 eggs",
+      "1/4 cup milk",
+      "1/4 teaspoon ground black pepper"
+    ]
   },
   {
     "rank": 10,
@@ -77,7 +220,26 @@
     "why": "A creamy, cheesy, easy favorite from Allrecipes' 2026 most-saved lists.",
     "rating": "Excellent",
     "url": "https://www.allrecipes.com/recipe/83549/angelas-awesome-enchiladas/",
-    "freeze": "Assemble without baking, cover tightly, and freeze. Thaw overnight; add fresh cheese before baking."
+    "freeze": "Assemble without baking, cover tightly, and freeze. Thaw overnight; add fresh cheese before baking.",
+    "ingredients": [
+      "2 pounds skinless, boneless chicken breast meat - cut into chunks",
+      "1 1/4 cups sour cream",
+      "1 (10.5 ounce) can condensed cream of chicken soup",
+      "1/4 teaspoon chili powder",
+      "1 tablespoon butter",
+      "1 small onion, chopped",
+      "1 cup water",
+      "1 bunch green onions, chopped, divided",
+      "1 (4 ounce) can chopped green chiles, drained",
+      "1 (1.25 ounce) package mild taco seasoning mix",
+      "1 teaspoon lime juice",
+      "1/2 teaspoon onion powder",
+      "1/2 teaspoon garlic powder",
+      "5 (12 inch) flour tortillas",
+      "3 cups shredded Cheddar cheese",
+      "1 (10 ounce) can enchilada sauce",
+      "1 (6 ounce) can sliced black olives, drained"
+    ]
   },
   {
     "rank": 11,
@@ -85,7 +247,21 @@
     "why": "Sausage, potatoes, greens, and creamy broth in one cozy bowl.",
     "rating": "Good",
     "url": "https://www.allrecipes.com/recipe/261337/slow-cooker-zuppa-toscana/",
-    "freeze": "For best results, freeze before adding cream and greens. Stir both in after reheating the soup base."
+    "freeze": "For best results, freeze before adding cream and greens. Stir both in after reheating the soup base.",
+    "ingredients": [
+      "1 pound bulk pork sausage",
+      "1 large yellow onion, chopped",
+      "2 tablespoons minced garlic",
+      "4 large russet potatoes, chopped",
+      "1/2 teaspoon salt",
+      "1/4 teaspoon ground black pepper",
+      "1 pinch red pepper flakes",
+      "1 (32 ounce) container chicken broth",
+      "2 cups water, or as needed",
+      "1 cup heavy whipping cream",
+      "1 bunch kale, stems removed and discarded, leaves torn into bite-size pieces",
+      "1/4 cup shredded Parmesan cheese"
+    ]
   },
   {
     "rank": 12,
@@ -93,7 +269,20 @@
     "why": "Rich cheddar-broccoli soup with nearly 2,100 ratings when compiled.",
     "rating": "Good",
     "url": "https://www.allrecipes.com/recipe/235874/copycat-panera-broccoli-cheddar-soup/",
-    "freeze": "Cool fully and thaw in the refrigerator. Reheat slowly while stirring to help the dairy return to a smooth texture."
+    "freeze": "Cool fully and thaw in the refrigerator. Reheat slowly while stirring to help the dairy return to a smooth texture.",
+    "ingredients": [
+      "1 tablespoon butter",
+      "1/2 onion, chopped",
+      "1/4 cup melted butter",
+      "1/4 cup flour",
+      "2 cups milk",
+      "2 cups chicken stock",
+      "1 1/2 cups coarsely chopped broccoli florets",
+      "1 cup matchstick-cut carrots",
+      "1 stalk celery, thinly sliced",
+      "2 1/2 cups shredded sharp Cheddar cheese",
+      "salt and ground black pepper to taste"
+    ]
   },
   {
     "rank": 13,
@@ -101,7 +290,28 @@
     "why": "A 2026 breakout favorite with chicken, potatoes, bacon, cheese, and sour cream.",
     "rating": "Good",
     "url": "https://www.allrecipes.com/million-dollar-soup-recipe-11823470",
-    "freeze": "Freeze the soup base without sour cream or cheese when possible. Add dairy after reheating for a smoother finish."
+    "freeze": "Freeze the soup base without sour cream or cheese when possible. Add dairy after reheating for a smoother finish.",
+    "ingredients": [
+      "2 Tablespoons butter",
+      "1/2 medium onion, chopped",
+      "2 stalks celery, chopped",
+      "salt and freshly ground black pepper",
+      "2 cups yukon potatoes, diced",
+      "1 can cream of chicken",
+      "1 can cheddar cheese soup",
+      "4 cups chicken broth",
+      "1 Tablespoon cajun seasoning",
+      "1 teaspoon garlic powder",
+      "1 teaspoon onion powder",
+      "4 cups chopped rotisserie chicken, or more to taste",
+      "5 strips bacon, cooked and chopped",
+      "1/2 cup sour cream",
+      "1/2 cup shredded creamy mozzarella cheese",
+      "shredded cheddar cheese",
+      "bacon",
+      "scallions",
+      "ritz crackers"
+    ]
   },
   {
     "rank": 14,
@@ -109,7 +319,20 @@
     "why": "A 2026 most-saved mash-up of white chili and enchilada casserole.",
     "rating": "Excellent",
     "url": "https://www.allrecipes.com/white-chicken-chili-enchilada-casserole-recipe-11898775",
-    "freeze": "Assemble and freeze unbaked. Thaw overnight, then bake until bubbling and hot in the center."
+    "freeze": "Assemble and freeze unbaked. Thaw overnight, then bake until bubbling and hot in the center.",
+    "ingredients": [
+      "cooking spray",
+      "3 cups shredded cooked chicken",
+      "1 (15-ounce) can white beans, rinsed and drained",
+      "1 (9.5-ounce) bag frozen southwestern-style corn and peppers, thawed",
+      "1 (15-ounce) container green chile enchilada sauce",
+      "1 (8-ounce) carton sour cream",
+      "1/2 teaspoon salt",
+      "1/2 teaspoon ground black pepper",
+      "12 6-inch corn or flour tortillas, cut in half",
+      "8 ounces pepperjack cheese, shredded",
+      "Chopped fresh cilantro and avocado slices, for garnish"
+    ]
   },
   {
     "rank": 15,
@@ -117,7 +340,21 @@
     "why": "One of Chef John's most-saved dinners, reportedly saved 140,000+ times.",
     "rating": "Very good",
     "url": "https://www.allrecipes.com/recipe/223042/chicken-parmesan/",
-    "freeze": "Freeze breaded cooked cutlets without sauce. Add sauce and cheese during reheating so the coating stays crisper."
+    "freeze": "Freeze breaded cooked cutlets without sauce. Add sauce and cheese during reheating so the coating stays crisper.",
+    "ingredients": [
+      "4 skinless, boneless chicken breast halves",
+      "salt and freshly ground black pepper to taste",
+      "2 large eggs",
+      "1 cup panko bread crumbs, or more as needed",
+      "3/4 cup grated Parmesan cheese, divided",
+      "2 tablespoons all-purpose flour, or more if needed",
+      "1/2 cup olive oil for frying, or as needed",
+      "1/2 cup prepared tomato sauce",
+      "1/4 cup fresh mozzarella, cut into small cubes",
+      "1/4 cup chopped fresh basil",
+      "1/2 cup grated provolone cheese",
+      "2 teaspoons olive oil"
+    ]
   },
   {
     "rank": 16,
@@ -125,7 +362,17 @@
     "why": "Meatballs, vegetables, and pasta in a hearty broth.",
     "rating": "Very good*",
     "url": "https://www.allrecipes.com/recipe/231282/hearty-italian-meatball-soup/",
-    "freeze": "Freeze the soup without pasta. Cook fresh pasta separately and add it to each bowl after reheating."
+    "freeze": "Freeze the soup without pasta. Cook fresh pasta separately and add it to each bowl after reheating.",
+    "ingredients": [
+      "2 (14 ounce) cans diced tomatoes with onion and garlic, undrained",
+      "2 (14 ounce) cans beef broth",
+      "3 cups water",
+      "1 teaspoon Italian seasoning",
+      "1 (16 ounce) package frozen cooked Italian-style meatballs",
+      "2 cups frozen Italian-blend vegetables",
+      "1 cup small star-shaped dried pasta",
+      "1/4 cup grated Parmesan cheese"
+    ]
   },
   {
     "rank": 17,
@@ -133,7 +380,21 @@
     "why": "Chicken pastina soup with Parmesan and one of 2026's popularity leaders.",
     "rating": "Very good*",
     "url": "https://www.allrecipes.com/italian-penicillin-soup-recipe-8751324",
-    "freeze": "Freeze the broth, chicken, and vegetables without pastina. Add freshly cooked pastina and Parmesan when serving."
+    "freeze": "Freeze the broth, chicken, and vegetables without pastina. Add freshly cooked pastina and Parmesan when serving.",
+    "ingredients": [
+      "8 cups lower-sodium chicken broth",
+      "1 medium (8 ounce) sweet onion, coarsely chopped (about 2 cups)",
+      "2 medium (3 ounces each) carrots, peeled and coarsely chopped (about 1 1/2 cups)",
+      "2 medium (2 ounces each) celery ribs, coarsely chopped (about 1 1/3 cups)",
+      "6 medium garlic cloves, smashed and peeled",
+      "3/4 teaspoon kosher salt",
+      "4 (3 inch) thyme sprigs",
+      "2 fresh bay leaves",
+      "1 (2-ounce) Parmigiano-Reggiano cheese rind, plus grated cheese for garnish",
+      "4 ounce uncooked pastina pasta (about 1/2 cup)",
+      "2 cups (8 ounce) shredded rotisserie chicken (from 1 [3 pound] chicken)",
+      "Fresh flat-leaf parsley leaves"
+    ]
   },
   {
     "rank": 18,
@@ -141,7 +402,32 @@
     "why": "Chicken-stew richness without an all-day simmer.",
     "rating": "Good",
     "url": "https://www.allrecipes.com/recipe/276647/instant-pot-chicken-and-dumplings/",
-    "freeze": "Freeze the chicken-and-gravy base. Make fresh dumplings after reheating for the best texture."
+    "freeze": "Freeze the chicken-and-gravy base. Make fresh dumplings after reheating for the best texture.",
+    "ingredients": [
+      "1/2 tablespoon olive oil",
+      "1 cup diced onion",
+      "1/2 cup diced carrot",
+      "1/2 cup diced celery",
+      "1 bay leaf",
+      "4 cups low-sodium chicken broth",
+      "1 pound boneless, skinless chicken thighs",
+      "1 pound bone-in chicken breasts, skin removed",
+      "1 teaspoon salt",
+      "1/2 teaspoon thyme",
+      "1/2 teaspoon dried marjoram",
+      "1/4 teaspoon freshly ground black pepper",
+      "2 tablespoons unsalted butter, softened",
+      "2 tablespoons all-purpose flour",
+      "salt and ground black pepper to taste",
+      "1/2 cup frozen petite peas",
+      "1/2 cup frozen cut green beans",
+      "1 cup all-purpose flour",
+      "1 teaspoon baking powder",
+      "1/2 teaspoon salt",
+      "2 tablespoons cold unsalted butter",
+      "1 tablespoon chopped fresh flat-leaf parsley",
+      "1/2 cup buttermilk"
+    ]
   },
   {
     "rank": 19,
@@ -149,7 +435,14 @@
     "why": "Bacon, cheese, and potatoes - another 2026 most-saved entry.",
     "rating": "Fair",
     "url": "https://www.allrecipes.com/recipe/23996/aaahh-potato-soup/",
-    "freeze": "Potatoes and dairy can turn grainy. If freezing, cool quickly, thaw overnight, and reheat gently while stirring."
+    "freeze": "Potatoes and dairy can turn grainy. If freezing, cool quickly, thaw overnight, and reheat gently while stirring.",
+    "ingredients": [
+      "2 Yukon Gold potatoes, cubed",
+      "1 1/2 cups water",
+      "1 (10.5 ounce) can condensed chicken broth",
+      "1 (5.5 ounce) package au gratin instant potato mix",
+      "1 cup heavy cream"
+    ]
   },
   {
     "rank": 20,
@@ -157,7 +450,19 @@
     "why": "Chicken, bacon, and cheese made with ordinary pantry ingredients.",
     "rating": "Excellent",
     "url": "https://www.allrecipes.com/neiman-marcus-chicken-casserole-recipe-11693255",
-    "freeze": "Assemble and freeze before baking. Hold back any crunchy topping and add it just before baking."
+    "freeze": "Assemble and freeze before baking. Hold back any crunchy topping and add it just before baking.",
+    "ingredients": [
+      "4 cups cooked shredded chicken",
+      "1 can cream of chicken soup",
+      "1 cup sour cream",
+      "2 cups shredded cheddar cheese",
+      "1/2 cup sliced green onions",
+      "1/2 cup slivered almonds",
+      "6 slices bacon, cooked and crumbled",
+      "1 1/2 teaspoons hot sauce, such as tabasco",
+      "1 sleeve buttery crackers, such as Ritz® crackers",
+      "1/2 cup butter, melted"
+    ]
   },
   {
     "rank": 21,
@@ -165,7 +470,15 @@
     "why": "Extremely simple baked chicken and one of 2026's most-saved recipes.",
     "rating": "Very good",
     "url": "https://www.allrecipes.com/recipe/24002/famous-butter-chicken/",
-    "freeze": "Freeze cooked portions tightly wrapped. Reheat covered, then uncover briefly to restore the crumb topping."
+    "freeze": "Freeze cooked portions tightly wrapped. Reheat covered, then uncover briefly to restore the crumb topping.",
+    "ingredients": [
+      "1 cup crushed buttery round cracker crumbs",
+      "2 large eggs, beaten",
+      "1/2 teaspoon garlic salt",
+      "ground black pepper to taste",
+      "4 skinless, boneless chicken breast halves",
+      "1/2 cup butter, cut into pieces"
+    ]
   },
   {
     "rank": 22,
@@ -173,7 +486,22 @@
     "why": "Bright but still comforting, with chicken, rice, and lemon.",
     "rating": "Good",
     "url": "https://www.allrecipes.com/recipe/12963/greek-lemon-chicken-soup/",
-    "freeze": "Freeze without rice when possible. Add freshly cooked rice after reheating to prevent a soft, swollen texture."
+    "freeze": "Freeze without rice when possible. Add freshly cooked rice after reheating to prevent a soft, swollen texture.",
+    "ingredients": [
+      "8 cups chicken broth",
+      "1/2 cup fresh lemon juice",
+      "1/2 cup shredded carrots",
+      "1/2 cup finely chopped onion",
+      "1/2 cup finely chopped celery",
+      "6 tablespoons chicken soup base",
+      "1/4 teaspoon ground white pepper",
+      "1/4 cup margarine",
+      "1/4 cup all-purpose flour",
+      "8 egg yolks",
+      "1 cup cooked white rice",
+      "1 cup diced, cooked chicken meat",
+      "16 slices lemon"
+    ]
   },
   {
     "rank": 23,
@@ -181,7 +509,20 @@
     "why": "Creamy peppercorn chicken with steakhouse DNA.",
     "rating": "Good",
     "url": "https://www.allrecipes.com/chicken-au-poivre-recipe-11861726",
-    "freeze": "Freeze chicken and sauce together, then thaw overnight. Reheat gently so the cream sauce does not separate."
+    "freeze": "Freeze chicken and sauce together, then thaw overnight. Reheat gently so the cream sauce does not separate.",
+    "ingredients": [
+      "1 Tablespoon black peppercorns",
+      "1 Tablespoon olive oil",
+      "3 Tablespoons unsalted butter, divided",
+      "2 pounds boneless, skinless chicken thighs, patted dry",
+      "1/2 teaspoon salt, or to taste",
+      "2 Tablespoons minced shallot",
+      "1 cup low-sodium chicken broth",
+      "1/2 cup heavy cream",
+      "3 or 4 fresh thyme sprigs",
+      "1 Tablespoon freshly squeezed lemon juice",
+      "fresh parsley sprigs for garnish optional"
+    ]
   },
   {
     "rank": 24,
@@ -189,7 +530,20 @@
     "why": "Chef John's rich potato gratin and a 2026 most-saved side dish.",
     "rating": "Good",
     "url": "https://www.allrecipes.com/country-club-potatoes-recipe-11872410",
-    "freeze": "Freeze after baking and cooling completely. Reheat covered, then uncover at the end to refresh the browned top."
+    "freeze": "Freeze after baking and cooling completely. Reheat covered, then uncover at the end to refresh the browned top.",
+    "ingredients": [
+      "6 large russet potatoes (about 5 pounds)",
+      "4 cups chicken broth",
+      "2 teaspoons kosher salt",
+      "1/2 teaspoon white pepper",
+      "pinch cayenne",
+      "3/4 cup heavy cream",
+      "1/2 cup milk",
+      "1 1/4 cups panko breadcrumbs",
+      "2 tablespoons melted butter",
+      "6 ounces cheddar cheese, freshly grated",
+      "sliced green onion"
+    ]
   },
   {
     "rank": 25,
@@ -197,6 +551,19 @@
     "why": "A dessert-and-breakfast comfort bomb from 2026's most-saved recipes.",
     "rating": "Very good",
     "url": "https://www.allrecipes.com/cinnamon-roll-butter-swim-biscuits-recipe-11905339",
-    "freeze": "Freeze cooled individual biscuits. Thaw at room temperature and warm briefly; add fresh glaze after reheating."
+    "freeze": "Freeze cooled individual biscuits. Thaw at room temperature and warm briefly; add fresh glaze after reheating.",
+    "ingredients": [
+      "1/3 cup dark brown sugar",
+      "1 Tablespoon cinnamon",
+      "1 1/4 cups heavy cream, divided",
+      "1/2 cup butter",
+      "2 1/2 cups all-purpose flour",
+      "3 Tablespoons white sugar",
+      "1 Tablespoon baking powder",
+      "3/4 teaspoon kosher salt or 1/2 teaspoon iodized salt",
+      "1 cup buttermilk",
+      "1 cup confectioner’s sugar",
+      "2 ounces cream cheese"
+    ]
   }
 ]

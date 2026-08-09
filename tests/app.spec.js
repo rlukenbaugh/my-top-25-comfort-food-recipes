@@ -182,6 +182,42 @@ test("measurement converter handles weight, volume, temperature, swapping, and b
 });
 
 
+test("cooking shortcuts, pantry matching, and surprise selection work", async ({ page }) => {
+  await openCleanApp(page);
+
+  await expect(page.locator("#day-greeting")).toHaveText(/Good (morning|afternoon|evening), Ron!/);
+  await expect(page.locator(".quick-action")).toHaveCount(5);
+
+  await page.locator("#quick-add-recipe").click();
+  await expect(page.getByRole("dialog", { name: "Add a Recipe" })).toBeVisible();
+  await page.getByRole("button", { name: "Cancel" }).click();
+
+  await page.locator("#quick-shopping-list").click();
+  await expect(page.getByRole("dialog", { name: "Shopping List" })).toBeVisible();
+  await page.getByRole("dialog", { name: "Shopping List" }).getByRole("button", { name: "Done" }).click();
+
+  await page.locator("#quick-pantry-match").click();
+  const pantryDialog = page.getByRole("dialog", { name: "What Can I Make?" });
+  await pantryDialog.getByLabel("What ingredients do you have?").fill("chicken, potatoes, cheddar");
+  await pantryDialog.getByRole("button", { name: "Find Recipes" }).click();
+  await expect(pantryDialog.getByRole("status")).toContainText("matches found");
+  await expect(pantryDialog.locator(".pantry-result").first()).toContainText("Million Dollar Soup");
+  const accessibility = await new AxeBuilder({ page }).include("#pantry-dialog").analyze();
+  expect(accessibility.violations).toEqual([]);
+  await pantryDialog.locator(".pantry-result").first().getByRole("button", { name: /View/ }).click();
+  await expect(page.getByRole("heading", { name: "1 recipe" })).toBeVisible();
+
+  await page.locator("#quick-my-recipes").click();
+  await expect(page.getByRole("heading", { name: "25 recipes" })).toBeVisible();
+  await page.locator("#quick-surprise").click();
+  await expect(page.locator("#recipe-list article.is-surprise")).toHaveCount(1);
+  await expect(page.getByRole("status")).toContainText("Tonight's pick:");
+  const firstSurprise = await page.locator("#recipe-list article.is-surprise").getAttribute("data-recipe-id");
+  await page.locator("#quick-surprise").click();
+  await expect(page.locator("#recipe-list article.is-surprise")).not.toHaveAttribute("data-recipe-id", firstSurprise);
+});
+
+
 test("collections can be created, assigned, and used as a recipe filter", async ({ page }) => {
   await openCleanApp(page);
 
@@ -224,9 +260,12 @@ test("recipe ingredients build a persistent grouped shopping list", async ({ pag
   await page.getByRole("button", { name: "Add ingredients for World's Best Lasagna to the shopping list" }).click();
   const ingredientsDialog = page.getByRole("dialog", { name: "Recipe Ingredients" });
   await expect(ingredientsDialog).toBeVisible();
-  await ingredientsDialog.getByRole("textbox", { name: "Ingredients", exact: true }).fill("1 pound ground beef\n1 onion, diced\n2 cups tomato sauce");
-  await ingredientsDialog.getByRole("button", { name: "Save Ingredients" }).click();
-  await ingredientsDialog.getByRole("checkbox", { name: "1 onion, diced" }).uncheck();
+  await expect(ingredientsDialog.locator("#ingredients-source-note")).toContainText("Loaded from the linked original recipe");
+  const ingredientCheckboxes = ingredientsDialog.getByRole("checkbox");
+  await expect(ingredientCheckboxes).toHaveCount(20);
+  for (const checkbox of await ingredientCheckboxes.all()) await checkbox.uncheck();
+  await ingredientsDialog.getByRole("checkbox", { name: "1 pound sweet Italian sausage" }).check();
+  await ingredientsDialog.getByRole("checkbox", { name: "12 lasagna noodles" }).check();
   await ingredientsDialog.getByRole("button", { name: "Add to Shopping List" }).click();
 
   const shoppingDialog = page.getByRole("dialog", { name: "Shopping List" });
@@ -238,7 +277,7 @@ test("recipe ingredients build a persistent grouped shopping list", async ({ pag
   await expect(shoppingDialog.getByRole("heading", { name: "Other items" })).toBeVisible();
   await expect(shoppingDialog.locator(".shopping-item")).toHaveCount(3);
 
-  await shoppingDialog.getByRole("checkbox", { name: "1 pound ground beef" }).check();
+  await shoppingDialog.getByRole("checkbox", { name: "1 pound sweet Italian sausage" }).check();
   await shoppingDialog.getByRole("button", { name: "Clear Checked" }).click();
   await expect(shoppingDialog.locator(".shopping-item")).toHaveCount(2);
   await shoppingDialog.getByRole("button", { name: "Copy List" }).click();
@@ -249,10 +288,15 @@ test("recipe ingredients build a persistent grouped shopping list", async ({ pag
     ingredients: JSON.parse(localStorage.getItem("rons-recipes.ingredients.v1")),
     shopping: JSON.parse(localStorage.getItem("rons-recipes.shopping.v1")),
   }));
-  expect(Object.values(savedData.ingredients)[0]).toEqual(["1 pound ground beef", "1 onion, diced", "2 cups tomato sauce"]);
+  expect(savedData.ingredients).toBeNull();
   expect(savedData.shopping).toHaveLength(2);
   const accessibility = await new AxeBuilder({ page }).include("#shopping-dialog").analyze();
   expect(accessibility.violations).toEqual([]);
+
+  await shoppingDialog.getByRole("button", { name: "Done" }).click();
+  await page.getByRole("button", { name: "Add ingredients for Chicken Pot Pie to the shopping list" }).click();
+  await ingredientsDialog.getByRole("button", { name: "Cancel" }).click();
+  await expect(ingredientsDialog).toBeHidden();
 });
 
 
@@ -278,6 +322,7 @@ test("mobile details, touch targets, wrapping, contrast, and accessibility pass"
   for (const control of [
     mobileNavigation.getByRole("button", { name: "Collections" }),
     mobileNavigation.getByRole("button", { name: "Shopping List" }),
+    page.locator(".quick-action").first(),
     firstRecipe.locator(".recipe-link"),
     firstRecipe.locator(".collection-recipe"),
     firstRecipe.locator(".shopping-recipe"),
@@ -288,6 +333,12 @@ test("mobile details, touch targets, wrapping, contrast, and accessibility pass"
     expect(box.width).toBeGreaterThanOrEqual(43.9);
     expect(box.height).toBeGreaterThanOrEqual(43.9);
   }
+
+  const quickActionLayout = await page.locator(".quick-actions").evaluate((element) => ({
+    clientWidth: element.clientWidth,
+    scrollWidth: element.scrollWidth,
+  }));
+  expect(quickActionLayout.scrollWidth).toBeGreaterThan(quickActionLayout.clientWidth);
 
   const rankContrast = await firstRecipe.locator(".rank").evaluate((element) => {
     const rgb = (value) => value.match(/[\d.]+/g).map(Number).slice(0, 3);

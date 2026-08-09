@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="Ron's ranked comfort-food recipes with practical freezer notes and links to every original recipe." />
+    <meta name="description" content="Ron's 25 comfort-food favorites with ingredient checklists, a shopping list, pantry matching, and practical freezer notes." />
     <meta name="theme-color" content="#651f27" />
     <meta name="application-name" content="Ron's Recipes" />
     <meta name="apple-mobile-web-app-title" content="Ron's Recipes" />
@@ -14,7 +14,7 @@
     <meta property="og:locale" content="en_US" />
     <meta property="og:site_name" content="Ron's Recipes" />
     <meta property="og:title" content="Ron's Recipes | Comfort-Food Favorites" />
-    <meta property="og:description" content="25 ranked comfort-food favorites with practical freezer notes and links to every original recipe." />
+    <meta property="og:description" content="25 comfort-food favorites with ingredient checklists, a shopping list, pantry matching, and practical freezer notes." />
     <meta property="og:url" content="https://rlukenbaugh.github.io/my-top-25-comfort-food-recipes/" />
     <meta property="og:image" content="https://rlukenbaugh.github.io/my-top-25-comfort-food-recipes/assets/og/rons-recipes-share-1200x630.png" />
     <meta property="og:image:secure_url" content="https://rlukenbaugh.github.io/my-top-25-comfort-food-recipes/assets/og/rons-recipes-share-1200x630.png" />
@@ -24,7 +24,7 @@
     <meta property="og:image:alt" content="Ron's Recipes, a ranked collection of 25 comfort-food favorites with freezer guidance." />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Ron's Recipes | Comfort-Food Favorites" />
-    <meta name="twitter:description" content="25 ranked comfort-food favorites with practical freezer notes and links to every original recipe." />
+    <meta name="twitter:description" content="25 comfort-food favorites with ingredient checklists, a shopping list, pantry matching, and practical freezer notes." />
     <meta name="twitter:image" content="https://rlukenbaugh.github.io/my-top-25-comfort-food-recipes/assets/og/rons-recipes-share-1200x630.png" />
     <meta name="twitter:image:alt" content="Ron's Recipes, a ranked collection of 25 comfort-food favorites with freezer guidance." />
     <title>Ron's Recipes</title>
@@ -32,8 +32,8 @@
     <link rel="icon" href="assets/icons/favicon.ico" sizes="any" />
     <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" />
     <link rel="manifest" href="manifest.webmanifest" />
-    <link rel="stylesheet" href="styles-v1.4.css" />
-    <script src="app-v1.4.js" defer></script>
+    <link rel="stylesheet" href="styles-v1.5.css" />
+    <script src="app-v1.5.js" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#recipes">Skip to recipes</a>
@@ -67,7 +67,7 @@
     <main id="top">
       <section class="intro" aria-labelledby="page-title">
         <h1 id="page-title">Ron's Recipes</h1>
-        <p><span data-recipe-count>25</span> ranked comfort-food favorites with practical freezer notes and links to every original recipe.</p>
+        <p><span data-recipe-count>25</span> ranked comfort-food favorites with ingredient checklists, a shopping list, pantry matching, and practical freezer notes.</p>
         <div class="hero-meta">
           <ul class="summary-badges" aria-label="Collection highlights">
             <li>
@@ -86,6 +86,40 @@
           <button id="install-app" class="install-app" type="button" hidden>
             <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M5 20h14"/></svg>
             Install Ron's Recipes
+          </button>
+        </div>
+      </section>
+
+      <section class="day-starter" aria-labelledby="day-greeting">
+        <div class="day-starter-heading">
+          <h2 id="day-greeting">Good morning, Ron!</h2>
+          <p>What are we cooking today?</p>
+        </div>
+        <div class="quick-actions" aria-label="Recipe shortcuts">
+          <button id="quick-add-recipe" class="quick-action" type="button">
+            <span class="quick-action-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>
+            <strong>Add a recipe</strong>
+            <small>Save your own favorite</small>
+          </button>
+          <button id="quick-my-recipes" class="quick-action" type="button">
+            <span class="quick-action-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 4h12a2 2 0 0 1 2 2v14H7a2 2 0 0 1-2-2V4Zm2 0v16M10 8h6M10 12h6"/></svg></span>
+            <strong>My recipes</strong>
+            <small><span id="quick-recipe-count">25</span> saved</small>
+          </button>
+          <button id="quick-shopping-list" class="quick-action" type="button">
+            <span class="quick-action-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 4h2l2 11h11l2-8H6M9 20h.01M17 20h.01"/></svg></span>
+            <strong>Shopping list</strong>
+            <small><span id="quick-shopping-count">0</span> items</small>
+          </button>
+          <button id="quick-pantry-match" class="quick-action" type="button">
+            <span class="quick-action-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m12 3 1.7 4.3L18 9l-4.3 1.7L12 15l-1.7-4.3L6 9l4.3-1.7L12 3ZM18.5 15l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8.8-2.2Z"/></svg></span>
+            <strong>What can I make?</strong>
+            <small>Match your pantry</small>
+          </button>
+          <button id="quick-surprise" class="quick-action" type="button">
+            <span class="quick-action-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg></span>
+            <strong>Surprise me</strong>
+            <small>Pick a random favorite</small>
           </button>
         </div>
       </section>
@@ -303,6 +337,10 @@
         <button id="close-ingredients" class="icon-button" type="button" aria-label="Close recipe ingredients"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
       </div>
       <div class="personal-tools-content">
+        <div class="ingredient-source-row">
+          <p id="ingredients-source-note"></p>
+          <a id="ingredients-source-link" href="#" target="_blank" rel="noopener noreferrer">View original recipe <span aria-hidden="true">↗</span></a>
+        </div>
         <section id="ingredients-editor" class="ingredients-editor" aria-labelledby="ingredients-editor-title">
           <h3 id="ingredients-editor-title">Paste ingredients once</h3>
           <p>Use one ingredient per line. They stay on this device and can be edited later.</p>
@@ -332,6 +370,27 @@
         <div id="shopping-list" class="shopping-list"></div>
         <p id="shopping-message" class="form-message" role="status"></p>
         <div class="shopping-actions"><button id="copy-shopping" class="button button-secondary" type="button">Copy List</button><button id="print-shopping" class="button button-secondary" type="button">Print</button><button id="clear-checked-shopping" class="text-button" type="button">Clear Checked</button><button id="done-shopping" class="button button-primary" type="button">Done</button></div>
+      </div>
+    </dialog>
+
+    <dialog id="pantry-dialog" class="personal-tools-dialog" aria-labelledby="pantry-dialog-title">
+      <div class="dialog-header">
+        <div><h2 id="pantry-dialog-title">What Can I Make?</h2><p>Match ingredients you already have with Ron's recipes.</p></div>
+        <button id="close-pantry" class="icon-button" type="button" aria-label="Close pantry matcher"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+      </div>
+      <div class="personal-tools-content">
+        <form id="pantry-form" class="pantry-form">
+          <label class="field" for="pantry-ingredients">What ingredients do you have?
+            <textarea id="pantry-ingredients" rows="4" placeholder="chicken, potatoes, cheddar cheese"></textarea>
+          </label>
+          <p>Separate ingredients with commas or put one on each line.</p>
+          <button class="button button-primary" type="submit">Find Recipes</button>
+        </form>
+        <p id="pantry-message" class="form-message pantry-message" role="status"></p>
+        <div id="pantry-results" class="pantry-results">
+          <div class="tool-empty">Add a few pantry ingredients to see your closest recipe matches.</div>
+        </div>
+        <div class="dialog-actions"><button id="done-pantry" class="button button-secondary" type="button">Done</button></div>
       </div>
     </dialog>
 
@@ -465,9 +524,9 @@
         <div class="recipe-freeze"><span class="section-label">Freeze smart</span><p></p></div>
         <div class="recipe-actions">
           <a class="recipe-link" target="_blank" rel="noopener noreferrer"><span>Open original recipe</span><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 13v7H4V6h7"/></svg></a>
+          <button class="shopping-recipe" type="button"><span>Add to Shopping List</span><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 5h2l2 10h9l2-7H7M10 20h.01M17 20h.01"/></svg></button>
           <div class="secondary-actions">
             <button class="collection-recipe" type="button"><span>Collections</span><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 6h7l2 2h9v11H3V6Z"/></svg></button>
-            <button class="shopping-recipe" type="button"><span>Shopping</span><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 5h2l2 10h9l2-7H7M10 20h.01M17 20h.01"/></svg></button>
             <button class="edit-recipe" type="button" hidden><span>Edit</span><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m4 16-1 5 5-1L19 9l-4-4L4 16ZM13 7l4 4"/></svg></button>
             <button class="copy-recipe" type="button"><span>Copy</span><svg aria-hidden="true" viewBox="0 0 24 24"><rect x="8" y="8" width="11" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h2"/></svg></button>
             <button class="remove-recipe" type="button"><span>Remove</span><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M7 7l1 13h8l1-13M10 11v5M14 11v5"/></svg></button>

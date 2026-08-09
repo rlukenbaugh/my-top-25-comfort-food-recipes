@@ -8,7 +8,7 @@ Open the live collection at:
 
 https://rlukenbaugh.github.io/my-top-25-comfort-food-recipes/
 
-The web app reads the same `recipes.json` file as the printable book. It includes sticky search and freezer-rating filters, personal recipe collections, a recipe-linked shopping list, rating-accented recipe cards, expandable mobile details, a back-to-top control, a live kitchen measurement converter, original-recipe links, a downloadable PDF, and browser-based recipe additions. GitHub Pages validates, tests, rebuilds, and republishes it whenever `main` is updated.
+The web app reads the same `recipes.json` file as the printable book. It includes a time-aware cooking dashboard, sticky search and freezer-rating filters, personal recipe collections, a recipe-linked shopping list, a pantry matcher, a random-recipe picker, rating-accented recipe cards, expandable mobile details, a back-to-top control, a live kitchen measurement converter, original-recipe links, a downloadable PDF, and browser-based recipe additions. GitHub Pages validates, tests, rebuilds, and republishes it whenever `main` is updated.
 
 The site also includes branded sharing metadata, install icons, a web-app manifest, an install prompt when supported by the browser, and an offline app-shell cache. After the first successful visit, the recipe list and freezer notes remain available without a connection; the printable PDF and original Allrecipes pages still require internet access.
 
@@ -28,9 +28,10 @@ The site also includes branded sharing metadata, install icons, a web-app manife
 
 - Select **Collections** to use the starter folders (Crockpot, Easy, New, Favorites, and Weeknight) or create your own.
 - Select **Collections** on a recipe card to assign that recipe to one or more folders. The **View** action filters the main recipe list to that folder.
-- Select **Shopping** on a recipe card to paste and save its ingredients once, choose the ingredients you need, and add them as a grouped shopping list.
+- Select **Add to Shopping List** on any built-in recipe to choose directly from the ingredient list loaded from its linked original recipe. Personal recipes still support the paste-once ingredient editor.
 - The shopping list supports manual items, checkboxes, individual removal, clearing checked items, copying, and printing.
 - Ingredients, collections, and the shopping list are private to the current browser and are included in exported backups.
+- The home-page shortcuts open Add Recipe and Shopping List, return to all recipes, match pantry terms against recipe ingredients, or highlight a random favorite.
 
 ## Add or change a recipe
 
@@ -43,6 +44,7 @@ The site also includes branded sharing metadata, install icons, a web-app manife
    - `rating`
    - `url`
    - `freeze`
+   - `ingredients` (an array with one ingredient per line)
 4. Keep the commas between recipe blocks and save the file.
 5. Double-click `build.cmd`, or open a terminal in this folder and run:
 
@@ -77,7 +79,7 @@ Then run:
 npm.cmd test
 ```
 
-This validates the recipe data and exercises search, filters, collections, ingredients, shopping-list actions, keyboard tabs, mobile details, touch targets, color contrast, accessibility, add/edit/delete, and backup export/import. `npm.cmd run test:links` performs the external-link audit; Allrecipes may report protected HTTP 403 responses when it blocks automated requests.
+This validates the recipe data and exercises search, filters, dashboard shortcuts, pantry matching, surprise selection, collections, ingredients, shopping-list actions, keyboard tabs, mobile details, touch targets, color contrast, accessibility, add/edit/delete, and backup export/import. `npm.cmd run test:links` performs the external-link audit; Allrecipes may report protected HTTP 403 responses when it blocks automated requests.
 
 ## Project files
 

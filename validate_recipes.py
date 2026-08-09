@@ -5,7 +5,7 @@ import json
 
 ROOT = Path(__file__).resolve().parent
 RATINGS = {"Outstanding", "Excellent", "Very good", "Good", "Fair"}
-REQUIRED_FIELDS = {"rank", "title", "why", "rating", "url", "freeze"}
+REQUIRED_FIELDS = {"rank", "title", "why", "rating", "url", "freeze", "ingredients"}
 
 
 def fail(messages):
@@ -43,6 +43,10 @@ def main():
         for field in ("title", "why", "rating", "url", "freeze"):
             if not isinstance(recipe[field], str) or not recipe[field].strip():
                 errors.append(f"Recipe {index} has an empty or invalid {field}.")
+        if not isinstance(recipe["ingredients"], list) or not recipe["ingredients"]:
+            errors.append(f"Recipe {index} must have a non-empty ingredients list.")
+        elif any(not isinstance(item, str) or not item.strip() for item in recipe["ingredients"]):
+            errors.append(f"Recipe {index} has an empty or invalid ingredient.")
 
         title_key = recipe["title"].strip().casefold()
         url_key = recipe["url"].strip().rstrip("/").casefold()
@@ -59,11 +63,11 @@ def main():
         if parsed_url.scheme != "https" or parsed_url.hostname not in {"allrecipes.com", "www.allrecipes.com"}:
             errors.append(f"Recipe {index} must use an HTTPS Allrecipes URL: {recipe['url']}.")
 
-    app_source = (ROOT / "index.html").read_text(encoding="utf-8") + (ROOT / "app-v1.4.js").read_text(encoding="utf-8")
+    app_source = (ROOT / "index.html").read_text(encoding="utf-8") + (ROOT / "app-v1.5.js").read_text(encoding="utf-8")
     for required_reference in (
         "recipes.json",
-        "app-v1.4.js",
-        "styles-v1.4.css",
+        "app-v1.5.js",
+        "styles-v1.5.css",
         "printable/rons-recipes-2026.pdf",
         "manifest.webmanifest",
         "service-worker.js",

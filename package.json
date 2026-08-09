@@ -1,8 +1,8 @@
 {
   "name": "rons-recipes",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "private": true,
-  "description": "Ron's editable comfort-food collection with freezer notes and a printable PDF.",
+  "description": "Ron's editable comfort-food collection with shopping lists, pantry matching, freezer notes, and a printable PDF.",
   "homepage": "https://rlukenbaugh.github.io/my-top-25-comfort-food-recipes/",
   "repository": {
     "type": "git",

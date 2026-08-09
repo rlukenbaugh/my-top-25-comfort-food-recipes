@@ -43,6 +43,7 @@ const state = {
   ingredientOverrides: {},
   collectionRecipe: null,
   ingredientRecipe: null,
+  surpriseRecipeKey: null,
   editingRecipeId: null,
 };
 
@@ -61,6 +62,14 @@ const elements = {
   backToTop: document.querySelector("#back-to-top"),
   installApp: document.querySelector("#install-app"),
   brand: document.querySelector(".brand"),
+  dayGreeting: document.querySelector("#day-greeting"),
+  quickAddRecipe: document.querySelector("#quick-add-recipe"),
+  quickMyRecipes: document.querySelector("#quick-my-recipes"),
+  quickShoppingList: document.querySelector("#quick-shopping-list"),
+  quickPantryMatch: document.querySelector("#quick-pantry-match"),
+  quickSurprise: document.querySelector("#quick-surprise"),
+  quickRecipeCount: document.querySelector("#quick-recipe-count"),
+  quickShoppingCount: document.querySelector("#quick-shopping-count"),
   openCollections: [...document.querySelectorAll("#open-collections, [data-footer-collections]")],
   openShopping: [...document.querySelectorAll("#open-shopping, [data-footer-shopping]")],
   activeCollectionFilter: document.querySelector("#active-collection-filter"),
@@ -138,6 +147,8 @@ const elements = {
   ingredientsDialog: document.querySelector("#ingredients-dialog"),
   closeIngredients: document.querySelector("#close-ingredients"),
   ingredientsRecipeName: document.querySelector("#ingredients-recipe-name"),
+  ingredientsSourceNote: document.querySelector("#ingredients-source-note"),
+  ingredientsSourceLink: document.querySelector("#ingredients-source-link"),
   ingredientsEditor: document.querySelector("#ingredients-editor"),
   ingredientsText: document.querySelector("#ingredients-text"),
   saveIngredients: document.querySelector("#save-ingredients"),
@@ -159,6 +170,13 @@ const elements = {
   copyShopping: document.querySelector("#copy-shopping"),
   printShopping: document.querySelector("#print-shopping"),
   clearCheckedShopping: document.querySelector("#clear-checked-shopping"),
+  pantryDialog: document.querySelector("#pantry-dialog"),
+  closePantry: document.querySelector("#close-pantry"),
+  donePantry: document.querySelector("#done-pantry"),
+  pantryForm: document.querySelector("#pantry-form"),
+  pantryIngredients: document.querySelector("#pantry-ingredients"),
+  pantryMessage: document.querySelector("#pantry-message"),
+  pantryResults: document.querySelector("#pantry-results"),
 };
 
 function normalizedRating(rating) {
@@ -336,7 +354,9 @@ function saveIngredientOverrides() {
 }
 
 function ingredientsForRecipe(recipe) {
-  return recipe?.custom ? parseIngredientLines(recipe.ingredients) : parseIngredientLines(state.ingredientOverrides[recipeKey(recipe)]);
+  if (!recipe) return [];
+  if (recipe.custom) return parseIngredientLines(recipe.ingredients);
+  return parseIngredientLines(state.ingredientOverrides[recipeKey(recipe)] || recipe.ingredients);
 }
 
 function recipeKey(recipe) {
@@ -355,6 +375,8 @@ function mergeRecipes() {
   state.removedKeys = new Set([...state.removedKeys].filter((key) => validKeys.has(key)));
   state.recipes = state.allRecipes.filter((recipe) => !state.removedKeys.has(recipeKey(recipe)));
   elements.recipeCounts.forEach((element) => { element.textContent = state.recipes.length; });
+  elements.quickRecipeCount.textContent = state.recipes.length;
+  elements.quickShoppingCount.textContent = state.shoppingItems.length;
   elements.removedCount.textContent = state.removedKeys.size;
   elements.restoreRemoved.hidden = state.removedKeys.size === 0;
 }
@@ -606,6 +628,7 @@ function createRecipeRow(recipe, displayRank) {
   const row = elements.template.content.firstElementChild.cloneNode(true);
   row.dataset.recipeId = recipe.id || `base-${recipe.rank}`;
   row.dataset.rating = normalizedRating(recipe.rating).toLocaleLowerCase().replace(/\s+/g, "-");
+  row.classList.toggle("is-surprise", state.surpriseRecipeKey === recipeKey(recipe));
   row.querySelector(".rank").textContent = displayRank;
   row.querySelector(".recipe-title").textContent = recipe.title;
   row.querySelector(".recipe-why").textContent = recipe.why;
@@ -686,6 +709,7 @@ function render() {
 
 function setRating(rating) {
   state.rating = rating;
+  state.surpriseRecipeKey = null;
   elements.filters.forEach((button) => {
     const active = button.dataset.rating === rating;
     button.classList.toggle("active", active);
@@ -1074,6 +1098,16 @@ function renderIngredientsDialog(showEditor = false) {
   const recipe = state.ingredientRecipe;
   if (!recipe) return;
   const ingredients = ingredientsForRecipe(recipe);
+  const hasOverride = !recipe.custom && Object.hasOwn(state.ingredientOverrides, recipeKey(recipe));
+  elements.ingredientsSourceNote.textContent = ingredients.length === 0
+    ? "No ingredient list is saved yet. Paste it below once and it will be ready next time."
+    : recipe.custom
+      ? "Ingredients saved with this personal recipe."
+      : hasOverride
+        ? "Using the ingredient list you edited on this device."
+        : "Loaded from the linked original recipe. Check the source if package sizes or amounts change.";
+  elements.ingredientsSourceLink.hidden = !recipe.url;
+  elements.ingredientsSourceLink.href = recipe.url || "#";
   const editorVisible = showEditor || ingredients.length === 0;
   elements.ingredientsEditor.hidden = !editorVisible;
   elements.ingredientsPicker.hidden = editorVisible;
@@ -1105,6 +1139,7 @@ function renderIngredientsDialog(showEditor = false) {
 function openIngredients(recipe) {
   state.ingredientRecipe = recipe;
   elements.ingredientsRecipeName.textContent = recipe.title;
+  elements.ingredientsMessage.textContent = "";
   elements.ingredientsDialog.showModal();
   renderIngredientsDialog();
 }
@@ -1148,7 +1183,8 @@ function saveRecipeIngredients() {
 }
 
 function cancelIngredientEditing() {
-  if (ingredientsForRecipe(state.ingredientRecipe).length) renderIngredientsDialog(false);
+  const isEditing = !elements.ingredientsEditor.hidden;
+  if (isEditing && ingredientsForRecipe(state.ingredientRecipe).length) renderIngredientsDialog(false);
   else closeIngredients();
 }
 
@@ -1199,6 +1235,7 @@ function shoppingGroups() {
 function renderShoppingList() {
   const checkedCount = state.shoppingItems.filter((item) => item.checked).length;
   const total = state.shoppingItems.length;
+  elements.quickShoppingCount.textContent = total;
   elements.shoppingSummary.textContent = total ? `${total} ${total === 1 ? "item" : "items"}; ${checkedCount} checked.` : "Nothing to buy yet.";
   elements.shoppingEmpty.hidden = total !== 0;
   elements.shoppingList.hidden = total === 0;
@@ -1315,6 +1352,130 @@ function clearCheckedShoppingItems() {
   if (!saveShoppingItems()) state.shoppingItems = previous;
   elements.shoppingMessage.textContent = `${checkedCount} checked ${checkedCount === 1 ? "item" : "items"} cleared.`;
   renderShoppingList();
+}
+
+function updateDayGreeting() {
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+  elements.dayGreeting.textContent = greeting + ", Ron!";
+}
+
+function scrollToRecipes() {
+  const behavior = matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+  document.querySelector("#recipes")?.scrollIntoView({ behavior, block: "start" });
+}
+
+function showMyRecipes() {
+  state.surpriseRecipeKey = null;
+  clearFilters(false);
+  scrollToRecipes();
+  requestAnimationFrame(() => elements.search.focus({ preventScroll: true }));
+}
+
+function surpriseMe() {
+  if (!state.recipes.length) return;
+  const previousSurpriseKey = state.surpriseRecipeKey;
+  clearFilters(false);
+  const alternatives = state.recipes.filter((recipe) => recipeKey(recipe) !== previousSurpriseKey);
+  const choices = alternatives.length ? alternatives : state.recipes;
+  const recipe = choices[Math.floor(Math.random() * choices.length)];
+  state.surpriseRecipeKey = recipeKey(recipe);
+  render();
+  requestAnimationFrame(() => {
+    const recipeId = recipe.id || "base-" + recipe.rank;
+    const row = document.querySelector('[data-recipe-id="' + recipeId + '"]');
+    const behavior = matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+    row?.scrollIntoView({ behavior, block: "center" });
+    row?.querySelector(".recipe-link")?.focus({ preventScroll: true });
+  });
+  showToast("Tonight's pick: " + recipe.title);
+}
+
+function pantryTerms(value) {
+  return [...new Set(String(value).split(/[\n,;]+/)
+    .map((term) => term.trim().toLocaleLowerCase())
+    .filter((term) => term.length >= 2))];
+}
+
+function pantryMatches(terms) {
+  return state.recipes.map((recipe) => {
+    const ingredients = ingredientsForRecipe(recipe);
+    const normalizedIngredients = ingredients.map((ingredient) => ingredient.toLocaleLowerCase());
+    const matches = terms.filter((term) => normalizedIngredients.some((ingredient) => ingredient.includes(term)));
+    return { recipe, ingredients, matches };
+  }).filter((result) => result.matches.length)
+    .sort((a, b) => b.matches.length - a.matches.length || a.recipe.rank - b.recipe.rank)
+    .slice(0, 8);
+}
+
+function viewPantryRecipe(recipe) {
+  closePantry();
+  state.collectionId = null;
+  state.rating = "All";
+  state.query = recipe.title;
+  state.surpriseRecipeKey = null;
+  elements.search.value = recipe.title;
+  elements.filters.forEach((button) => {
+    const active = button.dataset.rating === "All";
+    button.classList.toggle("active", active);
+    button.setAttribute("aria-pressed", String(active));
+  });
+  render();
+  scrollToRecipes();
+}
+
+function renderPantryResults(results, terms) {
+  const fragment = document.createDocumentFragment();
+  results.forEach(({ recipe, ingredients, matches }, index) => {
+    const article = document.createElement("article");
+    article.className = "pantry-result";
+    const details = document.createElement("div");
+    const rank = document.createElement("span");
+    rank.className = "pantry-result-rank";
+    rank.textContent = "Match " + (index + 1);
+    const title = document.createElement("h3");
+    title.textContent = recipe.title;
+    const summary = document.createElement("p");
+    summary.textContent = matches.length + " of " + terms.length + " pantry " + (terms.length === 1 ? "item" : "items") + " matched: " + matches.join(", ") + ".";
+    const ingredientCount = document.createElement("small");
+    ingredientCount.textContent = ingredients.length + " ingredients in the recipe";
+    details.append(rank, title, summary, ingredientCount);
+    const view = document.createElement("button");
+    view.type = "button";
+    view.className = "button button-secondary";
+    view.textContent = "View Recipe";
+    view.setAttribute("aria-label", "View " + recipe.title);
+    view.addEventListener("click", () => viewPantryRecipe(recipe));
+    article.append(details, view);
+    fragment.append(article);
+  });
+  elements.pantryResults.replaceChildren(fragment);
+}
+
+function findPantryRecipes(event) {
+  event.preventDefault();
+  const terms = pantryTerms(elements.pantryIngredients.value);
+  if (!terms.length) {
+    elements.pantryMessage.textContent = "Enter at least one ingredient.";
+    elements.pantryIngredients.focus();
+    return;
+  }
+  const results = pantryMatches(terms);
+  elements.pantryMessage.textContent = results.length
+    ? results.length + " closest " + (results.length === 1 ? "match" : "matches") + " found."
+    : "No matches yet. Try broader ingredient names such as chicken, potatoes, or cheese.";
+  if (results.length) renderPantryResults(results, terms);
+  else elements.pantryResults.innerHTML = '<div class="tool-empty">No recipes matched those pantry ingredients.</div>';
+}
+
+function openPantry() {
+  elements.pantryMessage.textContent = "";
+  elements.pantryDialog.showModal();
+  elements.pantryIngredients.focus();
+}
+
+function closePantry() {
+  elements.pantryDialog.close();
 }
 
 function backupRecipe(recipe) {
@@ -1518,6 +1679,7 @@ async function loadRecipes() {
 
 elements.search.addEventListener("input", (event) => {
   state.query = event.target.value.trim();
+  state.surpriseRecipeKey = null;
   render();
 });
 elements.filters.forEach((button) => button.addEventListener("click", () => setRating(button.dataset.rating)));
@@ -1529,6 +1691,11 @@ elements.backToTop.addEventListener("click", () => {
   window.scrollTo({ top: 0, behavior });
 });
 elements.installApp.addEventListener("click", installApp);
+elements.quickAddRecipe.addEventListener("click", () => openDialog());
+elements.quickMyRecipes.addEventListener("click", showMyRecipes);
+elements.quickShoppingList.addEventListener("click", openShopping);
+elements.quickPantryMatch.addEventListener("click", openPantry);
+elements.quickSurprise.addEventListener("click", surpriseMe);
 elements.openCollections.forEach((button) => button.addEventListener("click", openCollections));
 elements.openShopping.forEach((button) => button.addEventListener("click", openShopping));
 elements.activeCollectionFilter.addEventListener("click", () => {
@@ -1576,6 +1743,12 @@ elements.printShopping.addEventListener("click", printShoppingList);
 elements.clearCheckedShopping.addEventListener("click", clearCheckedShoppingItems);
 elements.shoppingDialog.addEventListener("click", (event) => {
   if (event.target === elements.shoppingDialog) closeShopping();
+});
+elements.closePantry.addEventListener("click", closePantry);
+elements.donePantry.addEventListener("click", closePantry);
+elements.pantryForm.addEventListener("submit", findPantryRecipes);
+elements.pantryDialog.addEventListener("click", (event) => {
+  if (event.target === elements.pantryDialog) closePantry();
 });
 elements.restoreRemoved.addEventListener("click", restoreRemovedRecipes);
 elements.openManager.addEventListener("click", openManager);
@@ -1628,6 +1801,7 @@ window.addEventListener("appinstalled", () => {
 });
 
 loadRecipes();
+updateDayGreeting();
 updateScrollEnhancements();
 updateConversion();
 
