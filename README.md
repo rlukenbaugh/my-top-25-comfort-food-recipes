@@ -18,7 +18,8 @@ The site also includes branded sharing metadata, install icons, a web-app manife
 - Select **Import URL** to have the Mealie server on this PC preview a public recipe page and fill the form. Review the imported fields and add a freezer note before saving.
 - Select **Paste recipe** to import labeled recipe text or a JSON recipe object.
 - Select **Copy recipe** on any entry to copy it in the exact labeled format accepted by the paste tool.
-- Personal recipes have **Edit** and permanent **Delete** actions.
+- Every recipe card has an **Edit** action for locally saved changes to its title, notes, rating, tags, source link, and ingredients. Personal recipes also have a permanent **Delete** action.
+- Edits to bundled recipes stay in this browser, are included in backups, and do not alter the shared printable PDF.
 - Select **Remove** to hide a recipe on that browser after confirmation. Select **Restore Removed** to bring hidden recipes back.
 - Select **Manage** to export a JSON backup or safely merge a previously exported backup. After personal data is saved, the home page also reminds you when no backup exists or the latest backup is at least 14 days old; the reminder can be snoozed for three days.
 - Recipe numbers automatically close any gaps when recipes are removed and return to their original order when restored.

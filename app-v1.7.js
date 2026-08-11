@@ -3,10 +3,11 @@ const REMOVED_STORAGE_KEY = "rons-recipes.removed.v1";
 const COLLECTIONS_STORAGE_KEY = "rons-recipes.collections.v1";
 const SHOPPING_STORAGE_KEY = "rons-recipes.shopping.v1";
 const INGREDIENTS_STORAGE_KEY = "rons-recipes.ingredients.v1";
+const RECIPE_OVERRIDES_STORAGE_KEY = "rons-recipes.overrides.v1";
 const LAST_BACKUP_STORAGE_KEY = "rons-recipes.backup.last.v1";
 const BACKUP_SNOOZE_STORAGE_KEY = "rons-recipes.backup.snooze.v1";
 const BACKUP_FORMAT = "rons-recipes-backup";
-const BACKUP_VERSION = 2;
+const BACKUP_VERSION = 3;
 const BACKUP_REMINDER_DAYS = 14;
 const BACKUP_SNOOZE_DAYS = 3;
 const MEALIE_BRIDGE_URL = "http://127.0.0.1:9931";
@@ -64,11 +65,12 @@ const state = {
   collections: [],
   shoppingItems: [],
   ingredientOverrides: {},
+  recipeOverrides: {},
   collectionRecipe: null,
   ingredientRecipe: null,
   ingredientScale: 1,
   surpriseRecipeKey: null,
-  editingRecipeId: null,
+  editingRecipeKey: null,
   importedRecipe: null,
 };
 
@@ -422,6 +424,44 @@ function saveCustomRecipes() {
   }
 }
 
+function normalizeRecipeOverride(recipe) {
+  const normalized = {
+    title: String(recipe?.title || "").trim(),
+    why: String(recipe?.why || "").trim(),
+    rating: normalizedRating(recipe?.rating || ""),
+    tags: parseTags(recipe?.tags),
+    freeze: String(recipe?.freeze || "").trim(),
+    url: String(recipe?.url || "").trim(),
+    ingredients: parseIngredientLines(recipe?.ingredients),
+  };
+  return isValidCustomRecipe(normalized) ? normalized : null;
+}
+
+function loadRecipeOverrides() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(RECIPE_OVERRIDES_STORAGE_KEY) || "{}");
+    if (!saved || typeof saved !== "object" || Array.isArray(saved)) return {};
+    return Object.fromEntries(Object.entries(saved)
+      .filter(([key]) => key.startsWith("base:"))
+      .map(([key, value]) => [key, normalizeRecipeOverride(value)])
+      .filter(([, value]) => value));
+  } catch (error) {
+    console.warn("Edited recipes could not be read.", error);
+    return {};
+  }
+}
+
+function saveRecipeOverrides() {
+  try {
+    localStorage.setItem(RECIPE_OVERRIDES_STORAGE_KEY, JSON.stringify(state.recipeOverrides));
+    return true;
+  } catch (error) {
+    console.error("Edited recipes could not be written.", error);
+    showToast("Changes could not be saved on this device");
+    return false;
+  }
+}
+
 function loadRemovedKeys() {
   try {
     const saved = JSON.parse(localStorage.getItem(REMOVED_STORAGE_KEY) || "[]");
@@ -557,18 +597,34 @@ function ingredientsForRecipe(recipe) {
 }
 
 function recipeKey(recipe) {
+  if (typeof recipe?.baseKey === "string" && recipe.baseKey) return recipe.baseKey;
   return recipe.id ? `custom:${recipe.id}` : `base:${normalizeUrl(recipe.url)}`;
+}
+
+function baseRecipeKey(recipe) {
+  return `base:${normalizeUrl(recipe.url)}`;
 }
 
 function mergeRecipes() {
   const highestBaseRank = Math.max(0, ...state.baseRecipes.map((recipe) => Number(recipe.rank) || 0));
+  const baseRecipes = state.baseRecipes.map((recipe) => {
+    const baseKey = baseRecipeKey(recipe);
+    const override = state.recipeOverrides[baseKey];
+    return {
+      ...recipe,
+      ...(override || {}),
+      rank: recipe.rank,
+      baseKey,
+      locallyEdited: Boolean(override),
+    };
+  });
   state.customRecipes = state.customRecipes.map((recipe, index) => ({
     ...recipe,
     tags: parseTags(recipe.tags),
     rank: highestBaseRank + index + 1,
     custom: true,
   }));
-  state.allRecipes = [...state.baseRecipes, ...state.customRecipes].sort((a, b) => Number(a.rank) - Number(b.rank));
+  state.allRecipes = [...baseRecipes, ...state.customRecipes].sort((a, b) => Number(a.rank) - Number(b.rank));
   const validKeys = new Set(state.allRecipes.map(recipeKey));
   state.removedKeys = new Set([...state.removedKeys].filter((key) => validKeys.has(key)));
   state.recipes = state.allRecipes.filter((recipe) => !state.removedKeys.has(recipeKey(recipe)));
@@ -642,7 +698,7 @@ function showToast(message) {
 
 function personalDataCount() {
   const customCollections = state.collections.filter((collection) => collection.recipeKeys.length || !STARTER_COLLECTIONS.includes(collection.name));
-  return state.customRecipes.length + state.removedKeys.size + state.shoppingItems.length + Object.keys(state.ingredientOverrides).length + customCollections.length;
+  return state.customRecipes.length + Object.keys(state.recipeOverrides).length + state.removedKeys.size + state.shoppingItems.length + Object.keys(state.ingredientOverrides).length + customCollections.length;
 }
 
 function storedDate(key) {
@@ -888,6 +944,7 @@ function restoreRemovedRecipes() {
 function createRecipeRow(recipe, displayRank) {
   const row = elements.template.content.firstElementChild.cloneNode(true);
   row.dataset.recipeId = recipe.id || `base-${recipe.rank}`;
+  row.dataset.recipeKey = recipeKey(recipe);
   row.dataset.rating = normalizedRating(recipe.rating).toLocaleLowerCase().replace(/\s+/g, "-");
   row.classList.toggle("is-surprise", state.surpriseRecipeKey === recipeKey(recipe));
   row.querySelector(".rank").textContent = displayRank;
@@ -939,12 +996,13 @@ function createRecipeRow(recipe, displayRank) {
   removeButton.setAttribute("aria-label", `Remove ${recipe.title}`);
   removeButton.addEventListener("click", () => openRemoveDialog(recipe));
 
+  const editButton = row.querySelector(".edit-recipe");
+  editButton.hidden = false;
+  editButton.setAttribute("aria-label", `Edit ${recipe.title}`);
+  editButton.addEventListener("click", () => openDialog(recipe));
+
   if (recipe.custom) {
-    const editButton = row.querySelector(".edit-recipe");
     const deleteButton = row.querySelector(".delete-recipe");
-    editButton.hidden = false;
-    editButton.setAttribute("aria-label", `Edit ${recipe.title}`);
-    editButton.addEventListener("click", () => openDialog(recipe));
     deleteButton.hidden = false;
     deleteButton.setAttribute("aria-label", `Permanently delete ${recipe.title}`);
     deleteButton.addEventListener("click", () => openRemoveDialog(recipe, "delete"));
@@ -1047,10 +1105,10 @@ function resetDialog() {
 
 function openDialog(recipe = null) {
   resetDialog();
-  state.editingRecipeId = recipe?.id || null;
+  state.editingRecipeKey = recipe ? recipeKey(recipe) : null;
   elements.entryTabs.hidden = Boolean(recipe);
   if (recipe) {
-    elements.dialogTitle.textContent = "Edit Personal Recipe";
+    elements.dialogTitle.textContent = "Edit Saved Recipe";
     elements.dialogDescription.textContent = "Update the copy saved in this browser.";
     elements.deviceNote.textContent = "Changes are saved only in this browser and do not alter the shared printable PDF.";
     elements.submitRecipe.textContent = "Save Changes";
@@ -1244,11 +1302,12 @@ function usePastedRecipe() {
 function saveRecipe(event) {
   event.preventDefault();
   if (!elements.form.reportValidity()) return;
-  const editingRecipe = state.editingRecipeId
-    ? state.customRecipes.find((recipe) => recipe.id === state.editingRecipeId)
+  const editingKey = state.editingRecipeKey;
+  const editingRecipe = editingKey
+    ? state.allRecipes.find((recipe) => recipeKey(recipe) === editingKey)
     : null;
   const recipe = {
-    id: editingRecipe?.id || makeCustomId(),
+    id: editingRecipe?.custom ? editingRecipe.id : editingRecipe ? undefined : makeCustomId(),
     title: elements.titleInput.value.trim(),
     why: elements.whyInput.value.trim(),
     rating: elements.ratingInput.value,
@@ -1259,7 +1318,7 @@ function saveRecipe(event) {
   };
 
   const duplicate = state.allRecipes.some((existing) =>
-    existing.id !== recipe.id && (
+    (editingKey ? recipeKey(existing) !== editingKey : existing.id !== recipe.id) && (
       normalizeUrl(existing.url) === normalizeUrl(recipe.url) ||
       existing.title.trim().toLocaleLowerCase() === recipe.title.toLocaleLowerCase()
     )
@@ -1270,14 +1329,22 @@ function saveRecipe(event) {
   }
 
   const previousCustomRecipes = state.customRecipes;
-  if (editingRecipe) {
+  const previousRecipeOverrides = { ...state.recipeOverrides };
+  const previousIngredientOverrides = { ...state.ingredientOverrides };
+  if (editingRecipe?.custom) {
     state.customRecipes = state.customRecipes.map((existing) => existing.id === recipe.id ? recipe : existing);
+  } else if (editingRecipe) {
+    const { id, ...override } = recipe;
+    state.recipeOverrides = { ...state.recipeOverrides, [editingKey]: override };
+    delete state.ingredientOverrides[editingKey];
   } else {
     state.customRecipes = [...state.customRecipes, recipe];
   }
   mergeRecipes();
-  if (!saveCustomRecipes()) {
+  if (!saveCustomRecipes() || !saveRecipeOverrides() || !saveIngredientOverrides()) {
     state.customRecipes = previousCustomRecipes;
+    state.recipeOverrides = previousRecipeOverrides;
+    state.ingredientOverrides = previousIngredientOverrides;
     mergeRecipes();
     render();
     return;
@@ -1286,8 +1353,11 @@ function saveRecipe(event) {
   closeDialog();
   updateManageSummary();
   showToast(`${recipe.title} ${editingRecipe ? "updated" : "added"}`);
+  const savedKey = editingKey || `custom:${recipe.id}`;
   requestAnimationFrame(() => {
-    document.querySelector(`[data-recipe-id="${recipe.id}"]`)?.scrollIntoView({ behavior: "smooth", block: "center" });
+    [...document.querySelectorAll(".recipe-row")]
+      .find((row) => row.dataset.recipeKey === savedKey)
+      ?.scrollIntoView({ behavior: "smooth", block: "center" });
   });
 }
 
@@ -1956,11 +2026,17 @@ function backupRecipe(recipe) {
   };
 }
 
+function backupRecipeOverride(recipe) {
+  const { id, ...override } = backupRecipe(recipe);
+  return override;
+}
+
 function updateManageSummary() {
   const customCount = state.customRecipes.length;
+  const editedCount = Object.keys(state.recipeOverrides).length;
   const hiddenCount = state.removedKeys.size;
   const ingredientCount = Object.keys(state.ingredientOverrides).length + state.customRecipes.filter((recipe) => parseIngredientLines(recipe.ingredients).length).length;
-  elements.manageSummary.textContent = `${customCount} personal ${customCount === 1 ? "recipe" : "recipes"}, ${hiddenCount} hidden, ${ingredientCount} with saved ingredients, ${state.collections.length} collections, and ${state.shoppingItems.length} shopping items are saved on this device.`;
+  elements.manageSummary.textContent = `${customCount} personal ${customCount === 1 ? "recipe" : "recipes"}, ${editedCount} edited, ${hiddenCount} hidden, ${ingredientCount} with saved ingredients, ${state.collections.length} collections, and ${state.shoppingItems.length} shopping items are saved on this device.`;
   updateBackupReminder();
 }
 
@@ -1981,6 +2057,7 @@ function exportBackup() {
     version: BACKUP_VERSION,
     exportedAt: new Date().toISOString(),
     customRecipes: state.customRecipes.map(backupRecipe),
+    recipeOverrides: Object.fromEntries(Object.entries(state.recipeOverrides).map(([key, recipe]) => [key, backupRecipeOverride(recipe)])),
     removedKeys: [...state.removedKeys],
     collections: state.collections.map((collection) => ({ ...collection, recipeKeys: [...collection.recipeKeys] })),
     shoppingItems: state.shoppingItems.map((item) => ({ ...item })),
@@ -2024,11 +2101,12 @@ function normalizeImportedRecipe(recipe) {
 async function importBackupFile(file) {
   try {
     const backup = JSON.parse(await file.text());
-    if (backup?.format !== BACKUP_FORMAT || ![1, BACKUP_VERSION].includes(backup?.version) || !Array.isArray(backup.customRecipes) || !Array.isArray(backup.removedKeys)) {
+    if (backup?.format !== BACKUP_FORMAT || ![1, 2, BACKUP_VERSION].includes(backup?.version) || !Array.isArray(backup.customRecipes) || !Array.isArray(backup.removedKeys)) {
       throw new Error("This is not a supported Ron's Recipes backup.");
     }
 
     const previousCustomRecipes = state.customRecipes;
+    const previousRecipeOverrides = { ...state.recipeOverrides };
     const previousRemovedKeys = new Set(state.removedKeys);
     const previousCollections = state.collections.map((collection) => ({ ...collection, recipeKeys: [...collection.recipeKeys] }));
     const previousShoppingItems = state.shoppingItems;
@@ -2037,6 +2115,7 @@ async function importBackupFile(file) {
     let added = 0;
     let updated = 0;
     let skipped = 0;
+    let edited = 0;
 
     for (const importedValue of backup.customRecipes) {
       const imported = normalizeImportedRecipe(importedValue);
@@ -2104,15 +2183,26 @@ async function importBackupFile(file) {
       }
     }
 
+    if (backup.version >= 3 && backup.recipeOverrides && typeof backup.recipeOverrides === "object" && !Array.isArray(backup.recipeOverrides)) {
+      const importedOverrides = Object.fromEntries(Object.entries(backup.recipeOverrides)
+        .filter(([key]) => key.startsWith("base:"))
+        .map(([key, value]) => [key, normalizeRecipeOverride(value)])
+        .filter(([, value]) => value));
+      edited = Object.keys(importedOverrides).length;
+      state.recipeOverrides = { ...state.recipeOverrides, ...importedOverrides };
+    }
+
     mergeRecipes();
-    if (!saveCustomRecipes() || !saveRemovedKeys() || !saveCollections() || !saveShoppingItems() || !saveIngredientOverrides()) {
+    if (!saveCustomRecipes() || !saveRecipeOverrides() || !saveRemovedKeys() || !saveCollections() || !saveShoppingItems() || !saveIngredientOverrides()) {
       state.customRecipes = previousCustomRecipes;
+      state.recipeOverrides = previousRecipeOverrides;
       state.removedKeys = previousRemovedKeys;
       state.collections = previousCollections;
       state.shoppingItems = previousShoppingItems;
       state.ingredientOverrides = previousIngredientOverrides;
       mergeRecipes();
       saveCustomRecipes();
+      saveRecipeOverrides();
       saveRemovedKeys();
       saveCollections();
       saveShoppingItems();
@@ -2124,7 +2214,7 @@ async function importBackupFile(file) {
 
     render();
     updateManageSummary();
-    elements.manageMessage.textContent = `Import complete: ${added} added, ${updated} updated, ${skipped} skipped.`;
+    elements.manageMessage.textContent = `Import complete: ${added} added, ${updated} updated, ${edited} recipe edits, ${skipped} skipped.`;
   } catch (error) {
     console.error("Backup could not be imported.", error);
     elements.manageMessage.textContent = error.message || "That backup could not be imported.";
@@ -2139,6 +2229,7 @@ async function loadRecipes() {
     if (!response.ok) throw new Error(`Recipe data request failed: ${response.status}`);
     state.baseRecipes = (await response.json()).sort((a, b) => Number(a.rank) - Number(b.rank));
     state.customRecipes = loadCustomRecipes();
+    state.recipeOverrides = loadRecipeOverrides();
     state.removedKeys = loadRemovedKeys();
     state.collections = loadCollections();
     state.shoppingItems = loadShoppingItems();
@@ -2278,7 +2369,7 @@ elements.removeDialog.addEventListener("close", () => {
 elements.dialog.addEventListener("click", (event) => {
   if (event.target === elements.dialog) closeDialog();
 });
-elements.dialog.addEventListener("close", () => { state.editingRecipeId = null; });
+elements.dialog.addEventListener("close", () => { state.editingRecipeKey = null; });
 elements.manageDialog.addEventListener("click", (event) => {
   if (event.target === elements.manageDialog) closeManager();
 });

@@ -530,6 +530,49 @@ test("mobile details, touch targets, wrapping, contrast, and accessibility pass"
 });
 
 
+test("bundled recipes can be edited locally, persist, and round-trip in a backup", async ({ page }) => {
+  await page.goto("/");
+  await page.evaluate(() => localStorage.clear());
+  await page.reload();
+  await expect(page.getByRole("heading", { name: "26 recipes" })).toBeVisible();
+  await expect(page.getByRole("button", { name: /^Edit / })).toHaveCount(26);
+
+  await page.getByRole("button", { name: "Edit World's Best Lasagna" }).click();
+  await expect(page.getByRole("heading", { name: "Edit Saved Recipe" })).toBeVisible();
+  await expect(page.locator("#recipe-ingredients")).not.toHaveValue("");
+  await page.getByLabel("Recipe name").fill("World's Best Lasagna (Edited)");
+  await page.getByLabel("Why it belongs in the collection").fill("Ron's locally edited lasagna notes.");
+  await page.getByRole("button", { name: "Save Changes" }).click();
+  await expect(page.getByRole("heading", { name: "World's Best Lasagna (Edited)" })).toBeVisible();
+
+  await page.reload();
+  await expect(page.getByRole("heading", { name: "World's Best Lasagna (Edited)" })).toBeVisible();
+  await page.getByRole("button", { name: "Manage" }).click();
+  const downloadPromise = page.waitForEvent("download");
+  await page.getByRole("button", { name: "Export Backup" }).click();
+  const download = await downloadPromise;
+  const backupPath = await download.path();
+  const backupBuffer = await readFile(backupPath);
+  const backup = JSON.parse(backupBuffer.toString("utf8"));
+  expect(backup.version).toBe(3);
+  expect(Object.values(backup.recipeOverrides)).toContainEqual(expect.objectContaining({ title: "World's Best Lasagna (Edited)" }));
+
+  await page.getByRole("button", { name: "Done" }).click();
+  await page.evaluate(() => localStorage.removeItem("rons-recipes.overrides.v1"));
+  await page.reload();
+  await expect(page.getByRole("heading", { name: "World's Best Lasagna" })).toBeVisible();
+  await page.getByRole("button", { name: "Manage" }).click();
+  await page.locator("#import-backup-file").setInputFiles({
+    name: "rons-recipes-backup.json",
+    mimeType: "application/json",
+    buffer: backupBuffer,
+  });
+  await expect(page.getByRole("status").filter({ hasText: "1 recipe edits" })).toBeVisible();
+  await page.getByRole("button", { name: "Done" }).click();
+  await expect(page.getByRole("heading", { name: "World's Best Lasagna (Edited)" })).toBeVisible();
+});
+
+
 test("personal recipes can be added, edited, exported, deleted, and imported", async ({ page }) => {
   await openCleanApp(page);
   await page.getByRole("button", { name: "Add Recipe" }).click();
@@ -557,7 +600,7 @@ test("personal recipes can be added, edited, exported, deleted, and imported", a
   const backupPath = await download.path();
   const backupBuffer = await readFile(backupPath);
   const backup = JSON.parse(backupBuffer.toString("utf8"));
-  expect(backup.version).toBe(2);
+  expect(backup.version).toBe(3);
   expect(backup).toMatchObject({ collections: expect.any(Array), shoppingItems: expect.any(Array), ingredientOverrides: expect.any(Object) });
   expect(backup.customRecipes[0].ingredients).toEqual(["2 pounds chuck roast", "1 onion, chopped"]);
   expect(backup.customRecipes[0].tags).toEqual(["American", "Beef", "Slow cooker"]);
