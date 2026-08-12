@@ -5,7 +5,7 @@ import json
 
 ROOT = Path(__file__).resolve().parent
 RATINGS = {"Outstanding", "Excellent", "Very good", "Good", "Fair"}
-REQUIRED_FIELDS = {"rank", "title", "why", "rating", "url", "freeze", "ingredients", "tags"}
+REQUIRED_FIELDS = {"rank", "title", "why", "rating", "url", "freeze", "ingredients", "instructions", "tags"}
 
 
 def fail(messages):
@@ -47,6 +47,10 @@ def main():
             errors.append(f"Recipe {index} must have a non-empty ingredients list.")
         elif any(not isinstance(item, str) or not item.strip() for item in recipe["ingredients"]):
             errors.append(f"Recipe {index} has an empty or invalid ingredient.")
+        if not isinstance(recipe["instructions"], list) or not recipe["instructions"]:
+            errors.append(f"Recipe {index} must have a non-empty instructions list.")
+        elif any(not isinstance(item, str) or not item.strip() for item in recipe["instructions"]):
+            errors.append(f"Recipe {index} has an empty or invalid instruction.")
         if not isinstance(recipe["tags"], list) or not recipe["tags"]:
             errors.append(f"Recipe {index} must have at least one recipe tag.")
         elif len(recipe["tags"]) > 8 or any(not isinstance(tag, str) or not tag.strip() for tag in recipe["tags"]):
@@ -99,7 +103,7 @@ def main():
         fail(errors)
 
     print(f"PASS: {len(recipes)} recipes validated")
-    print("Ranks, required fields, tags, ratings, titles, ingredients, and HTTPS source URLs are valid.")
+    print("Ranks, required fields, tags, ratings, titles, ingredients, instructions, and HTTPS source URLs are valid.")
 
 
 if __name__ == "__main__":

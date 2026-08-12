@@ -52,16 +52,17 @@ test("search, filters, keyboard tabs, and console remain healthy", async ({ page
   await importTab.press("ArrowRight");
   await expect(pasteTab).toBeFocused();
   await expect(pasteTab).toHaveAttribute("aria-selected", "true");
-  await page.locator("#paste-recipe").fill("Title: Test Soup\nWhy: Cozy.\nFreezer rating: Good\nFreeze smart: Freeze flat.\nIngredients:\n2 cups stock\n1 onion\nURL: https://example.com/test-soup");
+  await page.locator("#paste-recipe").fill("Title: Test Soup\nWhy: Cozy.\nFreezer rating: Good\nFreeze smart: Freeze flat.\nIngredients:\n2 cups stock\n1 onion\nInstructions:\nSimmer the stock and onion.\nServe hot.\nURL: https://example.com/test-soup");
   await page.getByRole("button", { name: "Use Pasted Details" }).click();
   await expect(page.locator("#recipe-ingredients")).toHaveValue("2 cups stock\n1 onion");
+  await expect(page.locator("#recipe-instructions")).toHaveValue("Simmer the stock and onion.\nServe hot.");
   await page.getByRole("button", { name: "Cancel" }).click();
 
   expect(errors).toEqual([]);
 });
 
 
-test("each recipe can print its own details and ingredients", async ({ page }) => {
+test("each recipe can print its own details, ingredients, and instructions", async ({ page }) => {
   await openCleanApp(page);
   await expect(page.getByRole("button", { name: /^Print / })).toHaveCount(26);
   await expect(page.getByRole("button", { name: "Print Recipes" })).toHaveCount(0);
@@ -85,6 +86,8 @@ test("each recipe can print its own details and ingredients", async ({ page }) =
   await expect(page.locator("#print-recipe-tags")).toContainText("Italian");
   await expect(page.locator("#print-recipe-ingredients li")).toHaveCount(20);
   await expect(page.locator("#print-recipe-ingredients li").first()).toHaveText("1 pound sweet Italian sausage");
+  await expect(page.locator("#print-recipe-instructions li")).toHaveCount(7);
+  await expect(page.locator("#print-recipe-instructions li").first()).toHaveText("Brown the sausage, beef, onion, and garlic together in a Dutch oven over medium heat.");
   await expect(page.locator("#print-recipe-link")).toHaveAttribute("href", "https://www.allrecipes.com/recipe/23600/worlds-best-lasagna/");
 
   await page.emulateMedia({ media: "print" });
@@ -95,6 +98,30 @@ test("each recipe can print its own details and ingredients", async ({ page }) =
   await page.emulateMedia({ media: "screen" });
   await expect(page.locator("body")).not.toHaveClass(/print-single-recipe/);
   await expect(page.locator("#recipe-print-sheet")).toBeHidden();
+});
+
+
+test("recipe edits saved before instructions were added inherit the bundled directions", async ({ page }) => {
+  await page.addInitScript(() => {
+    localStorage.clear();
+    localStorage.setItem("rons-recipes.overrides.v1", JSON.stringify({
+      "base:https://www.allrecipes.com/recipe/23600/worlds-best-lasagna": {
+        title: "World's Best Lasagna (My Notes)",
+        why: "My locally saved lasagna notes.",
+        rating: "Excellent",
+        tags: ["Italian", "Pasta", "Beef"],
+        freeze: "Freeze individual portions.",
+        url: "https://www.allrecipes.com/recipe/23600/worlds-best-lasagna/",
+        ingredients: ["1 pound sweet Italian sausage"],
+      },
+    }));
+    window.print = () => {};
+  });
+  await page.goto("/");
+  await expect(page.getByRole("heading", { name: "World's Best Lasagna (My Notes)" })).toBeVisible();
+  await page.getByRole("button", { name: "Print World's Best Lasagna (My Notes)" }).click();
+  await expect(page.locator("#print-recipe-instructions li")).toHaveCount(7);
+  await expect(page.locator("#print-recipe-instructions li").first()).toContainText("Brown the sausage");
 });
 
 
@@ -157,6 +184,7 @@ test("Mealie URL import previews and fills the curated recipe form", async ({ pa
   await expect(page.getByLabel("Why it belongs in the collection")).toHaveValue(importedRecipe.description);
   await expect(page.locator("#recipe-tags")).toHaveValue("American, Soup, Weeknight");
   await expect(page.locator("#recipe-ingredients")).toHaveValue(importedRecipe.ingredients.join("\n"));
+  await expect(page.locator("#recipe-instructions")).toHaveValue(importedRecipe.instructions.join("\n"));
   await expect(page.getByLabel("Original recipe link")).toHaveValue(importedRecipe.sourceUrl);
   await expect(page.getByLabel("Freeze smart note")).toBeFocused();
   await expect(page.getByLabel("Freeze smart note")).toHaveValue("");
@@ -577,6 +605,7 @@ test("bundled recipes can be edited locally, persist, and round-trip in a backup
   await page.getByRole("button", { name: "Edit World's Best Lasagna" }).click();
   await expect(page.getByRole("heading", { name: "Edit Saved Recipe" })).toBeVisible();
   await expect(page.locator("#recipe-ingredients")).not.toHaveValue("");
+  await expect(page.locator("#recipe-instructions")).not.toHaveValue("");
   await page.getByLabel("Recipe name").fill("World's Best Lasagna (Edited)");
   await page.getByLabel("Why it belongs in the collection").fill("Ron's locally edited lasagna notes.");
   await page.getByRole("button", { name: "Save Changes" }).click();
@@ -591,8 +620,11 @@ test("bundled recipes can be edited locally, persist, and round-trip in a backup
   const backupPath = await download.path();
   const backupBuffer = await readFile(backupPath);
   const backup = JSON.parse(backupBuffer.toString("utf8"));
-  expect(backup.version).toBe(3);
-  expect(Object.values(backup.recipeOverrides)).toContainEqual(expect.objectContaining({ title: "World's Best Lasagna (Edited)" }));
+  expect(backup.version).toBe(4);
+  expect(Object.values(backup.recipeOverrides)).toContainEqual(expect.objectContaining({
+    title: "World's Best Lasagna (Edited)",
+    instructions: expect.arrayContaining([expect.stringContaining("Brown the sausage")]),
+  }));
 
   await page.getByRole("button", { name: "Done" }).click();
   await page.evaluate(() => localStorage.removeItem("rons-recipes.overrides.v1"));
@@ -618,6 +650,7 @@ test("personal recipes can be added, edited, exported, deleted, and imported", a
   await page.getByLabel("Why it belongs in the collection").fill("Tender beef and vegetables in rich gravy.");
   await page.getByLabel("Freeze smart note").fill("Cool completely and freeze in meal-size portions.");
   await page.locator("#recipe-ingredients").fill("2 pounds chuck roast\n1 onion, chopped");
+  await page.locator("#recipe-instructions").fill("Brown the roast.\nCook with the onion until tender.");
   await page.locator("#recipe-tags").fill("American, Beef, Slow cooker");
   await page.getByLabel("Original recipe link").fill("https://example.com/pot-roast");
   await page.getByRole("button", { name: "Add to Ron's Recipes" }).click();
@@ -625,6 +658,7 @@ test("personal recipes can be added, edited, exported, deleted, and imported", a
 
   await page.getByRole("button", { name: "Edit Sunday Pot Roast" }).click();
   await expect(page.locator("#recipe-ingredients")).toHaveValue("2 pounds chuck roast\n1 onion, chopped");
+  await expect(page.locator("#recipe-instructions")).toHaveValue("Brown the roast.\nCook with the onion until tender.");
   await page.getByLabel("Recipe name").fill("Sunday Pot Roast Updated");
   await page.getByRole("button", { name: "Save Changes" }).click();
   await expect(page.getByRole("heading", { name: "Sunday Pot Roast Updated" })).toBeVisible();
@@ -637,9 +671,10 @@ test("personal recipes can be added, edited, exported, deleted, and imported", a
   const backupPath = await download.path();
   const backupBuffer = await readFile(backupPath);
   const backup = JSON.parse(backupBuffer.toString("utf8"));
-  expect(backup.version).toBe(3);
+  expect(backup.version).toBe(4);
   expect(backup).toMatchObject({ collections: expect.any(Array), shoppingItems: expect.any(Array), ingredientOverrides: expect.any(Object) });
   expect(backup.customRecipes[0].ingredients).toEqual(["2 pounds chuck roast", "1 onion, chopped"]);
+  expect(backup.customRecipes[0].instructions).toEqual(["Brown the roast.", "Cook with the onion until tender."]);
   expect(backup.customRecipes[0].tags).toEqual(["American", "Beef", "Slow cooker"]);
   await page.getByRole("button", { name: "Done" }).click();
 

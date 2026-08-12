@@ -8,7 +8,7 @@ Open the live collection at:
 
 https://rlukenbaugh.github.io/my-top-25-comfort-food-recipes/
 
-The web app reads the same `recipes.json` file as the printable book. It includes a time-aware cooking dashboard, sticky search plus rating and recipe-tag filters, private Mealie-assisted recipe importing by URL, personal recipe collections, an aisle-sorted recipe-linked shopping list, a synonym-aware pantry matcher, per-recipe serving scaling, a random-recipe picker, rating-accented recipe cards, expandable mobile details, a back-to-top control, a live kitchen measurement converter, original-recipe links, a downloadable PDF, one-click printing for individual recipes, and browser-based recipe additions. GitHub Pages validates, tests, rebuilds, and republishes it whenever `main` is updated.
+The web app reads the same `recipes.json` file as the printable book. It includes a time-aware cooking dashboard, sticky search plus rating and recipe-tag filters, private Mealie-assisted recipe importing by URL, personal recipe collections, an aisle-sorted recipe-linked shopping list, a synonym-aware pantry matcher, per-recipe serving scaling, a random-recipe picker, rating-accented recipe cards, expandable mobile details, a back-to-top control, a live kitchen measurement converter, original-recipe links, a downloadable PDF, one-click printing with ingredients and instructions for individual recipes, and browser-based recipe additions. GitHub Pages validates, tests, rebuilds, and republishes it whenever `main` is updated.
 
 The site also includes branded sharing metadata, install icons, a web-app manifest, an install prompt when supported by the browser, and a tested offline app-shell cache. The Pages build injects the current Git commit into cache-sensitive URLs and the service-worker cache name, so deployments cannot depend on a hand-edited cache-busting number. After the first successful visit, the recipe list and freezer notes remain available without a connection; the printable PDF and original Allrecipes pages still require internet access.
 
@@ -18,7 +18,7 @@ The site also includes branded sharing metadata, install icons, a web-app manife
 - Select **Import URL** to have the Mealie server on this PC preview a public recipe page and fill the form. Review the imported fields and add a freezer note before saving.
 - Select **Paste recipe** to import labeled recipe text or a JSON recipe object.
 - Select **Copy recipe** on any entry to copy it in the exact labeled format accepted by the paste tool.
-- Every recipe card has an **Edit** action for locally saved changes to its title, notes, rating, tags, source link, and ingredients. Personal recipes also have a permanent **Delete** action.
+- Every recipe card has an **Edit** action for locally saved changes to its title, notes, rating, tags, source link, ingredients, and instructions. Personal recipes also have a permanent **Delete** action.
 - Edits to bundled recipes stay in this browser, are included in backups, and do not alter the shared printable PDF.
 - Select **Remove** to hide a recipe on that browser after confirmation. Select **Restore Removed** to bring hidden recipes back.
 - Select **Manage** to export a JSON backup or safely merge a previously exported backup. After personal data is saved, the home page also reminds you when no backup exists or the latest backup is at least 14 days old; the reminder can be snoozed for three days.
@@ -61,6 +61,7 @@ The bridge listens only on `127.0.0.1:9931`, permits only the live Ron's Recipes
    - `url`
    - `freeze`
    - `ingredients` (an array with one ingredient per line)
+   - `instructions` (an array with one step per line)
    - `tags` (an array such as `American`, `Chicken`, and `Weeknight`)
 4. Keep the commas between recipe blocks and save the file.
 5. Double-click `build.cmd`, or open a terminal in this folder and run:
@@ -116,7 +117,7 @@ This validates the recipe data and the private Mealie bridge, then exercises URL
 - `generate_web_assets.py` - reproducibly rebuilds the branded web assets
 - `tests/app.spec.js` - browser interaction and accessibility tests
 
-Full recipe instructions remain on the linked Allrecipes pages. This project stores your ranking, notes, freezer guidance, and source links.
+The web app stores concise step-by-step instructions with each recipe and keeps the original source link for reference.
 
 ## Preview the web app locally
 

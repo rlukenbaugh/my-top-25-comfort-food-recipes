@@ -7,7 +7,7 @@ const RECIPE_OVERRIDES_STORAGE_KEY = "rons-recipes.overrides.v1";
 const LAST_BACKUP_STORAGE_KEY = "rons-recipes.backup.last.v1";
 const BACKUP_SNOOZE_STORAGE_KEY = "rons-recipes.backup.snooze.v1";
 const BACKUP_FORMAT = "rons-recipes-backup";
-const BACKUP_VERSION = 3;
+const BACKUP_VERSION = 4;
 const BACKUP_REMINDER_DAYS = 14;
 const BACKUP_SNOOZE_DAYS = 3;
 const MEALIE_BRIDGE_URL = "http://127.0.0.1:9931";
@@ -124,6 +124,7 @@ const elements = {
   printRecipeRating: document.querySelector("#print-recipe-rating"),
   printRecipeFreeze: document.querySelector("#print-recipe-freeze"),
   printRecipeIngredients: document.querySelector("#print-recipe-ingredients"),
+  printRecipeInstructions: document.querySelector("#print-recipe-instructions"),
   printRecipeLink: document.querySelector("#print-recipe-link"),
   openManager: document.querySelector("#open-manager"),
   openAdd: document.querySelector("#open-add-recipe"),
@@ -165,6 +166,7 @@ const elements = {
   freezeInput: document.querySelector("#recipe-freeze"),
   urlInput: document.querySelector("#recipe-url"),
   ingredientsInput: document.querySelector("#recipe-ingredients"),
+  instructionsInput: document.querySelector("#recipe-instructions"),
   tagsInput: document.querySelector("#recipe-tags"),
   deviceNote: document.querySelector("#recipe-device-note"),
   submitRecipe: document.querySelector("#submit-recipe"),
@@ -266,6 +268,12 @@ function parseIngredientLines(value) {
       seen.add(key);
       return true;
     });
+}
+
+function parseInstructionLines(value) {
+  return (Array.isArray(value) ? value : String(value || "").split(/\r?\n/))
+    .map((item) => String(item).trim().replace(/^(?:step\s*)?\d+[.)]\s*/i, ""))
+    .filter(Boolean);
 }
 
 function parseTags(value) {
@@ -407,6 +415,7 @@ function isValidCustomRecipe(recipe) {
     typeof recipe.url === "string" && /^https?:\/\//i.test(recipe.url) &&
     RATINGS.includes(normalizedRating(recipe.rating)) &&
     (recipe.ingredients === undefined || Array.isArray(recipe.ingredients)) &&
+    (recipe.instructions === undefined || Array.isArray(recipe.instructions)) &&
     (recipe.tags === undefined || Array.isArray(recipe.tags));
 }
 
@@ -441,6 +450,9 @@ function normalizeRecipeOverride(recipe) {
     url: String(recipe?.url || "").trim(),
     ingredients: parseIngredientLines(recipe?.ingredients),
   };
+  if (Object.prototype.hasOwnProperty.call(recipe || {}, "instructions")) {
+    normalized.instructions = parseInstructionLines(recipe.instructions);
+  }
   return isValidCustomRecipe(normalized) ? normalized : null;
 }
 
@@ -603,6 +615,10 @@ function ingredientsForRecipe(recipe) {
   return parseIngredientLines(state.ingredientOverrides[recipeKey(recipe)] || recipe.ingredients);
 }
 
+function instructionsForRecipe(recipe) {
+  return parseInstructionLines(recipe?.instructions);
+}
+
 function recipeKey(recipe) {
   if (typeof recipe?.baseKey === "string" && recipe.baseKey) return recipe.baseKey;
   return recipe.id ? `custom:${recipe.id}` : `base:${normalizeUrl(recipe.url)}`;
@@ -675,6 +691,8 @@ function formatRecipeForCopy(recipe) {
   ];
   const ingredients = ingredientsForRecipe(recipe);
   if (ingredients.length) lines.push(`Ingredients:\n${ingredients.join("\n")}`);
+  const instructions = instructionsForRecipe(recipe);
+  if (instructions.length) lines.push(`Instructions:\n${instructions.map((step, index) => `${index + 1}. ${step}`).join("\n")}`);
   lines.push(`URL: ${recipe.url}`);
   return lines.join("\n");
 }
@@ -1130,6 +1148,7 @@ function openDialog(recipe = null) {
     elements.freezeInput.value = recipe.freeze;
     elements.urlInput.value = recipe.url;
     elements.ingredientsInput.value = ingredientsForRecipe(recipe).join("\n");
+    elements.instructionsInput.value = instructionsForRecipe(recipe).join("\n");
   } else {
     elements.dialogTitle.textContent = "Add a Recipe";
     elements.dialogDescription.textContent = "Save it on this device and include it in search and filters.";
@@ -1214,7 +1233,7 @@ function renderImportedPreview(recipe) {
   const ingredientCount = parseIngredientLines(recipe.ingredients).length;
   const instructionCount = Array.isArray(recipe.instructions) ? recipe.instructions.length : 0;
   const tagCount = parseTags(recipe.tags).length;
-  elements.importPreviewSummary.textContent = `${ingredientCount} ingredients, ${instructionCount} instruction ${instructionCount === 1 ? "step" : "steps"}, and ${tagCount} suggested ${tagCount === 1 ? "tag" : "tags"}. Full directions remain on the original page.`;
+  elements.importPreviewSummary.textContent = `${ingredientCount} ingredients, ${instructionCount} instruction ${instructionCount === 1 ? "step" : "steps"}, and ${tagCount} suggested ${tagCount === 1 ? "tag" : "tags"}. Ingredients and directions will be saved with the recipe.`;
   elements.importPreview.hidden = false;
 }
 
@@ -1249,6 +1268,7 @@ function useImportedRecipe() {
   elements.freezeInput.value = "";
   elements.urlInput.value = recipe.sourceUrl;
   elements.ingredientsInput.value = parseIngredientLines(recipe.ingredients).join("\n");
+  elements.instructionsInput.value = parseInstructionLines(recipe.instructions).join("\n");
   setEntryMethod("form");
   elements.formMessage.textContent = "Imported from Mealie. Add your freezer note, review the details, then save.";
   elements.freezeInput.focus();
@@ -1274,6 +1294,7 @@ function parsePastedRecipe(text) {
         freeze: String(parsed.freeze || parsed.freezeSmart || parsed.freezerNote || "").trim(),
         url: String(parsed.url || parsed.link || "").trim(),
         ingredients: parseIngredientLines(parsed.ingredients || parsed.recipeIngredient),
+        instructions: parseInstructionLines(parsed.instructions || parsed.directions || parsed.recipeInstructions),
       };
     }
   } catch {
@@ -1288,7 +1309,11 @@ function parsePastedRecipe(text) {
     tags: parseTags(labeledValue(trimmed, ["Tags", "Categories"])),
     freeze: labeledValue(trimmed, ["Freeze smart", "Freeze note", "Freezer note"]),
     url: labeledValue(trimmed, ["URL", "Link"]) || (urlMatch ? urlMatch[0] : ""),
-    ingredients: parseIngredientLines(labeledBlock(trimmed, "Ingredients", ["URL", "Link"])),
+    ingredients: parseIngredientLines(labeledBlock(trimmed, "Ingredients", ["Instructions", "Directions", "URL", "Link"])),
+    instructions: parseInstructionLines(
+      labeledBlock(trimmed, "Instructions", ["URL", "Link"]) ||
+      labeledBlock(trimmed, "Directions", ["URL", "Link"])
+    ),
   };
 }
 
@@ -1305,6 +1330,7 @@ function usePastedRecipe() {
   elements.freezeInput.value = recipe.freeze;
   elements.urlInput.value = recipe.url;
   elements.ingredientsInput.value = parseIngredientLines(recipe.ingredients).join("\n");
+  elements.instructionsInput.value = parseInstructionLines(recipe.instructions).join("\n");
   elements.pasteMessage.textContent = "";
   setEntryMethod("form");
   elements.formMessage.textContent = "Pasted details loaded. Review them, then add the recipe.";
@@ -1326,6 +1352,7 @@ function saveRecipe(event) {
     freeze: elements.freezeInput.value.trim(),
     url: elements.urlInput.value.trim(),
     ingredients: parseIngredientLines(elements.ingredientsInput.value),
+    instructions: parseInstructionLines(elements.instructionsInput.value),
   };
 
   const duplicate = state.allRecipes.some((existing) =>
@@ -1883,6 +1910,14 @@ function printRecipe(recipe) {
   });
   elements.printRecipeIngredients.replaceChildren(...ingredientItems);
 
+  const instructions = instructionsForRecipe(recipe);
+  const instructionItems = (instructions.length ? instructions : ["Instructions are not saved on this device. Use the original source link below."]).map((step) => {
+    const item = document.createElement("li");
+    item.textContent = step;
+    return item;
+  });
+  elements.printRecipeInstructions.replaceChildren(...instructionItems);
+
   elements.printRecipeLink.textContent = recipe.url || "No original recipe link saved.";
   if (recipe.url) elements.printRecipeLink.href = recipe.url;
   else elements.printRecipeLink.removeAttribute("href");
@@ -2070,11 +2105,13 @@ function backupRecipe(recipe) {
     freeze: recipe.freeze,
     url: recipe.url,
     ingredients: parseIngredientLines(recipe.ingredients),
+    instructions: parseInstructionLines(recipe.instructions),
   };
 }
 
 function backupRecipeOverride(recipe) {
   const { id, ...override } = backupRecipe(recipe);
+  if (!Object.prototype.hasOwnProperty.call(recipe, "instructions")) delete override.instructions;
   return override;
 }
 
@@ -2141,6 +2178,7 @@ function normalizeImportedRecipe(recipe) {
     freeze: String(recipe?.freeze || "").trim(),
     url: String(recipe?.url || "").trim(),
     ingredients: parseIngredientLines(recipe?.ingredients),
+    instructions: parseInstructionLines(recipe?.instructions),
   };
   return isValidCustomRecipe(normalized) ? normalized : null;
 }
@@ -2148,7 +2186,7 @@ function normalizeImportedRecipe(recipe) {
 async function importBackupFile(file) {
   try {
     const backup = JSON.parse(await file.text());
-    if (backup?.format !== BACKUP_FORMAT || ![1, 2, BACKUP_VERSION].includes(backup?.version) || !Array.isArray(backup.customRecipes) || !Array.isArray(backup.removedKeys)) {
+    if (backup?.format !== BACKUP_FORMAT || ![1, 2, 3, BACKUP_VERSION].includes(backup?.version) || !Array.isArray(backup.customRecipes) || !Array.isArray(backup.removedKeys)) {
       throw new Error("This is not a supported Ron's Recipes backup.");
     }
 

@@ -7,6 +7,15 @@
     "tags": ["Italian", "Pasta", "Beef"],
     "url": "https://www.allrecipes.com/recipe/23600/worlds-best-lasagna/",
     "freeze": "Assemble in a freezer-safe pan and freeze before baking, or freeze baked portions. Thaw overnight before reheating.",
+    "instructions": [
+      "Brown the sausage, beef, onion, and garlic together in a Dutch oven over medium heat.",
+      "Add the tomato products, water, sugar, parsley, basil, 1 teaspoon salt, Italian seasoning, fennel, and pepper. Cover and simmer for about 1 1/2 hours, stirring now and then.",
+      "Boil the lasagna noodles for 8 to 10 minutes, then drain and rinse them with cold water.",
+      "Mix the ricotta with the egg, remaining parsley, and remaining salt. Heat the oven to 375 F.",
+      "In a 9x13-inch dish, layer meat sauce, 6 noodles, half the ricotta mixture, one-third of the mozzarella, more sauce, and Parmesan. Repeat, then finish with the remaining cheeses.",
+      "Cover with nonstick foil and bake for 25 minutes. Uncover and bake 25 minutes more.",
+      "Rest the lasagna for 15 minutes before slicing."
+    ],
     "ingredients": [
       "1 pound sweet Italian sausage",
       "3/4 pound lean ground beef",
@@ -38,6 +47,13 @@
     "tags": ["American", "Beef", "Weeknight"],
     "url": "https://www.allrecipes.com/salisbury-steak-meatballs-recipe-11844152",
     "freeze": "Freeze the meatballs in their gravy. For the best texture, make fresh mashed potatoes when serving.",
+    "instructions": [
+      "Mix the beef, panko, onion, egg, 1 tablespoon ketchup, 1 1/2 teaspoons Worcestershire, mustard powder, salt, and pepper just until combined.",
+      "Shape the mixture into twenty 1 1/2-inch meatballs. Brown them in batches in olive oil over medium-high heat, about 5 minutes per batch; set aside.",
+      "Lower the heat to medium, melt the butter, and brown the mushrooms. Stir in the flour and cook for 1 minute.",
+      "Gradually whisk in the beef stock, remaining Worcestershire, and remaining ketchup. Simmer until the gravy thickens, about 5 minutes.",
+      "Return the meatballs to the skillet, cover them with gravy, and cook until their centers reach 160 F, about 5 minutes. Garnish with parsley and serve with mashed potatoes."
+    ],
     "ingredients": [
       "1 pound lean ground beef",
       "3/4 cup panko bread crumbs",
@@ -66,6 +82,14 @@
     "tags": ["American", "Chicken", "Pie"],
     "url": "https://www.allrecipes.com/recipe/26317/chicken-pot-pie-ix/",
     "freeze": "Freeze assembled and unbaked. Wrap tightly, label, and bake from thawed so the filling heats evenly.",
+    "instructions": [
+      "Heat the oven to 425 F. Cover the chicken, carrots, peas, and celery with water in a saucepan; boil for 15 minutes, then drain.",
+      "In another saucepan, soften the onion in butter for 5 to 7 minutes. Stir in the flour, salt, pepper, and celery seed.",
+      "Slowly add the broth and milk. Simmer over medium-low heat until thickened, 5 to 10 minutes.",
+      "Fit one crust into a 9-inch pie plate. Add the chicken and vegetables, then pour the hot sauce over them.",
+      "Add the top crust, seal and trim the edge, and cut several steam vents.",
+      "Bake until the crust is golden and the filling bubbles, 30 to 35 minutes. Cool for 10 minutes before serving."
+    ],
     "ingredients": [
       "1 pound skinless, boneless chicken breast halves - cubed",
       "1 cup sliced carrots",
@@ -90,6 +114,13 @@
     "tags": ["American", "Chicken", "Casserole"],
     "url": "https://www.allrecipes.com/recipe/8422645/million-dollar-chicken-casserole/",
     "freeze": "Freeze before baking and add any crisp cracker topping just before it goes into the oven.",
+    "instructions": [
+      "Heat the oven to 350 F.",
+      "Blend the soup, cottage cheese, sour cream, cream cheese, Creole seasoning, onion powder, and half the garlic powder until smooth.",
+      "Fold in the chicken and parsley, then spread the mixture in an 11x7-inch or 9-inch square baking dish.",
+      "Mix the cracker crumbs with melted butter and the remaining garlic powder.",
+      "Top the chicken with mozzarella and the cracker mixture. Bake on a foil-lined sheet until golden and bubbly, about 35 minutes. Add scallions if desired."
+    ],
     "ingredients": [
       "1 (10.5 ounce) can cream of chicken soup",
       "1 cup cottage cheese",
@@ -114,6 +145,14 @@
     "tags": ["Irish", "Beef", "Stew"],
     "url": "https://www.allrecipes.com/recipe/234534/beef-and-guinness-stew/",
     "freeze": "Cool completely, portion with plenty of broth, and freeze. Reheat gently; add a splash of stock if needed.",
+    "instructions": [
+      "Crisp the bacon in a heavy skillet over medium-high heat, then transfer it to a stew pot and leave the fat in the skillet.",
+      "Season and brown the beef in the bacon fat, about 5 minutes. Move it to the stew pot.",
+      "Cook the onions in the skillet for 5 to 8 minutes, add the garlic for 1 minute, then pour in the stout and scrape up the browned bits.",
+      "Transfer the skillet liquid to the stew pot. Add tomato paste, carrots, celery, thyme, sugar, pepper, and enough stock to cover.",
+      "Cover and simmer gently until the beef is fork-tender, about 2 hours, stirring occasionally.",
+      "Uncover and boil gently for 15 to 20 minutes to thicken. Discard the thyme, adjust the seasoning, and serve over mashed potatoes."
+    ],
     "ingredients": [
       "4 slices bacon, cut into small pieces",
       "2 1/2 pounds boneless beef chuck, cut into 2-inch pieces",
@@ -140,6 +179,13 @@
     "tags": ["Italian", "Beef", "Meatballs"],
     "url": "https://www.allrecipes.com/recipe/220854/chef-johns-italian-meatballs/",
     "freeze": "Freeze cooked meatballs on a tray, then bag them. They can be reheated directly in simmering sauce.",
+    "instructions": [
+      "Line and lightly oil a baking sheet. Soak the bread crumbs in milk for 20 minutes.",
+      "Cook the onion in olive oil over medium heat for 5 minutes, then over low heat until very tender, about 15 minutes more.",
+      "Gently combine the beef, pork, cooked onion, soaked crumbs, eggs, Parmesan, parsley, garlic, and seasonings. Cover and chill for 1 hour.",
+      "Heat the oven to 425 F. Shape the mixture into 1 1/2-inch balls and arrange them on the prepared sheet.",
+      "Bake until browned and cooked through, 15 to 20 minutes. Serve with tomato sauce."
+    ],
     "ingredients": [
       "1/3 cup plain bread crumbs",
       "1/2 cup milk",
@@ -165,6 +211,13 @@
     "tags": ["American", "Chicken", "Easy"],
     "url": "https://www.allrecipes.com/chicken-cobbler-recipe-7966464",
     "freeze": "Freeze the filling separately when possible. Add the biscuit layer fresh for the lightest, crispest topping.",
+    "instructions": [
+      "Heat the oven to 375 F. Put the butter in a 9x13-inch baking dish and let it melt in the oven.",
+      "Spread the chicken over the melted butter, then add the frozen vegetables in an even layer.",
+      "Mix the biscuit mix, its seasoning packet, and the milk. Pour over the chicken and vegetables without stirring.",
+      "Whisk the soup and stock until smooth, then pour that mixture on top without stirring.",
+      "Bake uncovered until deeply golden and only slightly jiggly in the center, about 45 minutes. Rest for 10 minutes before serving."
+    ],
     "ingredients": [
       "1 stick (1/2 cup) butter",
       "1 rotisserie chicken, meat removed and shredded (about 4 cups)",
@@ -184,6 +237,13 @@
     "tags": ["British", "Beef", "Slow cooker"],
     "url": "https://www.allrecipes.com/slow-cooker-shepherd-s-pie-recipe-11695630",
     "freeze": "Cool and freeze in meal-size portions. Thaw overnight and reheat covered so the potatoes stay moist.",
+    "instructions": [
+      "Brown the beef and onion in a skillet over medium heat for about 8 minutes. Add the garlic for 1 minute, then drain.",
+      "Put the beef mixture and frozen vegetables in a 5- to 6-quart slow cooker.",
+      "Whisk the broth, tomato paste, Worcestershire, tapioca, Italian seasoning, salt, and pepper; stir it into the slow cooker.",
+      "Cover and cook on Low for 4 to 6 hours or on High for 3 hours.",
+      "Prepare the mashed potatoes and mix in the cheese. Spread over the beef, cover, and cook on High for 20 minutes. Garnish with paprika and parsley."
+    ],
     "ingredients": [
       "2 pounds 85% lean ground beef",
       "1 cup chopped onion",
@@ -210,6 +270,13 @@
     "tags": ["American", "Beef", "Meatloaf"],
     "url": "https://www.allrecipes.com/recipe/238904/brown-sugar-meatloaf-with-ketchup-glaze/",
     "freeze": "Freeze the shaped loaf raw or freeze cooked slices individually. Keep extra glaze in a separate container.",
+    "instructions": [
+      "Heat the oven to 350 F and lightly grease a 9x5-inch loaf pan.",
+      "Stir the ketchup, brown sugar, salt, and chili powder together; spread a thin layer in the bottom of the pan.",
+      "Combine the beef, croutons, onion, eggs, milk, and pepper. Shape into a loaf and place it in the pan.",
+      "Spread the remaining glaze over the meatloaf.",
+      "Bake for about 1 hour, until the center reaches at least 160 F."
+    ],
     "ingredients": [
       "1/2 cup ketchup",
       "1/2 cup packed brown sugar",
@@ -231,6 +298,14 @@
     "tags": ["Mexican-inspired", "Chicken", "Casserole"],
     "url": "https://www.allrecipes.com/recipe/83549/angelas-awesome-enchiladas/",
     "freeze": "Assemble without baking, cover tightly, and freeze. Thaw overnight; add fresh cheese before baking.",
+    "instructions": [
+      "Simmer the chicken in covered water until it reaches 165 F, about 10 minutes. Cool slightly and shred.",
+      "Warm the sour cream, condensed soup, and chili powder together over medium heat; cover and set aside.",
+      "Soften the onion in butter. Add the chicken, water, half the green onions, chiles, and taco seasoning; simmer 10 minutes. Add the lime juice and powdered seasonings, then simmer 10 minutes more.",
+      "Heat the oven to 350 F. Stir 1 cup of the soup mixture into the chicken and spread the rest in a 9x13-inch dish.",
+      "Divide the chicken and most of the Cheddar among the tortillas. Roll and place them seam-side down in the dish.",
+      "Top with enchilada sauce, remaining Cheddar, green onions, and olives. Bake until bubbling and melted, about 25 minutes."
+    ],
     "ingredients": [
       "2 pounds skinless, boneless chicken breast meat - cut into chunks",
       "1 1/4 cups sour cream",
@@ -259,6 +334,12 @@
     "tags": ["Italian", "Sausage", "Slow cooker"],
     "url": "https://www.allrecipes.com/recipe/261337/slow-cooker-zuppa-toscana/",
     "freeze": "For best results, freeze before adding cream and greens. Stir both in after reheating the soup base.",
+    "instructions": [
+      "Brown and crumble the sausage in a skillet over medium-high heat. Add the onion and garlic and cook until tender, then drain.",
+      "Put the potatoes and sausage mixture in the slow cooker. Add the seasonings, broth, and enough water to cover the potatoes.",
+      "Cover and cook on Low for 5 to 6 hours or on High for 3 to 4 hours.",
+      "Stir in the cream and kale. Cover and cook on High for 30 minutes more, then garnish with Parmesan."
+    ],
     "ingredients": [
       "1 pound bulk pork sausage",
       "1 large yellow onion, chopped",
@@ -282,6 +363,13 @@
     "tags": ["American", "Cheese", "Soup"],
     "url": "https://www.allrecipes.com/recipe/235874/copycat-panera-broccoli-cheddar-soup/",
     "freeze": "Cool fully and thaw in the refrigerator. Reheat slowly while stirring to help the dairy return to a smooth texture.",
+    "instructions": [
+      "Melt 1 tablespoon butter in a skillet and soften the onion over medium-high heat for about 5 minutes; set aside.",
+      "In a large saucepan over medium-low heat, whisk 1/4 cup melted butter with the flour for 3 to 4 minutes.",
+      "Whisk in the milk gradually, add the chicken stock, and simmer until thickened, 15 to 20 minutes.",
+      "Add the broccoli, carrots, celery, and cooked onion. Simmer until the vegetables are tender, 10 to 15 minutes.",
+      "Stir in the Cheddar until melted, then season with salt and pepper."
+    ],
     "ingredients": [
       "1 tablespoon butter",
       "1/2 onion, chopped",
@@ -304,6 +392,13 @@
     "tags": ["American", "Chicken", "Soup"],
     "url": "https://www.allrecipes.com/million-dollar-soup-recipe-11823470",
     "freeze": "Freeze the soup base without sour cream or cheese when possible. Add dairy after reheating for a smoother finish.",
+    "instructions": [
+      "Melt 2 tablespoons butter in a large pot. Cook the onion and celery over medium heat until tender, 4 to 5 minutes; season with salt and pepper.",
+      "Add the potatoes, condensed soups, broth, Cajun seasoning, garlic powder, and onion powder. Simmer for 5 minutes.",
+      "Add the chicken and bacon, reduce the heat, and simmer for 15 to 20 minutes, stirring occasionally.",
+      "Stir in the sour cream and creamy mozzarella, then remove the pot from the heat.",
+      "Serve with shredded Cheddar, bacon, scallions, and crushed crackers."
+    ],
     "ingredients": [
       "2 Tablespoons butter",
       "1/2 medium onion, chopped",
@@ -334,6 +429,13 @@
     "tags": ["Mexican-inspired", "Chicken", "Casserole"],
     "url": "https://www.allrecipes.com/white-chicken-chili-enchilada-casserole-recipe-11898775",
     "freeze": "Assemble and freeze unbaked. Thaw overnight, then bake until bubbling and hot in the center.",
+    "instructions": [
+      "Heat the oven to 375 F and lightly coat a 9x13-inch baking dish.",
+      "Combine the chicken, beans, corn, and peppers in one bowl. In another, whisk the enchilada sauce, sour cream, salt, and pepper.",
+      "Cover the bottom of the dish with 6 tortilla halves. Add one-quarter of the sauce mixture, one-third of the chicken mixture, and 1/2 cup Pepper Jack.",
+      "Repeat the sauce, chicken, and cheese layers twice more. Finish with the remaining tortillas, sauce, and cheese.",
+      "Bake until heated through and melted, 25 to 28 minutes. Rest for 5 minutes, then garnish with cilantro and avocado."
+    ],
     "ingredients": [
       "cooking spray",
       "3 cups shredded cooked chicken",
@@ -356,6 +458,13 @@
     "tags": ["Italian", "Chicken", "Weeknight"],
     "url": "https://www.allrecipes.com/recipe/223042/chicken-parmesan/",
     "freeze": "Freeze breaded cooked cutlets without sauce. Add sauce and cheese during reheating so the coating stays crisper.",
+    "instructions": [
+      "Heat the oven to 450 F. Pound the chicken to 1/2-inch thickness and season with salt and pepper.",
+      "Coat each piece with flour, then beaten egg, then the bread crumbs mixed with 1/2 cup Parmesan. Rest for 10 to 15 minutes.",
+      "Heat 1/2 inch olive oil in a skillet. Brown the chicken in batches for about 2 minutes per side.",
+      "Move the chicken to a baking dish. Top each piece with tomato sauce, mozzarella, basil, provolone, remaining Parmesan, and a small drizzle of oil.",
+      "Bake for 15 to 20 minutes, until the cheese is browned and the chicken reaches 165 F. Rest briefly before serving."
+    ],
     "ingredients": [
       "4 skinless, boneless chicken breast halves",
       "salt and freshly ground black pepper to taste",
@@ -379,6 +488,11 @@
     "tags": ["Italian", "Beef", "Soup"],
     "url": "https://www.allrecipes.com/recipe/231282/hearty-italian-meatball-soup/",
     "freeze": "Freeze the soup without pasta. Cook fresh pasta separately and add it to each bowl after reheating.",
+    "instructions": [
+      "Combine the tomatoes, beef broth, water, and Italian seasoning in a large pot and bring to a boil.",
+      "Add the frozen meatballs, mixed vegetables, and pasta. Return to a boil, then reduce to medium-low.",
+      "Cook for about 10 minutes, until the meatballs are hot and the pasta is tender. Serve with Parmesan."
+    ],
     "ingredients": [
       "2 (14 ounce) cans diced tomatoes with onion and garlic, undrained",
       "2 (14 ounce) cans beef broth",
@@ -398,6 +512,13 @@
     "tags": ["Italian", "Chicken", "Soup"],
     "url": "https://www.allrecipes.com/italian-penicillin-soup-recipe-8751324",
     "freeze": "Freeze the broth, chicken, and vegetables without pastina. Add freshly cooked pastina and Parmesan when serving.",
+    "instructions": [
+      "Bring the broth, onion, carrots, celery, garlic, and salt to a boil. Reduce to medium-low and simmer for about 10 minutes, until tender.",
+      "Blend the cooked vegetables with 1 cup broth until smooth, venting the blender safely, then stir the puree back into the pot.",
+      "Add the thyme, bay leaves, and Parmesan rind and return the soup to a boil.",
+      "Add the pasta, reduce to medium-low, and simmer until tender, 18 to 20 minutes. Stir in the chicken for the final 3 minutes.",
+      "Discard the thyme, bay leaves, and rind. Garnish with parsley and grated Parmesan."
+    ],
     "ingredients": [
       "8 cups lower-sodium chicken broth",
       "1 medium (8 ounce) sweet onion, coarsely chopped (about 2 cups)",
@@ -421,6 +542,15 @@
     "tags": ["American", "Chicken", "Instant Pot"],
     "url": "https://www.allrecipes.com/recipe/276647/instant-pot-chicken-and-dumplings/",
     "freeze": "Freeze the chicken-and-gravy base. Make fresh dumplings after reheating for the best texture.",
+    "instructions": [
+      "Using Saute mode, cook the onion, carrot, celery, and bay leaf in olive oil for about 5 minutes.",
+      "Add the broth, chicken, salt, thyme, marjoram, and pepper. Lock the lid and cook at high pressure for 9 minutes, then quick-release carefully.",
+      "Remove and shred the chicken; discard the bay leaf. Mash the butter and flour into a smooth paste.",
+      "For the dumplings, combine flour, baking powder, and salt. Cut in the cold butter, then stir in parsley.",
+      "Return the chicken to the pot. Add peas, green beans, and the flour-butter paste. Use Saute mode to bring the broth to a boil.",
+      "Stir buttermilk into the dumpling mixture and drop heaping spoonfuls over the stew.",
+      "Close the lid with the vent open. Use Slow Cook on Low for 10 to 12 minutes, until the dumpling centers are cooked."
+    ],
     "ingredients": [
       "1/2 tablespoon olive oil",
       "1 cup diced onion",
@@ -455,6 +585,11 @@
     "tags": ["American", "Potato", "Easy"],
     "url": "https://www.allrecipes.com/recipe/23996/aaahh-potato-soup/",
     "freeze": "Potatoes and dairy can turn grainy. If freezing, cool quickly, thaw overnight, and reheat gently while stirring.",
+    "instructions": [
+      "Combine the potatoes, water, broth, and au gratin potato mix in a large pot. Add enough extra water to cover the potatoes if needed.",
+      "Cook over medium heat, stirring occasionally, until the potatoes are tender, about 40 minutes.",
+      "Stir in the cream and heat through without boiling hard."
+    ],
     "ingredients": [
       "2 Yukon Gold potatoes, cubed",
       "1 1/2 cups water",
@@ -471,6 +606,12 @@
     "tags": ["American", "Chicken", "Casserole"],
     "url": "https://www.allrecipes.com/neiman-marcus-chicken-casserole-recipe-11693255",
     "freeze": "Assemble and freeze before baking. Hold back any crunchy topping and add it just before baking.",
+    "instructions": [
+      "Heat the oven to 375 F and lightly grease a 9x13-inch baking dish.",
+      "Mix the chicken, condensed soup, sour cream, cheese, green onions, almonds, bacon, and hot sauce. Spread in the dish.",
+      "Combine the crushed crackers and melted butter, then scatter the topping evenly over the casserole.",
+      "Bake until browned and bubbling, 40 to 45 minutes."
+    ],
     "ingredients": [
       "4 cups cooked shredded chicken",
       "1 can cream of chicken soup",
@@ -492,6 +633,12 @@
     "tags": ["Indian-inspired", "Chicken", "Weeknight"],
     "url": "https://www.allrecipes.com/recipe/24002/famous-butter-chicken/",
     "freeze": "Freeze cooked portions tightly wrapped. Reheat covered, then uncover briefly to restore the crumb topping.",
+    "instructions": [
+      "Heat the oven to 375 F. Put the beaten eggs in one shallow bowl and the cracker crumbs mixed with garlic salt and pepper in another.",
+      "Dip each chicken breast in egg, then coat it thoroughly with the seasoned crumbs.",
+      "Arrange the chicken in a 9x13-inch baking dish and scatter the butter over and around it.",
+      "Bake for about 40 minutes, until the chicken reaches 165 F. Serve hot."
+    ],
     "ingredients": [
       "1 cup crushed buttery round cracker crumbs",
       "2 large eggs, beaten",
@@ -509,6 +656,12 @@
     "tags": ["Greek", "Chicken", "Soup"],
     "url": "https://www.allrecipes.com/recipe/12963/greek-lemon-chicken-soup/",
     "freeze": "Freeze without rice when possible. Add freshly cooked rice after reheating to prevent a soft, swollen texture.",
+    "instructions": [
+      "Combine the broth, lemon juice, carrots, onion, celery, soup base, and white pepper. Bring to a boil, then simmer for 15 to 20 minutes until the vegetables soften.",
+      "Blend the butter and flour, stir it gradually into the soup, and simmer for 8 to 10 minutes while stirring often.",
+      "Beat the egg yolks until light. Slowly whisk in a ladleful of hot soup, then gradually stir the tempered yolks into the pot.",
+      "Add the cooked rice and chicken and heat through. Garnish with lemon slices."
+    ],
     "ingredients": [
       "8 cups chicken broth",
       "1/2 cup fresh lemon juice",
@@ -533,6 +686,14 @@
     "tags": ["French", "Chicken", "Weeknight"],
     "url": "https://www.allrecipes.com/chicken-au-poivre-recipe-11861726",
     "freeze": "Freeze chicken and sauce together, then thaw overnight. Reheat gently so the cream sauce does not separate.",
+    "instructions": [
+      "Crack the peppercorns in a sealed bag with a mallet or heavy skillet.",
+      "Heat the olive oil and 1 tablespoon butter in a large skillet over medium heat. Salt and brown the chicken for 3 to 4 minutes per side; set aside.",
+      "Melt the remaining butter in the skillet and soften the shallot for about 1 minute.",
+      "Stir in the broth, cream, thyme, and cracked pepper, scraping up the browned bits, and bring to a boil.",
+      "Return the chicken and its juices to the skillet. Simmer for 8 to 10 minutes, until the chicken reaches 165 F.",
+      "Move the chicken to serving plates. Add lemon juice to the sauce and cook for 3 to 5 minutes to thicken, then spoon it over the chicken and garnish with parsley."
+    ],
     "ingredients": [
       "1 Tablespoon black peppercorns",
       "1 Tablespoon olive oil",
@@ -555,6 +716,14 @@
     "tags": ["American", "Potato", "Side dish"],
     "url": "https://www.allrecipes.com/country-club-potatoes-recipe-11872410",
     "freeze": "Freeze after baking and cooling completely. Reheat covered, then uncover at the end to refresh the browned top.",
+    "instructions": [
+      "Heat the oven to 400 F. Peel and slice the potatoes about 3/8 inch thick; rinse in cold water and drain very well.",
+      "Spread the potatoes in a 9x13-inch dish. Add salt, white pepper, cayenne, and broth, toss well, and press into an even layer.",
+      "Bake until the slices are just tender, about 1 hour.",
+      "Mix the bread crumbs with butter. In a separate container, combine the milk and cream.",
+      "Raise the oven to 450 F. Toss the potatoes with the cream mixture and level them again. Top with cheese and buttered crumbs.",
+      "Bake until browned and bubbling, about 20 minutes. Rest 15 minutes and finish with green onions."
+    ],
     "ingredients": [
       "6 large russet potatoes (about 5 pounds)",
       "4 cups chicken broth",
@@ -577,6 +746,15 @@
     "tags": ["American", "Breakfast", "Baking"],
     "url": "https://www.allrecipes.com/cinnamon-roll-butter-swim-biscuits-recipe-11905339",
     "freeze": "Freeze cooled individual biscuits. Thaw at room temperature and warm briefly; add fresh glaze after reheating.",
+    "instructions": [
+      "Heat the oven to 425 F. Stir the brown sugar, cinnamon, and 2 tablespoons cream until smooth.",
+      "Melt the butter in an 8x8-inch baking dish.",
+      "Whisk the flour, sugar, baking powder, and salt. Stir in 1 cup cream and the buttermilk just until blended.",
+      "Spread half the batter in the buttered dish. Spoon the cinnamon mixture over it, swirl lightly, and cover with the remaining batter.",
+      "Smooth the thick batter quickly and score it into 9 or 12 squares.",
+      "Bake until evenly browned and cooked through, 25 to 27 minutes.",
+      "Whisk the confectioners' sugar, cream cheese, and remaining cream until smooth. Spread over the hot biscuits."
+    ],
     "ingredients": [
       "1/3 cup dark brown sugar",
       "1 Tablespoon cinnamon",
@@ -599,6 +777,14 @@
     "tags": ["American", "Beef", "Soup"],
     "url": "https://www.cookingclassy.com/vegetable-beef-soup/",
     "freeze": "Cool completely and freeze in meal-size airtight containers for up to 3 months. Thaw overnight and reheat gently.",
+    "instructions": [
+      "Heat 1 tablespoon olive oil in a large pot over medium-high heat. Pat the beef dry, season it, and brown it in two batches, adding another 1/2 tablespoon oil for the second batch; set aside.",
+      "Add the remaining tablespoon oil. Saute the onion, carrots, and celery for 3 minutes, then add the garlic for 1 minute.",
+      "Add the broth, tomatoes, browned beef, basil, oregano, thyme, salt, and pepper. Bring to a boil, cover, reduce to low, and simmer for 30 minutes.",
+      "Add the potatoes and simmer covered for 20 minutes.",
+      "Stir in the green beans and simmer about 15 minutes, until the beef and vegetables are tender.",
+      "Add the corn and peas and cook for about 5 minutes. Stir in parsley and serve."
+    ],
     "ingredients": [
       "1 1/2 pounds beef stew meat",
       "2 1/2 Tablespoons olive oil, divided",

@@ -518,6 +518,9 @@ footer > p { margin: 0; text-align: right; }
   body.print-single-recipe .print-ingredients { break-inside: avoid-page; }
   body.print-single-recipe .print-ingredients ul { columns: 2; column-gap: 36px; margin: 0; padding-left: 20px; }
   body.print-single-recipe .print-ingredients li { break-inside: avoid; margin: 0 0 6px; line-height: 1.35; }
+  body.print-single-recipe .print-instructions { margin-top: 22px; padding-top: 18px; border-top: 1px solid #aaa; }
+  body.print-single-recipe .print-instructions ol { margin: 0; padding-left: 24px; }
+  body.print-single-recipe .print-instructions li { break-inside: avoid; margin: 0 0 9px; padding-left: 4px; line-height: 1.42; }
   body.print-single-recipe .print-recipe-source { min-height: 0; display: block; margin-top: 22px; padding: 14px 0 0; background: transparent; border-top: 1px solid #aaa; color: #222; font-size: 9pt; text-align: left; }
   body.print-single-recipe .print-recipe-source a { display: block; margin-top: 4px; color: #000; overflow-wrap: anywhere; text-decoration: none; }
 

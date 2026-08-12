@@ -236,8 +236,12 @@
         <h2>Ingredients</h2>
         <ul id="print-recipe-ingredients"></ul>
       </section>
+      <section class="print-instructions">
+        <h2>Instructions</h2>
+        <ol id="print-recipe-instructions"></ol>
+      </section>
       <footer class="print-recipe-source">
-        <strong>Full directions:</strong>
+        <strong>Original source:</strong>
         <a id="print-recipe-link"></a>
       </footer>
     </article>
@@ -301,8 +305,8 @@
 
       <section id="paste-panel" class="paste-panel" role="tabpanel" aria-labelledby="paste-tab" hidden>
         <label for="paste-recipe">Paste recipe details</label>
-        <p>Paste text copied from any recipe in this app, or use labels such as <strong>Title:</strong>, <strong>Tags:</strong>, <strong>Why:</strong>, <strong>Freezer rating:</strong>, <strong>Freeze smart:</strong>, <strong>Ingredients:</strong>, and <strong>URL:</strong>.</p>
-        <textarea id="paste-recipe" rows="9" placeholder="Title: Sunday Pot Roast&#10;Why: Tender beef and vegetables in rich gravy.&#10;Freezer rating: Excellent&#10;Freeze smart: Cool completely and freeze in meal-size portions.&#10;Ingredients:&#10;2 pounds chuck roast&#10;1 onion, chopped&#10;URL: https://example.com/pot-roast"></textarea>
+        <p>Paste text copied from any recipe in this app, or use labels such as <strong>Title:</strong>, <strong>Tags:</strong>, <strong>Why:</strong>, <strong>Freezer rating:</strong>, <strong>Freeze smart:</strong>, <strong>Ingredients:</strong>, <strong>Instructions:</strong>, and <strong>URL:</strong>.</p>
+        <textarea id="paste-recipe" rows="11" placeholder="Title: Sunday Pot Roast&#10;Why: Tender beef and vegetables in rich gravy.&#10;Freezer rating: Excellent&#10;Freeze smart: Cool completely and freeze in meal-size portions.&#10;Ingredients:&#10;2 pounds chuck roast&#10;1 onion, chopped&#10;Instructions:&#10;Brown the roast.&#10;Cook with the onion until tender.&#10;URL: https://example.com/pot-roast"></textarea>
         <div class="paste-actions">
           <button id="cancel-paste" class="button button-secondary" type="button">Cancel</button>
           <button id="use-pasted-recipe" class="button button-secondary" type="button">Use Pasted Details</button>
@@ -335,6 +339,9 @@
           </label>
           <label class="field field-wide">Ingredients <span class="field-hint">one per line</span>
             <textarea id="recipe-ingredients" name="ingredients" rows="6" placeholder="2 pounds ground beef&#10;1 onion, diced&#10;1 cup shredded cheese"></textarea>
+          </label>
+          <label class="field field-wide">Instructions <span class="field-hint">one step per line</span>
+            <textarea id="recipe-instructions" name="instructions" rows="8" placeholder="Brown the beef and onion.&#10;Stir in the sauce.&#10;Bake until hot and bubbling."></textarea>
           </label>
           <label class="field field-wide">Original recipe link
             <input id="recipe-url" name="url" type="url" required placeholder="https://..." />
@@ -373,7 +380,7 @@
           </button>
           <input id="import-backup-file" type="file" accept=".json,application/json" hidden />
         </div>
-        <p class="device-note">Backups include personal recipes, hidden recipes, saved ingredients, collections, and the shopping list. Importing merges safely with data already on this device.</p>
+        <p class="device-note">Backups include personal recipes, hidden recipes, saved ingredients and instructions, collections, and the shopping list. Importing merges safely with data already on this device.</p>
         <p id="manage-message" class="form-message manage-message" role="status"></p>
         <div class="dialog-actions">
           <button id="done-manager" class="button button-secondary" type="button">Done</button>
