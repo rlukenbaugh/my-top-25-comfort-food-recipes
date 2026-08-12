@@ -118,6 +118,8 @@ const elements = {
   emptyState: document.querySelector("#empty-state"),
   clearButtons: [...document.querySelectorAll("[data-clear]")],
   pdfLinks: [...document.querySelectorAll("[data-pdf-link]")],
+  printRecipes: document.querySelector("#print-recipes"),
+  printSummary: document.querySelector("#print-summary"),
   openManager: document.querySelector("#open-manager"),
   openAdd: document.querySelector("#open-add-recipe"),
   dialog: document.querySelector("#recipe-dialog"),
@@ -1028,6 +1030,8 @@ function render() {
   if (activeCollection) elements.activeCollectionFilter.setAttribute("aria-label", `Clear collection filter: ${activeCollection.name}`);
   else elements.activeCollectionFilter.removeAttribute("aria-label");
   const isFiltered = state.query.length > 0 || state.rating !== "All" || state.tag !== "All" || Boolean(activeCollection);
+  elements.printRecipes.disabled = recipes.length === 0;
+  elements.printSummary.textContent = `${recipes.length} ${recipes.length === 1 ? "recipe" : "recipes"} ${isFiltered ? "currently shown" : "in the collection"}.`;
   elements.clearFilters.hidden = !isFiltered;
   elements.emptyState.hidden = recipes.length !== 0;
   elements.list.hidden = recipes.length === 0;
@@ -1851,6 +1855,11 @@ function printShoppingList() {
   setTimeout(cleanup, 1000);
 }
 
+function printRecipeList() {
+  if (!filteredRecipes().length) return;
+  window.print();
+}
+
 function clearCheckedShoppingItems() {
   const checkedCount = state.shoppingItems.filter((item) => item.checked).length;
   if (!checkedCount) return;
@@ -2261,6 +2270,7 @@ elements.tagFilter.addEventListener("change", () => {
 });
 elements.clearFilters.addEventListener("click", () => clearFilters());
 elements.clearButtons.forEach((button) => button.addEventListener("click", () => clearFilters()));
+elements.printRecipes.addEventListener("click", printRecipeList);
 elements.backToTop.addEventListener("click", () => {
   elements.brand.focus({ preventScroll: true });
   const behavior = matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";

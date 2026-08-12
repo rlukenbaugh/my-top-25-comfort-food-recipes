@@ -61,6 +61,34 @@ test("search, filters, keyboard tabs, and console remain healthy", async ({ page
 });
 
 
+test("Print Recipes prints the current results in a clean paper layout", async ({ page }) => {
+  await openCleanApp(page);
+  await page.getByRole("searchbox", { name: "Search recipes" }).fill("lasagna");
+  await expect(page.getByRole("heading", { name: "1 recipe" })).toBeVisible();
+
+  await page.evaluate(() => {
+    window.__printCallCount = 0;
+    window.print = () => { window.__printCallCount += 1; };
+  });
+  await page.getByRole("button", { name: "Print Recipes" }).click();
+  await expect.poll(() => page.evaluate(() => window.__printCallCount)).toBe(1);
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  const printButtonBox = await page.getByRole("button", { name: "Print Recipes" }).boundingBox();
+  expect(printButtonBox).not.toBeNull();
+  expect(printButtonBox.x).toBeGreaterThanOrEqual(0);
+  expect(printButtonBox.x + printButtonBox.width).toBeLessThanOrEqual(390);
+
+  await page.emulateMedia({ media: "print" });
+  await expect(page.locator(".print-heading")).toBeVisible();
+  await expect(page.locator("#print-summary")).toHaveText("1 recipe currently shown.");
+  await expect(page.locator(".site-header")).toBeHidden();
+  await expect(page.locator("#recipe-list article")).toHaveCount(1);
+  await expect(page.getByRole("heading", { name: "World's Best Lasagna" })).toBeVisible();
+  await expect(page.locator("#recipe-list .recipe-actions")).toBeHidden();
+});
+
+
 test("Mealie URL import previews and fills the curated recipe form", async ({ page }) => {
   const importedRecipe = {
     title: "Test Kitchen Harvest Soup",

@@ -159,6 +159,10 @@
       </section>
 
       <section id="recipes" class="recipe-section" aria-labelledby="results-title">
+        <div class="print-heading" aria-hidden="true">
+          <h1>Ron's Recipes</h1>
+          <p id="print-summary">26 recipes in the collection.</p>
+        </div>
         <div class="results-heading">
           <h2 id="results-title"><span id="result-count">26</span> <span id="result-noun">recipes</span></h2>
           <div class="results-actions">
@@ -169,6 +173,10 @@
             </button>
             <button id="clear-filters" class="text-button" type="button" hidden>Clear filters</button>
             <button id="restore-removed" class="text-button" type="button" hidden>Restore Removed (<span id="removed-count">0</span>)</button>
+            <button id="print-recipes" class="button button-secondary" type="button">
+              <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M6 9V3h12v6M6 18H4V9h16v9h-2M7 14h10v7H7v-7Z"/></svg>
+              Print Recipes
+            </button>
             <button id="open-manager" class="button button-secondary" type="button">
               <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h16M7 7V4h10v3M6 7v13h12V7M9 11h6M9 15h6"/></svg>
               Manage
