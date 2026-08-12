@@ -118,8 +118,13 @@ const elements = {
   emptyState: document.querySelector("#empty-state"),
   clearButtons: [...document.querySelectorAll("[data-clear]")],
   pdfLinks: [...document.querySelectorAll("[data-pdf-link]")],
-  printRecipes: document.querySelector("#print-recipes"),
-  printSummary: document.querySelector("#print-summary"),
+  printRecipeTitle: document.querySelector("#print-recipe-title"),
+  printRecipeTags: document.querySelector("#print-recipe-tags"),
+  printRecipeWhy: document.querySelector("#print-recipe-why"),
+  printRecipeRating: document.querySelector("#print-recipe-rating"),
+  printRecipeFreeze: document.querySelector("#print-recipe-freeze"),
+  printRecipeIngredients: document.querySelector("#print-recipe-ingredients"),
+  printRecipeLink: document.querySelector("#print-recipe-link"),
   openManager: document.querySelector("#open-manager"),
   openAdd: document.querySelector("#open-add-recipe"),
   dialog: document.querySelector("#recipe-dialog"),
@@ -986,6 +991,10 @@ function createRecipeRow(recipe, displayRank) {
   copyButton.setAttribute("aria-label", `Copy ${recipe.title}`);
   copyButton.addEventListener("click", () => copyRecipe(recipe));
 
+  const printButton = row.querySelector(".print-recipe");
+  printButton.setAttribute("aria-label", `Print ${recipe.title}`);
+  printButton.addEventListener("click", () => printRecipe(recipe));
+
   const collectionButton = row.querySelector(".collection-recipe");
   collectionButton.setAttribute("aria-label", `Add ${recipe.title} to collections`);
   collectionButton.addEventListener("click", () => openRecipeCollections(recipe));
@@ -1030,8 +1039,6 @@ function render() {
   if (activeCollection) elements.activeCollectionFilter.setAttribute("aria-label", `Clear collection filter: ${activeCollection.name}`);
   else elements.activeCollectionFilter.removeAttribute("aria-label");
   const isFiltered = state.query.length > 0 || state.rating !== "All" || state.tag !== "All" || Boolean(activeCollection);
-  elements.printRecipes.disabled = recipes.length === 0;
-  elements.printSummary.textContent = `${recipes.length} ${recipes.length === 1 ? "recipe" : "recipes"} ${isFiltered ? "currently shown" : "in the collection"}.`;
   elements.clearFilters.hidden = !isFiltered;
   elements.emptyState.hidden = recipes.length !== 0;
   elements.list.hidden = recipes.length === 0;
@@ -1855,9 +1862,40 @@ function printShoppingList() {
   setTimeout(cleanup, 1000);
 }
 
-function printRecipeList() {
-  if (!filteredRecipes().length) return;
+function printRecipe(recipe) {
+  elements.printRecipeTitle.textContent = recipe.title;
+  elements.printRecipeWhy.textContent = recipe.why;
+  elements.printRecipeRating.textContent = normalizedRating(recipe.rating);
+  elements.printRecipeFreeze.textContent = recipe.freeze;
+
+  const tagItems = parseTags(recipe.tags).map((tag) => {
+    const item = document.createElement("li");
+    item.textContent = tag;
+    return item;
+  });
+  elements.printRecipeTags.replaceChildren(...tagItems);
+
+  const ingredients = ingredientsForRecipe(recipe);
+  const ingredientItems = (ingredients.length ? ingredients : ["Ingredients are not saved on this device."]).map((ingredient) => {
+    const item = document.createElement("li");
+    item.textContent = ingredient;
+    return item;
+  });
+  elements.printRecipeIngredients.replaceChildren(...ingredientItems);
+
+  elements.printRecipeLink.textContent = recipe.url || "No original recipe link saved.";
+  if (recipe.url) elements.printRecipeLink.href = recipe.url;
+  else elements.printRecipeLink.removeAttribute("href");
+
+  document.body.classList.remove("print-shopping-list");
+  document.body.classList.add("print-single-recipe");
+  const cleanup = () => {
+    document.body.classList.remove("print-single-recipe");
+    window.removeEventListener("afterprint", cleanup);
+  };
+  window.addEventListener("afterprint", cleanup, { once: true });
   window.print();
+  setTimeout(cleanup, 1000);
 }
 
 function clearCheckedShoppingItems() {
@@ -2270,7 +2308,6 @@ elements.tagFilter.addEventListener("change", () => {
 });
 elements.clearFilters.addEventListener("click", () => clearFilters());
 elements.clearButtons.forEach((button) => button.addEventListener("click", () => clearFilters()));
-elements.printRecipes.addEventListener("click", printRecipeList);
 elements.backToTop.addEventListener("click", () => {
   elements.brand.focus({ preventScroll: true });
   const behavior = matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";

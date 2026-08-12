@@ -61,31 +61,40 @@ test("search, filters, keyboard tabs, and console remain healthy", async ({ page
 });
 
 
-test("Print Recipes prints the current results in a clean paper layout", async ({ page }) => {
+test("each recipe can print its own details and ingredients", async ({ page }) => {
   await openCleanApp(page);
-  await page.getByRole("searchbox", { name: "Search recipes" }).fill("lasagna");
-  await expect(page.getByRole("heading", { name: "1 recipe" })).toBeVisible();
+  await expect(page.getByRole("button", { name: /^Print / })).toHaveCount(26);
+  await expect(page.getByRole("button", { name: "Print Recipes" })).toHaveCount(0);
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  const printButton = page.getByRole("button", { name: "Print World's Best Lasagna" });
+  const printButtonBox = await printButton.boundingBox();
+  expect(printButtonBox).not.toBeNull();
+  expect(printButtonBox.x).toBeGreaterThanOrEqual(0);
+  expect(printButtonBox.x + printButtonBox.width).toBeLessThanOrEqual(390);
 
   await page.evaluate(() => {
     window.__printCallCount = 0;
     window.print = () => { window.__printCallCount += 1; };
   });
-  await page.getByRole("button", { name: "Print Recipes" }).click();
+  await printButton.click();
   await expect.poll(() => page.evaluate(() => window.__printCallCount)).toBe(1);
-
-  await page.setViewportSize({ width: 390, height: 844 });
-  const printButtonBox = await page.getByRole("button", { name: "Print Recipes" }).boundingBox();
-  expect(printButtonBox).not.toBeNull();
-  expect(printButtonBox.x).toBeGreaterThanOrEqual(0);
-  expect(printButtonBox.x + printButtonBox.width).toBeLessThanOrEqual(390);
+  await expect(page.locator("body")).toHaveClass(/print-single-recipe/);
+  await expect(page.locator("#print-recipe-title")).toHaveText("World's Best Lasagna");
+  await expect(page.locator("#print-recipe-rating")).toHaveText("Excellent");
+  await expect(page.locator("#print-recipe-tags")).toContainText("Italian");
+  await expect(page.locator("#print-recipe-ingredients li")).toHaveCount(20);
+  await expect(page.locator("#print-recipe-ingredients li").first()).toHaveText("1 pound sweet Italian sausage");
+  await expect(page.locator("#print-recipe-link")).toHaveAttribute("href", "https://www.allrecipes.com/recipe/23600/worlds-best-lasagna/");
 
   await page.emulateMedia({ media: "print" });
-  await expect(page.locator(".print-heading")).toBeVisible();
-  await expect(page.locator("#print-summary")).toHaveText("1 recipe currently shown.");
-  await expect(page.locator(".site-header")).toBeHidden();
-  await expect(page.locator("#recipe-list article")).toHaveCount(1);
-  await expect(page.getByRole("heading", { name: "World's Best Lasagna" })).toBeVisible();
-  await expect(page.locator("#recipe-list .recipe-actions")).toBeHidden();
+  await expect(page.locator("#recipe-print-sheet")).toBeVisible();
+  await expect(page.locator("main")).toBeHidden();
+
+  await page.evaluate(() => window.dispatchEvent(new Event("afterprint")));
+  await page.emulateMedia({ media: "screen" });
+  await expect(page.locator("body")).not.toHaveClass(/print-single-recipe/);
+  await expect(page.locator("#recipe-print-sheet")).toBeHidden();
 });
 
 
