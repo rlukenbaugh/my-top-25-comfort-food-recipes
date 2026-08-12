@@ -42,6 +42,8 @@ jobs:
         run: python build_recipe_book.py
       - name: Verify printable PDF
         run: python verify_book.py
+      - name: Test private importer bridge
+        run: npm run test:bridge
       - name: Run interaction and accessibility tests
         run: npm run test:e2e
       - name: Assemble website

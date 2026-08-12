@@ -24,6 +24,11 @@ def main():
     if not isinstance(recipes, list) or not recipes:
         fail(["recipes.json must contain a non-empty array."])
 
+    try:
+        food_com_catalog = json.loads((ROOT / "food-com-most-saved.json").read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as error:
+        fail([f"food-com-most-saved.json could not be read: {error}"])
+
     expected_ranks = list(range(1, len(recipes) + 1))
     ranks = [recipe.get("rank") for recipe in recipes if isinstance(recipe, dict)]
     if ranks != expected_ranks:
@@ -71,13 +76,44 @@ def main():
         if parsed_url.scheme != "https" or not parsed_url.hostname:
             errors.append(f"Recipe {index} must use a valid HTTPS source URL: {recipe['url']}.")
 
+    food_com_recipes = food_com_catalog.get("recipes") if isinstance(food_com_catalog, dict) else None
+    if not isinstance(food_com_recipes, list) or len(food_com_recipes) != 50:
+        errors.append("food-com-most-saved.json must contain exactly 50 recipes.")
+    else:
+        expected_food_ranks = list(range(1, 51))
+        if [recipe.get("rank") for recipe in food_com_recipes if isinstance(recipe, dict)] != expected_food_ranks:
+            errors.append("Food.com ranks must be consecutive from 1 through 50.")
+        food_urls = set()
+        food_titles = set()
+        for index, recipe in enumerate(food_com_recipes, start=1):
+            if not isinstance(recipe, dict) or set(recipe) != {"rank", "title", "url"}:
+                errors.append(f"Food.com recipe {index} must contain only rank, title, and url.")
+                continue
+            title = str(recipe["title"]).strip()
+            url = str(recipe["url"]).strip()
+            parsed = urlparse(url)
+            if not title:
+                errors.append(f"Food.com recipe {index} has no title.")
+            if parsed.scheme != "https" or parsed.hostname not in {"food.com", "www.food.com"} or not parsed.path.startswith("/recipe/"):
+                errors.append(f"Food.com recipe {index} has an invalid URL: {url}.")
+            if title.casefold() in food_titles:
+                errors.append(f"Duplicate Food.com title: {title}.")
+            if url.rstrip("/").casefold() in food_urls:
+                errors.append(f"Duplicate Food.com URL: {url}.")
+            food_titles.add(title.casefold())
+            food_urls.add(url.rstrip("/").casefold())
+    if food_com_catalog.get("source") != "https://www.food.com/ideas/most-saved-recipes-6799":
+        errors.append("The Food.com catalog source URL is missing or unexpected.")
+
     app_source = (ROOT / "index.html").read_text(encoding="utf-8") + (ROOT / "app-v1.7.js").read_text(encoding="utf-8")
     for required_reference in (
         "recipes.json",
+        "food-com-most-saved.json",
         "app-v1.7.js",
         "styles-v1.7.css",
         "printable/rons-recipes-2026.pdf",
         "manifest.webmanifest",
+        "food-com-most-saved.json",
         "service-worker.js",
         "assets/icons/favicon.svg",
         "assets/og/rons-recipes-share-1200x630.png",
@@ -102,7 +138,7 @@ def main():
     if errors:
         fail(errors)
 
-    print(f"PASS: {len(recipes)} recipes validated")
+    print(f"PASS: {len(recipes)} bundled recipes and 50 Food.com catalog entries validated")
     print("Ranks, required fields, tags, ratings, titles, ingredients, instructions, and HTTPS source URLs are valid.")
 
 

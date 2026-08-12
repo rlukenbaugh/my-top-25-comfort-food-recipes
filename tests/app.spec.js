@@ -44,12 +44,16 @@ test("search, filters, keyboard tabs, and console remain healthy", async ({ page
   await page.getByRole("button", { name: "Add Recipe" }).click();
   const formTab = page.getByRole("tab", { name: "Fill in form" });
   const importTab = page.getByRole("tab", { name: "Import URL" });
+  const foodComTab = page.getByRole("tab", { name: "Food.com Top 50" });
   const pasteTab = page.getByRole("tab", { name: "Paste recipe" });
   await formTab.focus();
   await formTab.press("ArrowRight");
   await expect(importTab).toBeFocused();
   await expect(importTab).toHaveAttribute("aria-selected", "true");
   await importTab.press("ArrowRight");
+  await expect(foodComTab).toBeFocused();
+  await expect(foodComTab).toHaveAttribute("aria-selected", "true");
+  await foodComTab.press("ArrowRight");
   await expect(pasteTab).toBeFocused();
   await expect(pasteTab).toHaveAttribute("aria-selected", "true");
   await page.locator("#paste-recipe").fill("Title: Test Soup\nWhy: Cozy.\nFreezer rating: Good\nFreeze smart: Freeze flat.\nIngredients:\n2 cups stock\n1 onion\nInstructions:\nSimmer the stock and onion.\nServe hot.\nURL: https://example.com/test-soup");
@@ -165,7 +169,7 @@ test("Mealie URL import previews and fills the curated recipe form", async ({ pa
   await page.getByRole("button", { name: "Add Recipe" }).click();
   await page.getByRole("tab", { name: "Import URL" }).click();
   await expect(page.locator("#import-message")).toHaveText("Connected securely to Mealie on this PC.");
-  await expect(page.locator(".import-heading")).toContainText("allow this site to access your local network");
+  await expect(page.locator("#import-panel .import-heading")).toContainText("allow this site to access your local network");
   await page.getByLabel("Recipe webpage").fill(importedRecipe.sourceUrl);
   await page.getByRole("button", { name: "Preview Recipe" }).click();
 
@@ -194,6 +198,82 @@ test("Mealie URL import previews and fills the curated recipe form", async ({ pa
   await page.getByRole("button", { name: "Add to Ron's Recipes" }).click();
   await expect(page.getByRole("heading", { name: "27 recipes" })).toBeVisible();
   await expect(page.getByRole("heading", { name: importedRecipe.title })).toBeVisible();
+});
+
+
+test("Food.com Top 50 imports selected recipes with instructions into its own collection", async ({ page }) => {
+  const failures = new Set(["https://www.food.com/recipe/easy-stove-top-macaroni-cheese-60350"]);
+  await page.route("http://127.0.0.1:9931/**", async (route) => {
+    const corsHeaders = {
+      "Access-Control-Allow-Origin": "http://127.0.0.1:4173",
+      "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type",
+    };
+    if (route.request().method() === "OPTIONS") {
+      await route.fulfill({ status: 204, headers: corsHeaders });
+      return;
+    }
+    const requestUrl = new URL(route.request().url());
+    if (requestUrl.pathname === "/health") {
+      await route.fulfill({ status: 200, contentType: "application/json", headers: corsHeaders, body: JSON.stringify({ ok: true }) });
+      return;
+    }
+    const { urls } = route.request().postDataJSON();
+    const results = urls.map((url, index) => failures.has(url)
+      ? { ok: false, url, error: "Test scrape failed." }
+      : {
+        ok: true,
+        url,
+        recipe: {
+          title: index === 0 ? "Best Banana Bread" : "Beef & Broccoli Stir-Fry",
+          description: "A Food.com favorite.",
+          sourceUrl: url,
+          ingredients: ["2 cups flour", "1 cup sugar"],
+          instructions: ["Mix the ingredients.", "Bake until golden."],
+          tags: ["Breakfast", "Easy"],
+        },
+      });
+    await route.fulfill({ status: 200, contentType: "application/json", headers: corsHeaders, body: JSON.stringify({ ok: true, results }) });
+  });
+
+  await openCleanApp(page);
+  await page.getByRole("button", { name: "Add Recipe" }).click();
+  await page.getByRole("tab", { name: "Food.com Top 50" }).click();
+  const panel = page.locator("#food-com-panel");
+  await expect(panel.locator('.food-com-option input[type="checkbox"]')).toHaveCount(50);
+  await expect(panel.getByRole("link", { name: /Food.com 50 Most-Saved Recipes/ })).toHaveAttribute("href", "https://www.food.com/ideas/most-saved-recipes-6799");
+  await panel.locator('.food-com-option input[type="checkbox"]').nth(0).check();
+  await panel.locator('.food-com-option input[type="checkbox"]').nth(1).check();
+  await panel.locator('.food-com-option input[type="checkbox"]').nth(2).check();
+  await expect(page.locator("#food-com-selection-count")).toHaveText("3 selected");
+  const accessibility = await new AxeBuilder({ page }).include("#recipe-dialog").analyze();
+  expect(accessibility.violations).toEqual([]);
+
+  await page.getByRole("button", { name: "Import Selected" }).click();
+  await expect(page.locator("#toast")).toContainText("2 added, 0 already saved, 1 failed");
+  await expect(page.getByRole("button", { name: "Clear collection filter: Food.com Most-Saved" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "2 recipes" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Best Banana Bread" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Beef & Broccoli Stir-Fry" })).toBeVisible();
+
+  const saved = await page.evaluate(() => ({
+    recipes: JSON.parse(localStorage.getItem("rons-recipes.custom.v1")),
+    collections: JSON.parse(localStorage.getItem("rons-recipes.collections.v1")),
+  }));
+  expect(saved.recipes).toHaveLength(2);
+  expect(saved.recipes[0]).toMatchObject({
+    rating: "Good",
+    tags: ["Food.com", "Breakfast", "Easy"],
+    ingredients: ["2 cups flour", "1 cup sugar"],
+    instructions: ["Mix the ingredients.", "Bake until golden."],
+  });
+  expect(saved.collections.find((collection) => collection.name === "Food.com Most-Saved").recipeKeys).toHaveLength(2);
+
+  await page.evaluate(() => { window.print = () => {}; });
+  await page.getByRole("button", { name: "Print Best Banana Bread" }).click();
+  await expect(page.locator("#print-recipe-ingredients li")).toHaveCount(2);
+  await expect(page.locator("#print-recipe-instructions li")).toHaveCount(2);
+  await expect(page.locator("#print-recipe-instructions li").first()).toHaveText("Mix the ingredients.");
 });
 
 

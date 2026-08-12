@@ -11,6 +11,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 from collections import deque
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -22,6 +23,7 @@ DEFAULT_MEALIE_URL = "http://192.168.1.60:9925"
 DEFAULT_PORT = 9931
 MAX_BODY_BYTES = 16_384
 MAX_REQUESTS_PER_MINUTE = 30
+MAX_BATCH_URLS = 10
 DEFAULT_ALLOWED_ORIGINS = {
     "https://rlukenbaugh.github.io",
     "http://127.0.0.1:4173",
@@ -222,8 +224,28 @@ def scrape_preview(config: BridgeConfig, source_url: str) -> dict[str, Any]:
     return normalize_preview(recipe, normalized_url)
 
 
+def scrape_batch(config: BridgeConfig, source_urls: Any) -> list[dict[str, Any]]:
+    if not isinstance(source_urls, list) or not source_urls:
+        raise BridgeError("Choose at least one recipe to import.")
+    if len(source_urls) > MAX_BATCH_URLS:
+        raise BridgeError(f"A batch may contain no more than {MAX_BATCH_URLS} recipes.")
+
+    def scrape_one(source_url: Any) -> dict[str, Any]:
+        requested_url = str(source_url or "").strip()
+        try:
+            recipe = scrape_preview(config, requested_url)
+            return {"ok": True, "url": recipe["sourceUrl"], "recipe": recipe}
+        except BridgeError as error:
+            return {"ok": False, "url": requested_url, "error": str(error)}
+        except Exception:
+            return {"ok": False, "url": requested_url, "error": "The importer encountered an unexpected error."}
+
+    with ThreadPoolExecutor(max_workers=min(3, len(source_urls))) as pool:
+        return list(pool.map(scrape_one, source_urls))
+
+
 class BridgeHandler(BaseHTTPRequestHandler):
-    server_version = "RonsRecipesMealieBridge/1.0"
+    server_version = "RonsRecipesMealieBridge/1.1"
     request_times: deque[float] = deque()
 
     @property
@@ -290,7 +312,7 @@ class BridgeHandler(BaseHTTPRequestHandler):
         origin = None
         try:
             origin = self.allowed_origin()
-            if self.path != "/preview":
+            if self.path not in {"/preview", "/batch-preview"}:
                 raise BridgeError("Not found.", 404)
             self.rate_limit()
             try:
@@ -303,8 +325,14 @@ class BridgeHandler(BaseHTTPRequestHandler):
                 payload = json.loads(self.rfile.read(length).decode("utf-8"))
             except (UnicodeDecodeError, json.JSONDecodeError) as error:
                 raise BridgeError("The import request is not valid JSON.") from error
-            recipe = scrape_preview(self.config, payload.get("url") if isinstance(payload, dict) else None)
-            self.send_json(200, {"ok": True, "recipe": recipe}, origin)
+            if not isinstance(payload, dict):
+                raise BridgeError("The import request must be a JSON object.")
+            if self.path == "/preview":
+                recipe = scrape_preview(self.config, payload.get("url"))
+                self.send_json(200, {"ok": True, "recipe": recipe}, origin)
+            else:
+                results = scrape_batch(self.config, payload.get("urls"))
+                self.send_json(200, {"ok": True, "results": results}, origin)
         except BridgeError as error:
             self.send_json(error.status, {"ok": False, "error": str(error)}, origin)
         except Exception:

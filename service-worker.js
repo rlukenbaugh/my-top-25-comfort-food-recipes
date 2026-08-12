@@ -7,6 +7,7 @@ const APP_SHELL = [
   `./styles-v1.7.css?v=${BUILD_VERSION}`,
   `./app-v1.7.js?v=${BUILD_VERSION}`,
   `./recipes.json?v=${BUILD_VERSION}`,
+  `./food-com-most-saved.json?v=${BUILD_VERSION}`,
   "./manifest.webmanifest",
   "./assets/icons/favicon.svg",
   "./assets/icons/favicon.ico",

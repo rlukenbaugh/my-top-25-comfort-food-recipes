@@ -29,6 +29,7 @@ def main() -> None:
         "styles-v1.7.css",
         "service-worker.js",
         "recipes.json",
+        "food-com-most-saved.json",
         "manifest.webmanifest",
         "printable/rons-recipes-2026.pdf",
         "assets/icons/icon-192.png",

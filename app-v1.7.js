@@ -11,6 +11,10 @@ const BACKUP_VERSION = 4;
 const BACKUP_REMINDER_DAYS = 14;
 const BACKUP_SNOOZE_DAYS = 3;
 const MEALIE_BRIDGE_URL = "http://127.0.0.1:9931";
+const FOOD_COM_LIST_URL = "food-com-most-saved.json?v=__BUILD_VERSION__";
+const FOOD_COM_COLLECTION_NAME = "Food.com Most-Saved";
+const FOOD_COM_FREEZER_NOTE = "Freezer guidance has not been reviewed. Check the original recipe before freezing.";
+const FOOD_COM_BATCH_SIZE = 5;
 const STARTER_COLLECTIONS = ["Crockpot", "Easy", "New", "Favorites", "Weeknight"];
 const RATINGS = ["Outstanding", "Excellent", "Very good", "Good", "Fair"];
 const AISLE_ORDER = ["Produce", "Meat & seafood", "Dairy & eggs", "Bakery", "Frozen", "Pantry", "Spices & seasonings", "Other"];
@@ -72,6 +76,9 @@ const state = {
   surpriseRecipeKey: null,
   editingRecipeKey: null,
   importedRecipe: null,
+  foodComRecipes: [],
+  foodComLoading: false,
+  foodComImporting: false,
 };
 
 const elements = {
@@ -137,6 +144,7 @@ const elements = {
   entryTabs: document.querySelector("#entry-tabs"),
   formTab: document.querySelector("#form-tab"),
   importTab: document.querySelector("#import-tab"),
+  foodComTab: document.querySelector("#food-com-tab"),
   pasteTab: document.querySelector("#paste-tab"),
   entryMethodTabs: [...document.querySelectorAll("[data-entry-method]")],
   importPanel: document.querySelector("#import-panel"),
@@ -154,6 +162,16 @@ const elements = {
   importPreviewSummary: document.querySelector("#import-preview-summary"),
   cancelImport: document.querySelector("#cancel-import"),
   useImportedRecipe: document.querySelector("#use-imported-recipe"),
+  foodComPanel: document.querySelector("#food-com-panel"),
+  foodComList: document.querySelector("#food-com-list"),
+  foodComSource: document.querySelector("#food-com-source"),
+  foodComSelectionCount: document.querySelector("#food-com-selection-count"),
+  foodComMessage: document.querySelector("#food-com-message"),
+  foodComProgress: document.querySelector("#food-com-progress"),
+  selectAllFoodCom: document.querySelector("#select-all-food-com"),
+  clearFoodCom: document.querySelector("#clear-food-com"),
+  cancelFoodCom: document.querySelector("#cancel-food-com"),
+  importSelectedFoodCom: document.querySelector("#import-selected-food-com"),
   pastePanel: document.querySelector("#paste-panel"),
   pasteInput: document.querySelector("#paste-recipe"),
   cancelPaste: document.querySelector("#cancel-paste"),
@@ -1087,6 +1105,7 @@ function clearFilters(shouldFocus = true) {
 function setEntryMethod(method, shouldFocus = true) {
   elements.form.hidden = method !== "form";
   elements.importPanel.hidden = method !== "import";
+  elements.foodComPanel.hidden = method !== "food-com";
   elements.pastePanel.hidden = method !== "paste";
   elements.entryMethodTabs.forEach((tab) => {
     const active = tab.dataset.entryMethod === method;
@@ -1097,9 +1116,11 @@ function setEntryMethod(method, shouldFocus = true) {
   if (shouldFocus) {
     if (method === "form") elements.titleInput.focus();
     else if (method === "import") elements.importUrl.focus();
+    else if (method === "food-com") elements.foodComList.querySelector("input")?.focus();
     else elements.pasteInput.focus();
   }
   if (method === "import") checkMealieBridge();
+  if (method === "food-com") loadFoodComRecipes();
 }
 
 function handleEntryTabKeydown(event) {
@@ -1127,6 +1148,16 @@ function resetDialog() {
   elements.importMessage.textContent = "Checking the private Mealie connection…";
   elements.previewImport.disabled = false;
   state.importedRecipe = null;
+  state.foodComImporting = false;
+  elements.foodComProgress.hidden = true;
+  elements.foodComProgress.value = 0;
+  elements.foodComMessage.textContent = state.foodComRecipes.length ? "Choose one or more recipes to import." : "Choose this tab to load the list.";
+  elements.foodComList.querySelectorAll("input").forEach((input) => { input.checked = false; });
+  elements.foodComList.querySelectorAll(".food-com-status").forEach((status) => {
+    status.textContent = "";
+    status.className = "food-com-status";
+  });
+  updateFoodComSelection();
   elements.formMessage.textContent = "";
   elements.pasteMessage.textContent = "";
   setEntryMethod("form", false);
@@ -1191,9 +1222,9 @@ function importedDescription(recipe) {
   }
 }
 
-async function bridgeRequest(path, options = {}) {
+async function bridgeRequest(path, { timeoutMs = 65000, ...options } = {}) {
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 65000);
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
   try {
     const response = await fetch(`${MEALIE_BRIDGE_URL}${path}`, {
       ...options,
@@ -1272,6 +1303,239 @@ function useImportedRecipe() {
   setEntryMethod("form");
   elements.formMessage.textContent = "Imported from Mealie. Add your freezer note, review the details, then save.";
   elements.freezeInput.focus();
+}
+
+function updateFoodComSelection() {
+  const checked = elements.foodComList.querySelectorAll('input[type="checkbox"]:checked').length;
+  elements.foodComSelectionCount.textContent = `${checked} selected`;
+  elements.importSelectedFoodCom.disabled = state.foodComImporting || checked === 0;
+  elements.selectAllFoodCom.disabled = state.foodComImporting || !state.foodComRecipes.length;
+  elements.clearFoodCom.disabled = state.foodComImporting || checked === 0;
+}
+
+function matchingSavedRecipe(recipe) {
+  return [...state.allRecipes].find((existing) =>
+    normalizeUrl(existing.url) === normalizeUrl(recipe.sourceUrl || recipe.url) ||
+    existing.title.trim().toLocaleLowerCase() === String(recipe.title || "").trim().toLocaleLowerCase()
+  );
+}
+
+function foodComRow(sourceUrl) {
+  return [...elements.foodComList.querySelectorAll(".food-com-option")]
+    .find((row) => row.dataset.url === sourceUrl);
+}
+
+function setFoodComRowStatus(sourceUrl, message, status = "") {
+  const row = foodComRow(sourceUrl);
+  if (!row) return;
+  const label = row.querySelector(".food-com-status");
+  label.textContent = message;
+  label.className = `food-com-status${status ? ` ${status}` : ""}`;
+}
+
+function renderFoodComRecipes() {
+  const fragment = document.createDocumentFragment();
+  state.foodComRecipes.forEach((recipe) => {
+    const label = document.createElement("label");
+    label.className = "food-com-option";
+    label.dataset.url = recipe.url;
+
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.value = String(recipe.rank);
+    checkbox.addEventListener("change", updateFoodComSelection);
+
+    const rank = document.createElement("span");
+    rank.className = "food-com-rank";
+    rank.textContent = `#${recipe.rank}`;
+
+    const title = document.createElement("span");
+    title.className = "food-com-title";
+    title.textContent = recipe.title;
+
+    const status = document.createElement("span");
+    status.className = "food-com-status";
+    if (matchingSavedRecipe(recipe)) status.textContent = "Already saved — selecting it adds it to the collection";
+
+    label.append(checkbox, rank, title, status);
+    fragment.append(label);
+  });
+  elements.foodComList.replaceChildren(fragment);
+  elements.foodComList.setAttribute("aria-busy", "false");
+  updateFoodComSelection();
+}
+
+async function loadFoodComRecipes() {
+  if (state.foodComLoading) return;
+  if (state.foodComRecipes.length) {
+    elements.foodComMessage.textContent = "Choose one or more recipes to import.";
+    return;
+  }
+  state.foodComLoading = true;
+  elements.foodComList.setAttribute("aria-busy", "true");
+  elements.foodComMessage.textContent = "Loading Food.com's most-saved recipes…";
+  try {
+    const response = await fetch(FOOD_COM_LIST_URL, { cache: "no-store" });
+    if (!response.ok) throw new Error(`Recipe list returned HTTP ${response.status}.`);
+    const catalog = await response.json();
+    if (!Array.isArray(catalog.recipes) || catalog.recipes.length !== 50) throw new Error("The Food.com recipe list is incomplete.");
+    state.foodComRecipes = catalog.recipes;
+    elements.foodComSource.href = catalog.source;
+    renderFoodComRecipes();
+    try {
+      await bridgeRequest("/health");
+      elements.foodComMessage.textContent = "50 recipes loaded. Connected securely to Mealie on this PC.";
+    } catch (error) {
+      elements.foodComMessage.textContent = error.message;
+    }
+  } catch (error) {
+    elements.foodComList.setAttribute("aria-busy", "false");
+    elements.foodComMessage.textContent = error.message || "The Food.com recipe list could not be loaded.";
+  } finally {
+    state.foodComLoading = false;
+  }
+}
+
+function setFoodComSelection(checked) {
+  if (state.foodComImporting) return;
+  elements.foodComList.querySelectorAll('input[type="checkbox"]').forEach((input) => { input.checked = checked; });
+  updateFoodComSelection();
+}
+
+function importedFoodComRecipe(preview) {
+  return {
+    id: makeCustomId(),
+    title: preview.title,
+    why: importedDescription(preview),
+    rating: "Good",
+    tags: parseTags(["Food.com", ...parseTags(preview.tags)]),
+    freeze: FOOD_COM_FREEZER_NOTE,
+    url: preview.sourceUrl,
+    ingredients: parseIngredientLines(preview.ingredients),
+    instructions: parseInstructionLines(preview.instructions),
+  };
+}
+
+async function importSelectedFoodComRecipes() {
+  if (state.foodComImporting) return;
+  const selectedRanks = new Set([...elements.foodComList.querySelectorAll('input[type="checkbox"]:checked')].map((input) => Number(input.value)));
+  const selected = state.foodComRecipes.filter((recipe) => selectedRanks.has(recipe.rank));
+  if (!selected.length) return;
+
+  state.foodComImporting = true;
+  elements.foodComList.querySelectorAll("input").forEach((input) => { input.disabled = true; });
+  elements.foodComProgress.max = selected.length;
+  elements.foodComProgress.value = 0;
+  elements.foodComProgress.hidden = false;
+  elements.foodComMessage.textContent = `Importing 0 of ${selected.length} recipes…`;
+  updateFoodComSelection();
+
+  const addedRecipes = [];
+  const collectionKeys = new Set();
+  const pending = [];
+  let skipped = 0;
+  let failed = 0;
+  let processed = 0;
+
+  selected.forEach((recipe) => {
+    const existing = matchingSavedRecipe(recipe);
+    if (existing) {
+      collectionKeys.add(recipeKey(existing));
+      skipped += 1;
+      processed += 1;
+      setFoodComRowStatus(recipe.url, "Already saved", "success");
+    } else {
+      pending.push(recipe);
+      setFoodComRowStatus(recipe.url, "Waiting…");
+    }
+  });
+  elements.foodComProgress.value = processed;
+
+  for (let start = 0; start < pending.length; start += FOOD_COM_BATCH_SIZE) {
+    const batch = pending.slice(start, start + FOOD_COM_BATCH_SIZE);
+    batch.forEach((recipe) => setFoodComRowStatus(recipe.url, "Importing…"));
+    try {
+      const data = await bridgeRequest("/batch-preview", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ urls: batch.map((recipe) => recipe.url) }),
+        timeoutMs: 120000,
+      });
+      batch.forEach((catalogRecipe) => {
+        const result = data.results?.find((item) => item.url === catalogRecipe.url);
+        if (!result?.ok) {
+          failed += 1;
+          setFoodComRowStatus(catalogRecipe.url, result?.error || "Import failed", "failed");
+          return;
+        }
+        const recipe = importedFoodComRecipe(result.recipe);
+        if (!recipe.ingredients.length || !recipe.instructions.length) {
+          failed += 1;
+          setFoodComRowStatus(catalogRecipe.url, "Ingredients or instructions were missing", "failed");
+          return;
+        }
+        const duplicate = matchingSavedRecipe(recipe) || addedRecipes.find((existing) =>
+          normalizeUrl(existing.url) === normalizeUrl(recipe.url) || existing.title.toLocaleLowerCase() === recipe.title.toLocaleLowerCase()
+        );
+        if (duplicate) {
+          collectionKeys.add(recipeKey(duplicate));
+          skipped += 1;
+          setFoodComRowStatus(catalogRecipe.url, "Already saved", "success");
+          return;
+        }
+        addedRecipes.push(recipe);
+        collectionKeys.add(recipeKey(recipe));
+        setFoodComRowStatus(catalogRecipe.url, "Imported", "success");
+      });
+    } catch (error) {
+      failed += batch.length;
+      batch.forEach((recipe) => setFoodComRowStatus(recipe.url, error.message || "Import failed", "failed"));
+    }
+    processed += batch.length;
+    elements.foodComProgress.value = processed;
+    elements.foodComMessage.textContent = `Imported ${processed} of ${selected.length} recipes…`;
+  }
+
+  if (collectionKeys.size) {
+    const previousCustomRecipes = state.customRecipes;
+    const previousCollections = state.collections.map((collection) => ({ ...collection, recipeKeys: [...collection.recipeKeys] }));
+    const nextCollections = previousCollections.map((collection) => ({ ...collection, recipeKeys: [...collection.recipeKeys] }));
+    let collection = nextCollections.find((item) => item.name.toLocaleLowerCase() === FOOD_COM_COLLECTION_NAME.toLocaleLowerCase());
+    if (!collection) {
+      collection = { id: makeLocalId("collection"), name: FOOD_COM_COLLECTION_NAME, recipeKeys: [] };
+      nextCollections.push(collection);
+    }
+    collection.recipeKeys = [...new Set([...collection.recipeKeys, ...collectionKeys])];
+    state.customRecipes = [...state.customRecipes, ...addedRecipes];
+    state.collections = nextCollections;
+    mergeRecipes();
+    if (!saveCustomRecipes() || !saveCollections()) {
+      state.customRecipes = previousCustomRecipes;
+      state.collections = previousCollections;
+      mergeRecipes();
+      saveCustomRecipes();
+      saveCollections();
+      render();
+      elements.foodComMessage.textContent = "The imported recipes could not be saved on this device.";
+      state.foodComImporting = false;
+      elements.foodComList.querySelectorAll("input").forEach((input) => { input.disabled = false; });
+      updateFoodComSelection();
+      return;
+    }
+
+    clearFilters(false);
+    state.collectionId = collection.id;
+    closeDialog();
+    render();
+    updateManageSummary();
+    showToast(`Food.com import: ${addedRecipes.length} added, ${skipped} already saved, ${failed} failed`);
+  } else {
+    elements.foodComMessage.textContent = `Import complete: 0 added, ${skipped} already saved, ${failed} failed.`;
+  }
+
+  state.foodComImporting = false;
+  elements.foodComList.querySelectorAll("input").forEach((input) => { input.disabled = false; });
+  updateFoodComSelection();
 }
 
 function labeledBlock(text, label, followingLabels) {
@@ -2426,11 +2690,16 @@ elements.closeDialog.addEventListener("click", closeDialog);
 elements.cancelAdd.addEventListener("click", closeDialog);
 elements.formTab.addEventListener("click", () => setEntryMethod("form"));
 elements.importTab.addEventListener("click", () => setEntryMethod("import"));
+elements.foodComTab.addEventListener("click", () => setEntryMethod("food-com"));
 elements.pasteTab.addEventListener("click", () => setEntryMethod("paste"));
 elements.entryMethodTabs.forEach((tab) => tab.addEventListener("keydown", handleEntryTabKeydown));
 elements.importForm.addEventListener("submit", previewRecipeUrl);
 elements.cancelImport.addEventListener("click", closeDialog);
 elements.useImportedRecipe.addEventListener("click", useImportedRecipe);
+elements.selectAllFoodCom.addEventListener("click", () => setFoodComSelection(true));
+elements.clearFoodCom.addEventListener("click", () => setFoodComSelection(false));
+elements.cancelFoodCom.addEventListener("click", closeDialog);
+elements.importSelectedFoodCom.addEventListener("click", importSelectedFoodComRecipes);
 elements.cancelPaste.addEventListener("click", closeDialog);
 elements.usePasted.addEventListener("click", usePastedRecipe);
 elements.form.addEventListener("submit", saveRecipe);

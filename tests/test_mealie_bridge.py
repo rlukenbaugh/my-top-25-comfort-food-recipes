@@ -5,7 +5,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from mealie_bridge import BridgeError, load_config, normalize_preview, validate_recipe_url
+from mealie_bridge import BridgeConfig, BridgeError, load_config, normalize_preview, scrape_batch, validate_recipe_url
 
 
 class MealieBridgeTests(unittest.TestCase):
@@ -80,6 +80,29 @@ class MealieBridgeTests(unittest.TestCase):
         self.assertEqual(result["instructions"], ["Chop vegetables.", "Simmer until tender."])
         self.assertEqual(result["prepTime"], "PT25M")
         self.assertEqual(result["tags"], ["American", "Soup", "easy", "weeknight"])
+
+    @patch("mealie_bridge.scrape_preview")
+    def test_batch_scrape_preserves_order_and_reports_individual_failures(self, scrape_preview) -> None:
+        urls = ["https://www.food.com/recipe/one-1", "https://www.food.com/recipe/two-2"]
+        def result_for_url(_config, source_url):
+            if source_url == urls[1]:
+                raise BridgeError("Mealie could not recognize recipe data at that URL.", 422)
+            return {"title": "One", "sourceUrl": urls[0], "ingredients": ["1 cup water"], "instructions": ["Stir."]}
+        scrape_preview.side_effect = result_for_url
+        config = BridgeConfig(token="test", mealie_url="https://mealie.example", host="127.0.0.1", port=9931, allowed_origins=frozenset())
+
+        results = scrape_batch(config, urls)
+
+        self.assertEqual([result["url"] for result in results], urls)
+        self.assertTrue(results[0]["ok"])
+        self.assertEqual(results[0]["recipe"]["title"], "One")
+        self.assertFalse(results[1]["ok"])
+        self.assertIn("could not recognize", results[1]["error"])
+
+    def test_batch_scrape_limits_batch_size(self) -> None:
+        config = BridgeConfig(token="test", mealie_url="https://mealie.example", host="127.0.0.1", port=9931, allowed_origins=frozenset())
+        with self.assertRaisesRegex(BridgeError, "no more than 10"):
+            scrape_batch(config, [f"https://example.com/{index}" for index in range(11)])
 
 
 if __name__ == "__main__":

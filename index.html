@@ -266,6 +266,7 @@
       <div id="entry-tabs" class="entry-tabs" role="tablist" aria-label="Recipe entry method">
         <button id="form-tab" class="entry-tab active" type="button" role="tab" data-entry-method="form" aria-selected="true" aria-controls="form-panel" tabindex="0">Fill in form</button>
         <button id="import-tab" class="entry-tab" type="button" role="tab" data-entry-method="import" aria-selected="false" aria-controls="import-panel" tabindex="-1">Import URL</button>
+        <button id="food-com-tab" class="entry-tab" type="button" role="tab" data-entry-method="food-com" aria-selected="false" aria-controls="food-com-panel" tabindex="-1">Food.com Top 50</button>
         <button id="paste-tab" class="entry-tab" type="button" role="tab" data-entry-method="paste" aria-selected="false" aria-controls="paste-panel" tabindex="-1">Paste recipe</button>
       </div>
 
@@ -301,6 +302,33 @@
             <button id="use-imported-recipe" class="button button-primary" type="button">Use Imported Recipe</button>
           </div>
         </article>
+      </section>
+
+      <section id="food-com-panel" class="food-com-panel" role="tabpanel" aria-labelledby="food-com-tab" hidden>
+        <div class="import-heading">
+          <div class="import-heading-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M4 4h16v16H4zM8 9h8M8 13h8M8 17h5"/></svg>
+          </div>
+          <div>
+            <h3>Food.com 50 Most-Saved Recipes</h3>
+            <p>Select the recipes you want. Mealie will save their ingredients and instructions in a private <strong>Food.com Most-Saved</strong> collection on this device.</p>
+          </div>
+        </div>
+        <div class="food-com-toolbar">
+          <span id="food-com-selection-count">0 selected</span>
+          <div>
+            <button id="select-all-food-com" class="text-button" type="button">Select all</button>
+            <button id="clear-food-com" class="text-button" type="button">Clear</button>
+          </div>
+        </div>
+        <div id="food-com-list" class="food-com-list" aria-label="Food.com most-saved recipes" aria-busy="true"></div>
+        <p class="food-com-source">Source: <a id="food-com-source" href="https://www.food.com/ideas/most-saved-recipes-6799" target="_blank" rel="noopener noreferrer">Food.com 50 Most-Saved Recipes ↗</a></p>
+        <progress id="food-com-progress" class="food-com-progress" max="50" value="0" hidden></progress>
+        <p id="food-com-message" class="import-message" role="status">Choose this tab to load the list.</p>
+        <div class="import-preview-actions food-com-actions">
+          <button id="cancel-food-com" class="button button-secondary" type="button">Cancel</button>
+          <button id="import-selected-food-com" class="button button-primary" type="button" disabled>Import Selected</button>
+        </div>
       </section>
 
       <section id="paste-panel" class="paste-panel" role="tabpanel" aria-labelledby="paste-tab" hidden>

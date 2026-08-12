@@ -8,7 +8,7 @@ Open the live collection at:
 
 https://rlukenbaugh.github.io/my-top-25-comfort-food-recipes/
 
-The web app reads the same `recipes.json` file as the printable book. It includes a time-aware cooking dashboard, sticky search plus rating and recipe-tag filters, private Mealie-assisted recipe importing by URL, personal recipe collections, an aisle-sorted recipe-linked shopping list, a synonym-aware pantry matcher, per-recipe serving scaling, a random-recipe picker, rating-accented recipe cards, expandable mobile details, a back-to-top control, a live kitchen measurement converter, original-recipe links, a downloadable PDF, one-click printing with ingredients and instructions for individual recipes, and browser-based recipe additions. GitHub Pages validates, tests, rebuilds, and republishes it whenever `main` is updated.
+The web app reads the same `recipes.json` file as the printable book. It includes a time-aware cooking dashboard, sticky search plus rating and recipe-tag filters, private Mealie-assisted recipe importing by URL, a selectable Food.com Top 50 importer, personal recipe collections, an aisle-sorted recipe-linked shopping list, a synonym-aware pantry matcher, per-recipe serving scaling, a random-recipe picker, rating-accented recipe cards, expandable mobile details, a back-to-top control, a live kitchen measurement converter, original-recipe links, a downloadable PDF, one-click printing with ingredients and instructions for individual recipes, and browser-based recipe additions. GitHub Pages validates, tests, rebuilds, and republishes it whenever `main` is updated.
 
 The site also includes branded sharing metadata, install icons, a web-app manifest, an install prompt when supported by the browser, and a tested offline app-shell cache. The Pages build injects the current Git commit into cache-sensitive URLs and the service-worker cache name, so deployments cannot depend on a hand-edited cache-busting number. After the first successful visit, the recipe list and freezer notes remain available without a connection; the printable PDF and original Allrecipes pages still require internet access.
 
@@ -16,6 +16,7 @@ The site also includes branded sharing metadata, install icons, a web-app manife
 
 - Select **Add Recipe** to enter a recipe with a simple form.
 - Select **Import URL** to have the Mealie server on this PC preview a public recipe page and fill the form. Review the imported fields and add a freezer note before saving.
+- Select **Food.com Top 50** to choose any of Food.com's 50 most-saved recipes and import them in batches. Successful recipes are placed in a private **Food.com Most-Saved** collection with their ingredients and instructions; existing recipes are reused, and one failed page does not stop the rest.
 - Select **Paste recipe** to import labeled recipe text or a JSON recipe object.
 - Select **Copy recipe** on any entry to copy it in the exact labeled format accepted by the paste tool.
 - Every recipe card has an **Edit** action for locally saved changes to its title, notes, rating, tags, source link, ingredients, and instructions. Personal recipes also have a permanent **Delete** action.
@@ -36,6 +37,8 @@ The GitHub Pages app never receives or stores the Mealie API token. A small loop
 4. In Ron's Recipes, select **Add Recipe** and **Import URL**. On first use, Chrome or Edge asks to find and connect to devices on the local network; select **Allow** so the hosted site can reach the bridge on this PC.
 5. Paste a public recipe URL and select **Preview Recipe**.
 6. Select **Use Imported Recipe**, add a freezer note, review the form, and save.
+
+For a batch import, choose **Food.com Top 50**, select individual recipes or **Select all**, then choose **Import Selected**. The importer works in groups of five so progress is visible and the private bridge remains responsive. Batch imports use a neutral **Good** freezer rating and a reminder to review freezer guidance; edit those fields after you decide how well each dish freezes.
 
 The bridge listens only on `127.0.0.1:9931`, permits only the live Ron's Recipes site and documented local preview origins, rate-limits requests, and blocks private/local target URLs. It must be running whenever you import. If local access was previously blocked in Chrome or Edge, select the site-controls icon beside the address, open **Site settings**, set **Local network access** to **Allow**, and reload the page. Because the bridge uses this PC's loopback address, URL importing is PC-only; phones and tablets can still use every other site feature.
 
@@ -97,11 +100,12 @@ Then run:
 npm.cmd test
 ```
 
-This validates the recipe data and the private Mealie bridge, then exercises URL-import previews, search, tags, filters, dashboard shortcuts, synonym and fuzzy pantry matching, missing-ingredient actions, recipe scaling, duplicate shopping-item merging, aisle grouping, backup reminders, surprise selection, collections, keyboard tabs, mobile details, touch targets, color contrast, accessibility, add/edit/delete, true offline reload, and backup export/import. `npm.cmd run test:links` performs the external-link audit; Allrecipes may report protected HTTP 403 responses when it blocks automated requests.
+This validates the recipe data and the private Mealie bridge, then exercises URL-import previews, Food.com batch imports, search, tags, filters, dashboard shortcuts, synonym and fuzzy pantry matching, missing-ingredient actions, recipe scaling, duplicate shopping-item merging, aisle grouping, backup reminders, surprise selection, collections, keyboard tabs, mobile details, touch targets, color contrast, accessibility, add/edit/delete, true offline reload, and backup export/import. `npm.cmd run test:links` checks every bundled recipe link, every Food.com Top 50 link, and the Food.com source-list link. A site may report a protected HTTP 403/429 response when it blocks automated requests; broken or mismatched destinations fail the audit.
 
 ## Project files
 
 - `recipes.json` - the recipe list you edit
+- `food-com-most-saved.json` - the checked Food.com Top 50 catalog used by the batch picker
 - `build_recipe_book.py` - PDF layout and design
 - `build.cmd` - installs the needed Python packages and builds the PDF
 - `verify_book.py` - checks the generated PDF

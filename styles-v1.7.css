@@ -149,10 +149,10 @@ dialog::backdrop { background: rgba(35, 18, 16, 0.58); backdrop-filter: blur(2px
 .dialog-header p { margin: 4px 0 0; color: #f1dedf; font-size: 0.9rem; }
 .icon-button { flex: 0 0 44px; width: 44px; height: 44px; display: grid; place-items: center; border: 1px solid rgba(255,255,255,0.45); border-radius: 8px; background: transparent; color: #fff; cursor: pointer; }
 .icon-button svg { width: 21px; height: 21px; }
-.entry-tabs { display: flex; gap: 8px; padding: 20px 26px 0; border-bottom: 1px solid var(--line); }
+.entry-tabs { display: flex; gap: 8px; padding: 20px 26px 0; overflow-x: auto; border-bottom: 1px solid var(--line); }
 .entry-tab { padding: 10px 14px; border: 0; border-bottom: 3px solid transparent; background: transparent; color: var(--muted); cursor: pointer; font-weight: 700; }
 .entry-tab.active { border-bottom-color: var(--burgundy); color: var(--burgundy); }
-.paste-panel, .import-panel { padding: 22px 26px 4px; }
+.paste-panel, .import-panel, .food-com-panel { padding: 22px 26px 24px; }
 .paste-panel > label { display: block; color: var(--burgundy-dark); font-weight: 700; }
 .paste-panel > p { margin: 6px 0 13px; color: var(--muted); font-size: 0.88rem; }
 .paste-panel textarea { width: 100%; resize: vertical; }
@@ -179,6 +179,22 @@ dialog::backdrop { background: rgba(35, 18, 16, 0.58); backdrop-filter: blur(2px
 .import-facts dd { margin: 3px 0 0; color: var(--ink); font-weight: 700; }
 .import-preview-summary { font-size: 0.86rem; }
 .import-preview-actions { display: flex; justify-content: flex-end; gap: 10px; }
+.food-com-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: 18px 0 10px; color: var(--muted); font-size: 0.86rem; font-weight: 700; }
+.food-com-toolbar > div { display: flex; gap: 14px; }
+.food-com-list { max-height: min(42vh, 390px); overflow: auto; background: #fff; border: 1px solid var(--line); border-radius: 10px; }
+.food-com-option { min-height: 50px; display: grid; grid-template-columns: 22px 38px minmax(0, 1fr) auto; align-items: center; gap: 10px; padding: 9px 12px; cursor: pointer; }
+.food-com-option + .food-com-option { border-top: 1px solid var(--line); }
+.food-com-option:hover { background: #fffdf9; }
+.food-com-option input { width: 20px; height: 20px; margin: 0; accent-color: var(--burgundy); }
+.food-com-rank { color: var(--gold-dark); font-size: 0.78rem; font-weight: 800; }
+.food-com-title { color: var(--ink); font-weight: 700; }
+.food-com-status { color: var(--muted); font-size: 0.78rem; }
+.food-com-status.success { color: var(--green); font-weight: 700; }
+.food-com-status.failed { color: var(--burgundy); font-weight: 700; }
+.food-com-source { margin: 10px 0 0; color: var(--muted); font-size: 0.78rem; }
+.food-com-source a { color: var(--green); font-weight: 700; }
+.food-com-progress { width: 100%; height: 10px; margin: 14px 0 0; accent-color: var(--burgundy); }
+.food-com-actions { margin-top: 16px; }
 .paste-actions { min-height: 48px; display: flex; align-items: center; gap: 14px; margin-top: 10px; }
 #recipe-form { padding: 22px 26px 26px; }
 .form-grid { display: grid; grid-template-columns: minmax(0, 1fr) 180px; gap: 17px; }
@@ -451,8 +467,9 @@ footer > p { margin: 0; text-align: right; }
   dialog { width: calc(100% - 18px); max-height: calc(100vh - 18px); }
   .dialog-header { padding: 19px 18px 16px; }
   .dialog-header h2 { font-size: 1.55rem; }
-  .entry-tabs { padding: 14px 18px 0; }
-  .paste-panel, .import-panel, #recipe-form { padding-left: 18px; padding-right: 18px; }
+  .entry-tabs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 8px; padding: 14px 18px 0; overflow: visible; }
+  .entry-tab { text-align: center; }
+  .paste-panel, .import-panel, .food-com-panel, #recipe-form { padding-left: 18px; padding-right: 18px; }
   .url-import-row { grid-template-columns: 1fr; }
   .url-import-row .button { width: 100%; }
   .import-preview-heading { display: block; }
@@ -461,6 +478,9 @@ footer > p { margin: 0; text-align: right; }
   .import-facts div + div { border-left: 0; border-top: 1px solid var(--line); }
   .import-preview-actions { flex-direction: column-reverse; }
   .import-preview-actions .button { width: 100%; }
+  .food-com-toolbar { align-items: flex-start; }
+  .food-com-option { grid-template-columns: 22px 34px minmax(0, 1fr); }
+  .food-com-status { grid-column: 3; }
   .form-grid { grid-template-columns: 1fr; }
   .field-wide { grid-column: 1; }
   .dialog-actions { flex-wrap: wrap; }

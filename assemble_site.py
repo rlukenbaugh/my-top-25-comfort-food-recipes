@@ -10,7 +10,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 TOKEN = "__BUILD_VERSION__"
 TEXT_FILES = ("index.html", "app-v1.7.js", "service-worker.js")
-COPY_FILES = ("styles-v1.7.css", "recipes.json", "manifest.webmanifest")
+COPY_FILES = ("styles-v1.7.css", "recipes.json", "food-com-most-saved.json", "manifest.webmanifest")
 
 
 def build(output: Path, version: str) -> None:
